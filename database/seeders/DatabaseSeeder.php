@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PlayerSeeder::class,
             UserSeeder::class,
             HealthRecordSeeder::class,
+            PlayerLicenseSeeder::class,
         ]);
 
         $this->command->info('All data seeded successfully!');
