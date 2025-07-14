@@ -26,6 +26,7 @@ class PlayerSeeder extends Seeder
         // Create players with real photos using reliable image URLs
         $players = [
             [
+                'name' => 'Lionel Messi',
                 'first_name' => 'Lionel',
                 'last_name' => 'Messi',
                 'date_of_birth' => '1987-06-24',
@@ -45,6 +46,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Cristiano Ronaldo',
                 'first_name' => 'Cristiano',
                 'last_name' => 'Ronaldo',
                 'date_of_birth' => '1985-02-05',
@@ -64,6 +66,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Kylian Mbappé',
                 'first_name' => 'Kylian',
                 'last_name' => 'Mbappé',
                 'date_of_birth' => '1998-12-20',
@@ -83,6 +86,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Bukayo Saka',
                 'first_name' => 'Bukayo',
                 'last_name' => 'Saka',
                 'date_of_birth' => '2001-09-05',
@@ -102,6 +106,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Erling Haaland',
                 'first_name' => 'Erling',
                 'last_name' => 'Haaland',
                 'date_of_birth' => '2000-07-21',
@@ -121,6 +126,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Kevin De Bruyne',
                 'first_name' => 'Kevin',
                 'last_name' => 'De Bruyne',
                 'date_of_birth' => '1991-06-28',
@@ -140,6 +146,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Virgil van Dijk',
                 'first_name' => 'Virgil',
                 'last_name' => 'van Dijk',
                 'date_of_birth' => '1991-07-08',
@@ -159,6 +166,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Jude Bellingham',
                 'first_name' => 'Jude',
                 'last_name' => 'Bellingham',
                 'date_of_birth' => '2003-06-29',
@@ -178,6 +186,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Vinícius Júnior',
                 'first_name' => 'Vinícius',
                 'last_name' => 'Júnior',
                 'date_of_birth' => '2000-07-12',
@@ -197,6 +206,7 @@ class PlayerSeeder extends Seeder
                 'status' => 'active'
             ],
             [
+                'name' => 'Mohamed Salah',
                 'first_name' => 'Mohamed',
                 'last_name' => 'Salah',
                 'date_of_birth' => '1992-06-15',
