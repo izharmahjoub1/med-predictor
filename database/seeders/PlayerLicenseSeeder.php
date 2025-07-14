@@ -92,7 +92,7 @@ class PlayerLicenseSeeder extends Seeder
                 'fitness_certificate' => rand(0, 1),
                 'disciplinary_record' => rand(0, 1) ? 'Clean record' : 'Minor infractions',
                 'international_clearance' => $licenseType === 'international' ? 1 : rand(0, 1),
-                'work_permit' => $player->nationality !== 'England' ? 1 : null,
+                'work_permit' => $player->nationality !== 'England' ? 1 : 0,
                 'visa_status' => $player->nationality !== 'England' ? 'Valid' : null,
                 'documentation_status' => 'complete',
                 'approval_status' => 'approved',
