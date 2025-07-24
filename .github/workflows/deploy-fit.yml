@@ -1,0 +1,64 @@
+name: Deploy FIT Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package.json"
+      - ".github/workflows/deploy-fit.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: |
+          cd src
+          npm ci --production
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Navigate to deployment directory
+            cd /opt/fit-service
+
+            # Pull latest changes
+            git pull origin main
+
+            # Install dependencies
+            npm ci --production
+
+            # Restart the service
+            pm2 reload fit-service
+
+            # Check service status
+            pm2 status
+
+            # Health check
+            sleep 5
+            curl -f http://localhost:3000/health || exit 1
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ FIT Service deployed successfully!"
+          else
+            echo "❌ FIT Service deployment failed!"
+          fi

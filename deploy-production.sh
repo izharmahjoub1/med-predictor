@@ -1,17 +1,9 @@
 #!/bin/bash
 
-# Production Deployment Script for Med Predictor
-# This script handles the complete production deployment process
+# FIT Service Production Deployment Script
+# This script deploys the FIT service to a production server
 
 set -e  # Exit on any error
-
-echo "🚀 Starting Med Predictor Production Deployment..."
-
-# Configuration
-APP_NAME="med-predictor"
-DEPLOY_PATH="/var/www/med-predictor"
-BACKUP_PATH="/var/backups/med-predictor"
-LOG_FILE="/var/log/med-predictor/deploy.log"
 
 # Colors for output
 RED='\033[0;31m'
@@ -19,129 +11,181 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Logging function
-log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}" | tee -a "$LOG_FILE"
-}
+# Configuration
+APP_NAME="fit-service"
+DEPLOY_USER="fit"
+DEPLOY_PATH="/opt/fit-service"
+BACKUP_PATH="/opt/backups"
+LOG_PATH="/var/log/fit-service"
 
-error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}" | tee -a "$LOG_FILE"
-    exit 1
-}
-
-warning() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}" | tee -a "$LOG_FILE"
-}
+echo -e "${GREEN}🚀 Starting FIT Service Production Deployment${NC}"
 
 # Check if running as root
 if [[ $EUID -eq 0 ]]; then
-   error "This script should not be run as root"
+   echo -e "${RED}This script should not be run as root${NC}"
+   exit 1
 fi
 
-# Check if deployment directory exists
-if [ ! -d "$DEPLOY_PATH" ]; then
-    error "Deployment directory $DEPLOY_PATH does not exist"
+# Function to log messages
+log() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
+}
+
+error() {
+    echo -e "${RED}[ERROR] $1${NC}"
+    exit 1
+}
+
+# Check prerequisites
+log "Checking prerequisites..."
+
+# Check if Node.js is installed
+if ! command -v node &> /dev/null; then
+    error "Node.js is not installed. Please install Node.js 18+ first."
 fi
 
-# Navigate to deployment directory
-cd "$DEPLOY_PATH" || error "Cannot navigate to deployment directory"
-
-log "📁 Current directory: $(pwd)"
-
-# Create backup
-log "💾 Creating backup..."
-if [ ! -d "$BACKUP_PATH" ]; then
-    mkdir -p "$BACKUP_PATH"
+# Check Node.js version
+NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
+if [ "$NODE_VERSION" -lt 18 ]; then
+    error "Node.js version 18+ is required. Current version: $(node -v)"
 fi
 
-BACKUP_FILE="$BACKUP_PATH/backup-$(date +%Y%m%d-%H%M%S).tar.gz"
-tar -czf "$BACKUP_FILE" --exclude='.git' --exclude='node_modules' --exclude='storage/logs/*' . || warning "Backup creation failed"
-
-log "✅ Backup created: $BACKUP_FILE"
-
-# Pull latest changes
-log "📥 Pulling latest changes from repository..."
-git pull origin main || error "Failed to pull latest changes"
-
-# Install/update dependencies
-log "📦 Installing PHP dependencies..."
-composer install --no-dev --optimize-autoloader --no-interaction || error "Composer install failed"
-
-log "📦 Installing Node.js dependencies..."
-npm ci --production || error "NPM install failed"
-
-# Build assets
-log "🔨 Building production assets..."
-npm run build || error "Asset building failed"
-
-# Set proper permissions
-log "🔐 Setting proper permissions..."
-sudo chown -R www-data:www-data "$DEPLOY_PATH"
-sudo chmod -R 755 "$DEPLOY_PATH"
-sudo chmod -R 775 "$DEPLOY_PATH/storage"
-sudo chmod -R 775 "$DEPLOY_PATH/bootstrap/cache"
-
-# Environment configuration
-log "⚙️ Configuring environment..."
-if [ ! -f ".env" ]; then
-    error "Environment file .env not found. Please create it from .env.example"
+# Check if PM2 is installed
+if ! command -v pm2 &> /dev/null; then
+    log "Installing PM2..."
+    npm install -g pm2
 fi
 
-# Clear all caches
-log "🧹 Clearing application caches..."
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
+# Create necessary directories
+log "Creating deployment directories..."
+sudo mkdir -p $DEPLOY_PATH
+sudo mkdir -p $BACKUP_PATH
+sudo mkdir -p $LOG_PATH
+sudo chown -R $USER:$USER $DEPLOY_PATH
+sudo chown -R $USER:$USER $BACKUP_PATH
+sudo chown -R $USER:$USER $LOG_PATH
 
-# Run database migrations
-log "🗄️ Running database migrations..."
-php artisan migrate --force || error "Database migration failed"
-
-# Optimize for production
-log "⚡ Optimizing for production..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Restart services
-log "🔄 Restarting services..."
-sudo systemctl restart php8.2-fpm || warning "PHP-FPM restart failed"
-sudo systemctl restart nginx || warning "Nginx restart failed"
-sudo systemctl restart redis || warning "Redis restart failed"
-
-# Health check
-log "🏥 Performing health check..."
-sleep 5
-if curl -f http://localhost/health > /dev/null 2>&1; then
-    log "✅ Health check passed"
-else
-    warning "Health check failed - application may not be responding"
+# Backup existing deployment
+if [ -d "$DEPLOY_PATH/app" ]; then
+    log "Creating backup of existing deployment..."
+    BACKUP_NAME="fit-backup-$(date +%Y%m%d-%H%M%S)"
+    cp -r $DEPLOY_PATH $BACKUP_PATH/$BACKUP_NAME
+    log "Backup created: $BACKUP_PATH/$BACKUP_NAME"
 fi
 
-# Cleanup old backups (keep last 7 days)
-log "🧹 Cleaning up old backups..."
-find "$BACKUP_PATH" -name "backup-*.tar.gz" -mtime +7 -delete
+# Copy application files
+log "Copying application files..."
+cp -r src/* $DEPLOY_PATH/
+cp package.json $DEPLOY_PATH/ 2>/dev/null || true
+cp .env.example $DEPLOY_PATH/.env 2>/dev/null || true
 
-# Final status
-log "🎉 Deployment completed successfully!"
-log "📊 Deployment Summary:"
-log "   - Backup: $BACKUP_FILE"
-log "   - Deploy Path: $DEPLOY_PATH"
-log "   - Log File: $LOG_FILE"
+# Install dependencies
+log "Installing Node.js dependencies..."
+cd $DEPLOY_PATH
+npm install --production
 
-# Optional: Send notification
-if command -v curl &> /dev/null; then
-    log "📧 Sending deployment notification..."
-    # Add your notification webhook here
-    # curl -X POST -H "Content-Type: application/json" -d '{"text":"Med Predictor deployment completed successfully"}' YOUR_WEBHOOK_URL
-fi
+# Create PM2 ecosystem file
+log "Creating PM2 configuration..."
+cat > $DEPLOY_PATH/ecosystem.config.js << EOF
+module.exports = {
+  apps: [{
+    name: '$APP_NAME',
+    script: 'app.js',
+    cwd: '$DEPLOY_PATH',
+    instances: 'max',
+    exec_mode: 'cluster',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    },
+    env_production: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    },
+    log_file: '$LOG_PATH/combined.log',
+    out_file: '$LOG_PATH/out.log',
+    error_file: '$LOG_PATH/error.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+    merge_logs: true,
+    max_memory_restart: '1G',
+    min_uptime: '10s',
+    max_restarts: 10,
+    autorestart: true,
+    watch: false,
+    ignore_watch: ['node_modules', 'logs'],
+    source_map_support: false
+  }]
+};
+EOF
 
-echo ""
-echo "✅ Production deployment completed!"
-echo "🌐 Application should be available at: https://your-domain.com"
-echo "📋 Next steps:"
-echo "   1. Verify all features are working"
-echo "   2. Check error logs for any issues"
-echo "   3. Monitor performance metrics"
-echo "   4. Test FIFA Connect and HL7 FHIR integrations" 
+# Create systemd service file
+log "Creating systemd service..."
+sudo tee /etc/systemd/system/fit-service.service > /dev/null << EOF
+[Unit]
+Description=FIT Service
+After=network.target
+
+[Service]
+Type=forking
+User=$USER
+WorkingDirectory=$DEPLOY_PATH
+ExecStart=/usr/bin/pm2 start ecosystem.config.js --env production
+ExecReload=/usr/bin/pm2 reload ecosystem.config.js --env production
+ExecStop=/usr/bin/pm2 stop ecosystem.config.js
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd and enable service
+sudo systemctl daemon-reload
+sudo systemctl enable fit-service
+
+# Create nginx configuration
+log "Creating nginx configuration..."
+sudo tee /etc/nginx/sites-available/fit-service > /dev/null << EOF
+server {
+    listen 80;
+    server_name your-domain.com;  # Replace with your domain
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_read_timeout 86400;
+    }
+
+    # Health check endpoint
+    location /health {
+        proxy_pass http://localhost:3000/health;
+        access_log off;
+    }
+}
+EOF
+
+# Enable nginx site
+sudo ln -sf /etc/nginx/sites-available/fit-service /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+
+# Start the service
+log "Starting FIT service..."
+pm2 start ecosystem.config.js --env production
+pm2 save
+pm2 startup
+
+log "✅ Deployment completed successfully!"
+log "Service is running on: http://localhost:3000"
+log "Health check: http://localhost:3000/health"
+log "PM2 status: pm2 status"
+log "Logs: pm2 logs $APP_NAME"
+log "Nginx config: /etc/nginx/sites-available/fit-service"
+
+echo -e "${GREEN}🎉 FIT Service is now deployed and running!${NC}" 
