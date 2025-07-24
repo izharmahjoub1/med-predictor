@@ -1,465 +1,408 @@
-# 🏈 FIT (Football Intelligence & Tracking) - Microservice
+# 🏈 Med-Predictor - Complete Football Management Platform
 
-Un microservice Node.js sécurisé pour la gestion des données biométriques et GPS des joueurs de football, intégrant OAuth2 avec Catapult Connect, Apple HealthKit et Garmin Connect.
+A comprehensive football management platform built with Laravel, Vue.js, and Node.js microservices for player management, health tracking, performance analysis, and FIFA integration.
 
-## 🚀 Fonctionnalités
+## 🚀 Platform Overview
 
--   **🔐 Authentification OAuth2** pour Catapult, Apple HealthKit et Garmin Connect
--   **📊 Synchronisation automatique** des données biométriques et GPS
--   **🔒 Chiffrement AES-256** des données sensibles
--   **🛡️ Sécurité renforcée** avec JWT, RBAC et 2FA
--   **📈 API REST sécurisée** avec validation et rate limiting
--   **🔄 Synchronisation automatique** via tâches cron
--   **📱 Support multi-appareils** (Catapult Vector, Apple Watch, Garmin)
--   **📊 Monitoring et alertes** en temps réel
--   **💾 Bases de données multiples** (MongoDB, PostgreSQL, Redis)
+Med-Predictor is a complete football management solution that combines:
 
-## 📋 Prérequis
+-   **🏥 Medical Predictions & Health Records**
+-   **⚽ Player Management & Registration**
+-   **🏆 Competition & League Management**
+-   **📊 Performance Analytics & AI Insights**
+-   **🔗 FIFA Connect Integration**
+-   **📱 FIT Microservice** (Biometric & GPS Data)
+-   **🔄 Transfer System & Document Management**
+-   **👥 User Management & Role-Based Access**
+-   **🌐 Multi-language Support** (English/French)
 
--   Node.js 18+ et npm
--   MongoDB 6.0+
--   PostgreSQL 15+
--   Redis 7+
--   Docker (optionnel)
+## 🏗️ Architecture
 
-## 🛠️ Installation Rapide
-
-### 1. Installation Automatique (Recommandée)
-
-```bash
-# Cloner le repository
-git clone <repository-url>
-cd fit-service
-
-# Installation automatique complète
-./scripts/setup.sh
+```
+Med-Predictor Platform
+├── 🎨 Laravel Backend (PHP 8.1+)
+│   ├── RESTful APIs
+│   ├── Database Management
+│   ├── Authentication & Authorization
+│   └── Business Logic
+├── ⚛️ Vue.js Frontend
+│   ├── Modern UI Components
+│   ├── Real-time Updates
+│   ├── Progressive Web App
+│   └── Responsive Design
+├── 🔧 FIT Microservice (Node.js)
+│   ├── Biometric Data Processing
+│   ├── GPS Tracking
+│   ├── OAuth2 Integrations
+│   └── Real-time Analytics
+└── 🗄️ Multi-Database Support
+    ├── PostgreSQL (Main Data)
+    ├── MongoDB (Analytics)
+    └── Redis (Caching)
 ```
 
-### 2. Installation Manuelle
+## ✨ Key Features
+
+### 🏥 Medical & Health Management
+
+-   **AI-Powered Medical Predictions**
+-   **Health Records Management**
+-   **Medical History Tracking**
+-   **Injury Prevention Analytics**
+-   **Biometric Data Integration**
+
+### ⚽ Player Management
+
+-   **Player Registration System**
+-   **License Management**
+-   **Performance Tracking**
+-   **Health Records**
+-   **Document Management**
+
+### 🏆 Competition Management
+
+-   **League & Championship Management**
+-   **Fixture Generation**
+-   **Match Sheet System**
+-   **Standings & Rankings**
+-   **Team Management**
+
+### 🔗 FIFA Integration
+
+-   **FIFA Connect API Integration**
+-   **Data Synchronization**
+-   **Player ID Management**
+-   **Real-time Updates**
+
+### 📊 Analytics & AI
+
+-   **Performance Analytics**
+-   **AI Insights & Recommendations**
+-   **Predictive Analytics**
+-   **Real-time Dashboards**
+
+### 🔄 Transfer System
+
+-   **Transfer Management**
+-   **Document Processing**
+-   **Payment Tracking**
+-   **Contract Management**
+
+### 👥 User Management
+
+-   **Role-Based Access Control**
+-   **Multi-language Support**
+-   **Account Requests**
+-   **Audit Trail**
+
+### 📱 FIT Microservice
+
+-   **Biometric Data Processing**
+-   **GPS Tracking**
+-   **OAuth2 Integrations** (Catapult, Apple HealthKit, Garmin)
+-   **Real-time Analytics**
+
+## 🛠️ Technology Stack
+
+### Backend
+
+-   **Laravel 10** - PHP Framework
+-   **PHP 8.1+** - Server Language
+-   **PostgreSQL** - Primary Database
+-   **Redis** - Caching & Sessions
+-   **MongoDB** - Analytics Data
+
+### Frontend
+
+-   **Vue.js 3** - Progressive Framework
+-   **Vite** - Build Tool
+-   **Tailwind CSS** - Styling
+-   **Alpine.js** - Interactive Components
+-   **Pinia** - State Management
+
+### Microservices
+
+-   **Node.js 18+** - FIT Service
+-   **Express.js** - API Framework
+-   **PM2** - Process Management
+-   **OAuth2** - Authentication
+
+### DevOps
+
+-   **Docker** - Containerization
+-   **Nginx** - Web Server
+-   **GitHub Actions** - CI/CD
+-   **PM2** - Process Management
+
+## 📋 Prerequisites
+
+### For Development
+
+-   **PHP 8.1+**
+-   **Node.js 18+**
+-   **Composer**
+-   **PostgreSQL 15+**
+-   **Redis 7+**
+-   **MongoDB 6.0+** (for FIT service)
+
+### For Production
+
+-   **Ubuntu 22.04 LTS**
+-   **Nginx**
+-   **SSL Certificate**
+-   **Domain Name** (optional)
+
+## 🚀 Quick Start
+
+### 1. Clone Repository
 
 ```bash
-# Installer les dépendances
+git clone https://github.com/izharmahjoub1/med-predictor.git
+cd med-predictor
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install PHP dependencies
+composer install
+
+# Install Node.js dependencies
 npm install
 
-# Copier la configuration
-cp env.example .env
-
-# Générer les clés de sécurité
-./scripts/setup.sh --generate-keys-only
-
-# Configurer les bases de données
-./scripts/setup.sh --databases-only
+# Install FIT service dependencies
+cd src && npm install
 ```
 
-## ⚙️ Configuration
-
-### Variables d'Environnement
-
-Copiez `env.example` vers `.env` et configurez :
+### 3. Environment Setup
 
 ```bash
-# Configuration de base
-NODE_ENV=development
-PORT=3000
-HOST=0.0.0.0
+# Copy environment files
+cp .env.example .env
+cp src/env.example src/.env
 
-# Bases de données
-MONGODB_URI=mongodb://localhost:27017/fit_database
-POSTGRES_HOST=localhost
-POSTGRES_DATABASE=fit_database
-REDIS_HOST=localhost
-
-# Sécurité
-JWT_SECRET=your-super-secret-jwt-key
-ENCRYPTION_KEY=your-32-character-encryption-key
-ENCRYPTION_IV=your-16-character-iv
-
-# OAuth2 - Catapult
-CATAPULT_CLIENT_ID=your-catapult-client-id
-CATAPULT_CLIENT_SECRET=your-catapult-client-secret
-
-# OAuth2 - Apple HealthKit
-APPLE_CLIENT_ID=your-apple-client-id
-APPLE_CLIENT_SECRET=your-apple-client-secret
-
-# OAuth2 - Garmin
-GARMIN_CLIENT_ID=your-garmin-client-id
-GARMIN_CLIENT_SECRET=your-garmin-client-secret
+# Generate Laravel key
+php artisan key:generate
 ```
 
-### Configuration OAuth2
-
-#### Catapult Connect
-
-1. Créer un compte sur [Catapult Developer Portal](https://developer.catapultsports.com/)
-2. Créer une application avec l'URL de redirection : `http://localhost:3000/api/v1/oauth2/catapult/callback`
-3. Noter le Client ID et Client Secret
-
-#### Apple HealthKit
-
-1. Créer un identifiant d'application sur [Apple Developer Portal](https://developer.apple.com/)
-2. Activer HealthKit
-3. Créer un certificat de service
-4. Configurer les credentials dans `.env`
-
-#### Garmin Connect
-
-1. Créer un compte sur [Garmin Developer Portal](https://developer.garmin.com/)
-2. Créer une application avec l'URL de redirection : `http://localhost:3000/api/v1/oauth2/garmin/callback`
-3. Noter le Consumer Key et Consumer Secret
-
-## 🚀 Démarrage
-
-### Développement
+### 4. Database Setup
 
 ```bash
-# Démarrer en mode développement
+# Run migrations
+php artisan migrate
+
+# Seed database
+php artisan db:seed
+
+# Create storage link
+php artisan storage:link
+```
+
+### 5. Start Development Servers
+
+```bash
+# Start Laravel development server
+php artisan serve
+
+# Start FIT microservice (in another terminal)
+cd src && npm run dev
+
+# Build frontend assets
 npm run dev
-
-# Ou avec nodemon
-npm run dev:watch
 ```
 
-### Production
-
-```bash
-# Installation des dépendances de production
-npm ci --only=production
-
-# Démarrer avec PM2
-pm2 start ecosystem.config.js --env production
-
-# Vérifier le statut
-pm2 status
-```
-
-## 📡 API Endpoints
-
-### Authentification
-
-```bash
-# Générer une URL d'authentification OAuth2
-GET /api/v1/oauth2/:service/auth-url
-
-# Callback OAuth2
-POST /api/v1/oauth2/:service/callback
-
-# Lister les tokens OAuth2
-GET /api/v1/oauth2/tokens
-
-# Rafraîchir un token
-POST /api/v1/oauth2/tokens/:service/refresh
-
-# Révoquer un token
-DELETE /api/v1/oauth2/tokens/:service
-```
-
-### Gestion des Appareils
-
-```bash
-# Lister les appareils connectés
-GET /api/v1/devices
-
-# Associer un appareil
-POST /api/v1/devices/:deviceId/associate
-
-# Dissocier un appareil
-DELETE /api/v1/devices/:deviceId
-
-# Déclencher une synchronisation manuelle
-POST /api/v1/devices/sync
-
-# Historique des synchronisations
-GET /api/v1/devices/sync-history
-```
-
-### Données
-
-```bash
-# Récupérer les données du joueur
-GET /api/v1/data?type=biometric&startDate=2024-01-01&endDate=2024-01-31
-
-# Statistiques des données
-GET /api/v1/data/stats
-
-# Données GPS
-GET /api/v1/data?type=gps&startDate=2024-01-01&endDate=2024-01-31
-```
-
-### Santé du Service
-
-```bash
-# Vérifier la santé du service
-GET /health
-
-# Métriques du service
-GET /metrics
-```
-
-## 🧪 Tests
-
-### Tests Unitaires
-
-```bash
-# Exécuter tous les tests unitaires
-npm run test:unit
-
-# Tests avec couverture
-npm run test:unit:coverage
-```
-
-### Tests d'Intégration
-
-```bash
-# Préparer l'environnement de test
-export NODE_ENV=test
-
-# Exécuter les tests d'intégration
-npm run test:integration
-```
-
-### Tests de Sécurité
-
-```bash
-# Tests de sécurité
-npm run test:security
-
-# Audit des dépendances
-npm audit
-npm audit fix
-```
-
-### Validation de l'Installation
-
-```bash
-# Tester l'installation complète
-./scripts/test-installation.sh
-```
-
-## 🐳 Déploiement avec Docker
-
-### Développement
-
-```bash
-# Démarrer les bases de données
-docker-compose -f docker-compose.databases.yml up -d
-
-# Démarrer le service
-docker-compose up -d
-```
-
-### Production
-
-```bash
-# Déploiement automatique avec Let's Encrypt
-./scripts/deploy-production.sh -d api.fit-service.com -e admin@fit-service.com -p
-
-# Déploiement avec certificat SSL personnalisé
-./scripts/deploy-production.sh -d api.fit-service.com -c /path/to/cert.pem -k /path/to/key.pem -p
-```
-
-## 🔒 Sécurité
-
-### Authentification et Autorisation
-
--   **JWT** avec refresh tokens
--   **RBAC** (Role-Based Access Control)
--   **2FA** avec TOTP (Time-based One-Time Password)
--   **Rate limiting** par utilisateur
--   **Validation** stricte des entrées
-
-### Chiffrement
-
--   **AES-256-GCM** pour les tokens OAuth2
--   **HTTPS/TLS** obligatoire en production
--   **Chiffrement** des données sensibles en base
-
-### Protection
-
--   **CORS** configuré
--   **Headers de sécurité** (HSTS, CSP, etc.)
--   **Validation** des certificats SSL
--   **Audit logging** complet
-
-## 📊 Monitoring
-
-### Métriques
-
-```bash
-# Vérifier la santé du service
-curl http://localhost:3000/health
-
-# Voir les logs en temps réel
-pm2 logs fit-service
-
-# Monitorer les ressources
-pm2 monit
-```
-
-### Alertes
-
-```bash
-# Configuration des alertes email
-ALERT_EMAIL_ENABLED=true
-ALERT_EMAIL_HOST=smtp.gmail.com
-ALERT_EMAIL_USER=your-email@gmail.com
-ALERT_EMAIL_PASSWORD=your-app-password
-
-# Configuration des alertes Slack
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-SLACK_CHANNEL=#fit-alerts
-```
-
-### Surveillance Automatique
-
-```bash
-# Ajouter au cron (vérification toutes les 5 minutes)
-crontab -e
-# Ajouter: */5 * * * * /path/to/fit-service/scripts/monitoring.sh
-```
-
-## 💾 Sauvegardes
-
-### Sauvegardes Automatiques
-
-```bash
-# Ajouter au cron (sauvegarde quotidienne à 2h du matin)
-crontab -e
-# Ajouter: 0 2 * * * /path/to/fit-service/scripts/backup.sh
-```
-
-### Sauvegardes Manuelles
-
-```bash
-# Sauvegarder toutes les bases de données
-./scripts/backup.sh
-
-# Restaurer depuis une sauvegarde
-./scripts/restore.sh /path/to/backup
-```
-
-## 🔧 Maintenance
-
-### Mises à Jour
-
-```bash
-# Sauvegarder avant mise à jour
-./scripts/backup.sh
-
-# Mettre à jour le code
-git pull origin main
-
-# Installer les nouvelles dépendances
-npm install
-
-# Redémarrer le service
-pm2 restart fit-service
-```
-
-### Nettoyage
-
-```bash
-# Nettoyer les logs anciens (30+ jours)
-find logs/ -name "*.log" -mtime +30 -delete
-
-# Nettoyer les sauvegardes anciennes (30+ jours)
-find backups/ -name "fit-backup-*" -mtime +30 -delete
-
-# Nettoyer les tokens expirés
-npm run cleanup:tokens
-```
-
-## 🆘 Dépannage
-
-### Problèmes Courants
-
-#### Service ne démarre pas
-
-```bash
-# Vérifier les logs
-pm2 logs fit-service
-
-# Vérifier la configuration
-node -c src/app.js
-
-# Vérifier les variables d'environnement
-node -e "require('dotenv').config(); console.log(process.env.NODE_ENV)"
-```
-
-#### Erreurs de base de données
-
-```bash
-# Vérifier MongoDB
-mongosh --eval "db.runCommand('ping')"
-
-# Vérifier PostgreSQL
-PGPASSWORD=fit_password psql -h localhost -U fit_user -d fit_database -c "SELECT 1;"
-
-# Vérifier Redis
-redis-cli ping
-```
-
-#### Erreurs OAuth2
-
-```bash
-# Vérifier les credentials
-grep -E "CLIENT_ID|CLIENT_SECRET" .env
-
-# Tester les URLs de redirection
-curl -I "https://connect.catapultsports.com/oauth/authorize"
-
-# Vérifier les logs OAuth2
-grep "oauth" logs/fit-service.log
-```
-
-### Logs et Debugging
-
-```bash
-# Activer le mode debug
-export LOG_LEVEL=debug
-pm2 restart fit-service
-
-# Voir les logs en temps réel
-pm2 logs fit-service --lines 100
-
-# Analyser les erreurs
-grep "ERROR" logs/fit-service.log | tail -20
-```
+## 🌐 Access Points
+
+-   **Main Application**: http://localhost:8000
+-   **FIT Microservice**: http://localhost:3000
+-   **API Documentation**: http://localhost:8000/api/docs
+-   **Health Check**: http://localhost:3000/health
 
 ## 📚 Documentation
 
--   [Guide de Déploiement](DEPLOYMENT_GUIDE.md) - Guide complet de déploiement
--   [API Documentation](API_DOCUMENTATION.md) - Documentation détaillée de l'API
--   [Architecture](ARCHITECTURE.md) - Architecture du système
--   [Sécurité](SECURITY.md) - Guide de sécurité
+### 📖 User Guides
 
-## 🤝 Contribution
+-   [Player Registration Guide](docs/player-registration.md)
+-   [Medical Predictions Guide](docs/medical-predictions.md)
+-   [Competition Management Guide](docs/competition-management.md)
+-   [FIFA Integration Guide](docs/fifa-integration.md)
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+### 🔧 Technical Documentation
 
-## 📄 Licence
+-   [API Documentation](docs/api-documentation.md)
+-   [Database Schema](docs/database-schema.md)
+-   [Deployment Guide](DEPLOYMENT_COMPLETE_GUIDE.md)
+-   [FIT Service Documentation](docs/fit-service.md)
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+### 🚀 Deployment
 
-## 📞 Support
+-   [Production Deployment](DEPLOYMENT_COMPLETE_GUIDE.md)
+-   [Docker Deployment](docs/docker-deployment.md)
+-   [Server Setup](setup-server.sh)
 
--   **Documentation:** [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
--   **Issues:** [GitHub Issues](https://github.com/your-repo/issues)
--   **Email:** support@fit-service.com
+## 🔧 Configuration
 
-## 🏆 Statut du Projet
+### Environment Variables
 
--   ✅ **Développement:** Terminé
--   ✅ **Tests:** 100% de couverture
--   ✅ **Sécurité:** Audit passé
--   ✅ **Documentation:** Complète
--   ✅ **Déploiement:** Automatisé
--   ✅ **Monitoring:** Configuré
+#### Laravel (.env)
+
+```bash
+APP_NAME="Med-Predictor"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=med_predictor
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+
+REDIS_HOST=localhost
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+FIFA_API_KEY=your-fifa-api-key
+FIFA_API_SECRET=your-fifa-api-secret
+```
+
+#### FIT Service (src/.env)
+
+```bash
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
+
+MONGODB_URI=mongodb://localhost:27017/fit_database
+POSTGRES_HOST=localhost
+POSTGRES_DB=fit_database
+REDIS_URL=redis://localhost:6379
+
+JWT_SECRET=your-jwt-secret
+ENCRYPTION_KEY=your-encryption-key
+ENCRYPTION_IV=your-encryption-iv
+
+CATAPULT_CLIENT_ID=your-catapult-client-id
+CATAPULT_CLIENT_SECRET=your-catapult-client-secret
+```
+
+## 🚀 Production Deployment
+
+### Option 1: Complete Server Setup
+
+```bash
+# On your production server
+wget https://raw.githubusercontent.com/izharmahjoub1/med-predictor/main/setup-server.sh
+chmod +x setup-server.sh
+./setup-server.sh
+```
+
+### Option 2: Docker Deployment
+
+```bash
+# Build and run with Docker
+docker-compose up -d
+```
+
+### Option 3: GitHub Actions (Automatic)
+
+Configure GitHub Secrets and push to main branch for automatic deployment.
+
+## 📊 Monitoring & Management
+
+### Service Management
+
+```bash
+# Laravel Application
+php artisan serve
+php artisan queue:work
+php artisan schedule:run
+
+# FIT Microservice
+pm2 start ecosystem.config.js
+pm2 status
+pm2 logs fit-service
+```
+
+### Database Management
+
+```bash
+# PostgreSQL
+sudo -u postgres psql med_predictor
+
+# MongoDB
+mongosh fit_database
+
+# Redis
+redis-cli
+```
+
+### Monitoring Commands
+
+```bash
+# System status
+/opt/monitor-fit.sh
+
+# Create backup
+/opt/backup-fit.sh
+
+# Health checks
+curl http://localhost:8000/health
+curl http://localhost:3000/health
+```
+
+## 🔒 Security Features
+
+-   **JWT Authentication**
+-   **Role-Based Access Control (RBAC)**
+-   **Two-Factor Authentication (2FA)**
+-   **API Rate Limiting**
+-   **CORS Protection**
+-   **SQL Injection Prevention**
+-   **XSS Protection**
+-   **CSRF Protection**
+-   **Encrypted Data Storage**
+
+## 🌍 Internationalization
+
+-   **Multi-language Support** (English/French)
+-   **Localized Content**
+-   **RTL Support Ready**
+-   **Timezone Management**
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+-   **Documentation**: [Complete Guide](DEPLOYMENT_COMPLETE_GUIDE.md)
+-   **Issues**: [GitHub Issues](https://github.com/izharmahjoub1/med-predictor/issues)
+-   **Email**: support@med-predictor.com
+
+## 🏆 Project Status
+
+-   ✅ **Core Platform**: Complete
+-   ✅ **FIT Microservice**: Complete
+-   ✅ **FIFA Integration**: Complete
+-   ✅ **Medical Predictions**: Complete
+-   ✅ **Player Management**: Complete
+-   ✅ **Competition Management**: Complete
+-   ✅ **Transfer System**: Complete
+-   ✅ **Multi-language**: Complete
+-   ✅ **Security**: Complete
+-   ✅ **Documentation**: Complete
+-   ✅ **Deployment**: Complete
 
 ---
 
-**FIT Service** - Football Intelligence & Tracking pour la performance des joueurs ⚽
+**🎯 Med-Predictor - The Complete Football Management Solution**
