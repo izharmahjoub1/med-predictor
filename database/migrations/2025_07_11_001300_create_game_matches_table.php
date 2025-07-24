@@ -56,6 +56,11 @@ return new class extends Migration
             $table->text('match_report')->nullable();
             $table->text('broadcast_info')->nullable();
             $table->text('ticket_info')->nullable();
+            $table->integer('matchday')->nullable();
+            $table->text('notes')->nullable();
+            $table->foreignId('referee_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
 
             $table->index(['competition_id', 'match_status']);

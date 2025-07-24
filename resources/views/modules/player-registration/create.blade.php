@@ -15,9 +15,36 @@
                 <h2 class="text-xl font-semibold text-gray-800">Informations du Joueur</h2>
             </div>
             
-            <form action="{{ route('player-registration.players.store') }}" method="POST" class="p-6">
+            <form action="{{ route('player-registration.store') }}" method="POST" class="p-6" enctype="multipart/form-data">
                 @csrf
                 
+                <!-- Player Picture Upload Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Photo du Joueur</h3>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex-shrink-0">
+                            <div class="h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center border-4 border-gray-200">
+                                <span class="text-gray-500 font-bold text-2xl">?</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <label for="player_picture" class="block text-sm font-medium text-gray-700 mb-2">
+                                Ajouter une photo
+                            </label>
+                            <input type="file" name="player_picture" id="player_picture" accept="image/*"
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPEG, PNG, JPG, GIF. Taille max: 2MB</p>
+                            @error('player_picture')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+                
+                @php
+                    $user = Auth::user();
+                    $isClubUser = in_array($user->role, ['club_admin', 'club_manager', 'club_medical']);
+                @endphp
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -59,9 +86,15 @@
                         <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
                             Nationalité *
                         </label>
-                        <input type="text" name="nationality" id="nationality" 
-                               value="{{ old('nationality') }}" required
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <select name="nationality" id="nationality" required
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Sélectionner une nationalité</option>
+                            @foreach($nationalities as $nationality)
+                                <option value="{{ $nationality }}" {{ old('nationality') == $nationality ? 'selected' : '' }}>
+                                    {{ $nationality }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('nationality')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -74,16 +107,11 @@
                         <select name="position" id="position" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Sélectionner une position</option>
-                            <option value="ST" {{ old('position') == 'ST' ? 'selected' : '' }}>Attaquant (ST)</option>
-                            <option value="RW" {{ old('position') == 'RW' ? 'selected' : '' }}>Ailier droit (RW)</option>
-                            <option value="LW" {{ old('position') == 'LW' ? 'selected' : '' }}>Ailier gauche (LW)</option>
-                            <option value="CAM" {{ old('position') == 'CAM' ? 'selected' : '' }}>Milieu offensif (CAM)</option>
-                            <option value="CM" {{ old('position') == 'CM' ? 'selected' : '' }}>Milieu central (CM)</option>
-                            <option value="CDM" {{ old('position') == 'CDM' ? 'selected' : '' }}>Milieu défensif (CDM)</option>
-                            <option value="CB" {{ old('position') == 'CB' ? 'selected' : '' }}>Défenseur central (CB)</option>
-                            <option value="RB" {{ old('position') == 'RB' ? 'selected' : '' }}>Arrière droit (RB)</option>
-                            <option value="LB" {{ old('position') == 'LB' ? 'selected' : '' }}>Arrière gauche (LB)</option>
-                            <option value="GK" {{ old('position') == 'GK' ? 'selected' : '' }}>Gardien (GK)</option>
+                            @foreach($positions as $key => $position)
+                                <option value="{{ $key }}" {{ old('position') == $key ? 'selected' : '' }}>
+                                    {{ $position }}
+                                </option>
+                            @endforeach
                         </select>
                         @error('position')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -137,10 +165,138 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    @if($isClubUser)
+                        <input type="hidden" name="club_id" value="{{ $user->club_id }}">
+                        <div class="col-span-2 mb-4">
+                            <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded">
+                                Cette inscription sera envoyée à l'association pour approbation.
+                            </div>
+                        </div>
+                    @elseif($clubs->isNotEmpty())
+                    <div>
+                        <label for="club_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Club
+                        </label>
+                        <select name="club_id" id="club_id"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Sélectionner un club</option>
+                            @foreach($clubs as $club)
+                                <option value="{{ $club->id }}" {{ old('club_id') == $club->id ? 'selected' : '' }}>
+                                    {{ $club->name }} ({{ $club->city }}, {{ $club->country }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('club_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @endif
+
+                    @if($teams->isNotEmpty())
+                    <div>
+                        <label for="team_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Équipe
+                        </label>
+                        <select name="team_id" id="team_id"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Sélectionner une équipe</option>
+                            @foreach($teams as $team)
+                                <option value="{{ $team->id }}" {{ old('team_id') == $team->id ? 'selected' : '' }}>
+                                    {{ $team->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('team_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @endif
+
+                    @if($associations->isNotEmpty())
+                    <div>
+                        <label for="association_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Association
+                        </label>
+                        <select name="association_id" id="association_id"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Sélectionner une association</option>
+                            @foreach($associations as $association)
+                                <option value="{{ $association->id }}" {{ old('association_id') == $association->id ? 'selected' : '' }}>
+                                    {{ $association->name }} ({{ $association->country }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('association_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @endif
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email
+                        </label>
+                        <input type="email" name="email" id="email" 
+                               value="{{ old('email') }}"
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        @error('email')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            Téléphone
+                        </label>
+                        <input type="tel" name="phone" id="phone" 
+                               value="{{ old('phone') }}"
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        @error('phone')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Supporting Documents Upload Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Documents justificatifs</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="id_document" class="block text-sm font-medium text-gray-700 mb-2">
+                                Pièce d'identité (PDF, JPG, PNG)
+                            </label>
+                            <input type="file" name="id_document" id="id_document" accept=".pdf,image/*"
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @error('id_document')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="medical_certificate" class="block text-sm font-medium text-gray-700 mb-2">
+                                Certificat médical (PDF, JPG, PNG)
+                            </label>
+                            <input type="file" name="medical_certificate" id="medical_certificate" accept=".pdf,image/*"
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @error('medical_certificate')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="proof_of_age" class="block text-sm font-medium text-gray-700 mb-2">
+                                Justificatif d'âge (PDF, JPG, PNG)
+                            </label>
+                            <input type="file" name="proof_of_age" id="proof_of_age" accept=".pdf,image/*"
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @error('proof_of_age')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-8 flex justify-end space-x-4">
-                    <a href="{{ route('player-registration.players.index') }}" 
+                    <a href="{{ route('player-registration.index') }}" 
                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
                         Annuler
                     </a>

@@ -133,6 +133,15 @@ class AssociationSeeder extends Seeder
             Association::create($associationData);
         }
 
+        Association::updateOrCreate(
+            ['name' => 'Test Association'],
+            [
+                'country' => 'Testland',
+                'fifa_connect_id' => 'TEST_ASSOC_001',
+                'status' => 'active',
+            ]
+        );
+
         $this->command->info('Associations seeded successfully!');
         $this->command->info('Created ' . count($associations) . ' football associations.');
     }

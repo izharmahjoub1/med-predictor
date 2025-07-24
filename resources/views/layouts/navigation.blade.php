@@ -1,361 +1,187 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-20">
-            <div class="flex items-center">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                        <span class="ml-2 text-lg font-bold text-gray-900">Med Predictor</span>
-                    </a>
-                </div>
+@php
+    $user = auth()->user();
+@endphp
 
-                <!-- Club and Association Logos -->
-                @php
-                    $user = auth()->user();
-                    $club = null;
-                    $association = null;
-                    
-                    if ($user->club_id) {
-                        $club = \App\Models\Club::with('association')->find($user->club_id);
-                    }
-                    
-                    if ($user->association_id) {
-                        $association = \App\Models\Association::find($user->association_id);
-                    }
-                    
-                    if ($club && !$association && $club->association) {
-                        $association = $club->association;
-                    }
-                @endphp
-                
-                <div class="flex items-center space-x-4 ml-8">
-                    @if($association)
-                    <div class="flex items-center space-x-2">
-                        <div class="w-12 h-12 bg-white rounded-lg shadow-sm p-2 border border-gray-200 flex items-center justify-center">
-                            @if($association->association_logo_url)
-                                <img src="{{ $association->association_logo_url }}" 
-                                     alt="{{ $association->name }} Logo" 
-                                     class="w-full h-full object-contain"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-full h-full bg-blue-100 rounded flex items-center justify-center text-blue-600 font-bold text-sm" style="display: none;">
-                                    {{ substr($association->name, 0, 2) }}
-                                </div>
-                            @else
-                                <div class="w-full h-full bg-blue-100 rounded flex items-center justify-center text-blue-600 font-bold text-sm">
-                                    {{ substr($association->name, 0, 2) }}
-                                </div>
-                            @endif
-                        </div>
-                        <span class="text-sm font-medium text-gray-700 hidden md:block">{{ $association->name }}</span>
-                    </div>
+<!-- Main Navigation Menu - Fixed at top -->
+<nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-2 shadow-sm z-50">
+    <div class="flex flex-col sm:flex-row items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+            <img src="{{ asset('images/logos/fit.png') }}" alt="FIT Logo" style="height:60px;width:auto;margin-right:0.75rem;" class="inline-block align-middle">
+        </div>
+        <!-- Menus principaux -->
+        <div class="flex flex-wrap gap-2 sm:gap-6 items-center justify-center">
+            <!-- Admin -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.admin') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('user-management.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.user_management') }}</a>
+                    @if($user && in_array($user->role, ['system_admin', 'association_admin', 'association_registrar']))
+                        <a href="{{ route('admin.account-requests.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">{{ __('navigation.account_requests') }}</a>
                     @endif
-                    
-                    @if($club)
-                    <div class="flex items-center space-x-2">
-                        <div class="w-12 h-12 bg-white rounded-lg shadow-sm p-2 border border-gray-200 flex items-center justify-center">
-                            @if($club->club_logo_url)
-                                <img src="{{ $club->club_logo_url }}" 
-                                     alt="{{ $club->name }} Logo" 
-                                     class="w-full h-full object-contain"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-sm" style="display: none;">
-                                    {{ substr($club->name, 0, 2) }}
-                                </div>
-                            @else
-                                <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-sm">
-                                    {{ substr($club->name, 0, 2) }}
-                                </div>
-                            @endif
-                        </div>
-                        <span class="text-sm font-medium text-gray-700 hidden md:block">{{ $club->name }}</span>
-                    </div>
-                    @endif
-                </div>
-
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
-                        </svg>
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    
-                    <!-- User Management (System Admin & Association Admin only) -->
-                    @if(auth()->user()->role === 'system_admin' || auth()->user()->role === 'association_admin')
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                            User Management
-                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('user-management.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Overview
-                            </a>
-                            <a href="{{ route('user-management.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                </svg>
-                                View Users
-                            </a>
-                            <a href="{{ route('user-management.users.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Create User
-                            </a>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Player Registration Module -->
-                    @if(auth()->user()->canAccessModule('player_registration'))
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                            Players
-                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('player-registration.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Overview
-                            </a>
-                            <a href="{{ route('player-registration.players.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                </svg>
-                                View Players
-                            </a>
-                            <a href="{{ route('player-registration.players.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Register Player
-                            </a>
-                            <a href="{{ route('players.bulk-import') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
-                                </svg>
-                                Bulk Import
-                            </a>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Competition Management Module -->
-                    @if(auth()->user()->canAccessModule('competition_management'))
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                            Competitions
-                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('competition-management.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Overview
-                            </a>
-                            <a href="{{ route('competition-management.competitions.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
-                                View Competitions
-                            </a>
-                            <a href="{{ route('competition-management.competitions.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Create Competition
-                            </a>
-                            <a href="{{ route('competition-management.export') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Export
-                            </a>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Healthcare Module -->
-                    @if(auth()->user()->role === 'club' || auth()->user()->role === 'association')
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                            Healthcare
-                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('healthcare.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Overview
-                            </a>
-                            <a href="{{ route('healthcare.records.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Health Records
-                            </a>
-                            <a href="{{ route('healthcare.predictions') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                                </svg>
-                                Predictions
-                            </a>
-                            <a href="{{ route('healthcare.export') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Export
-                            </a>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- FIFA Connect -->
-                    <x-nav-link :href="route('fifa.connectivity')" :active="request()->routeIs('fifa.*')">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                        </svg>
-                        FIFA Connect
-                    </x-nav-link>
-
-                    <!-- Legacy Club Management (for backward compatibility) -->
-                    <x-nav-link :href="route('club-management.dashboard')" :active="request()->routeIs('club-management.*')">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        Club Management
-                    </x-nav-link>
+                    <a href="{{ route('role-management.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.role_management') }}</a>
+                    <a href="{{ route('audit-trail.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.audit_trail') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('logs.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.logs') }}</a>
+                    <a href="{{ route('system-status.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.system_status') }}</a>
+                    <a href="{{ route('settings.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.settings') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('license-types.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.license_types') }}</a>
+                    <a href="{{ route('content.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.content_management') }}</a>
+                    <a href="{{ route('stakeholder-gallery.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.gallery') }}</a>
                 </div>
             </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div class="flex items-center space-x-3">
-                                <!-- User Profile Picture -->
-                                <div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
-                                    @if(auth()->user()->hasProfilePicture())
-                                        <img src="{{ auth()->user()->getProfilePictureUrl() }}" 
-                                             alt="{{ auth()->user()->getProfilePictureAlt() }}" 
-                                             class="w-8 h-8 rounded-full object-cover">
-                                    @else
-                                        <span class="text-white font-semibold text-sm">{{ auth()->user()->getInitials() }}</span>
-                                    @endif
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</div>
-                                    <div class="text-xs text-gray-500 capitalize">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
-                                </div>
-                            </div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Mon profil') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+            <!-- Club Management -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.club_management') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('players.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.players') }}</a>
+                    <a href="{{ route('player-registration.create') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">{{ __('navigation.register_player') }}</a>
+                    <a href="{{ route('club.player-licenses.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.player_license_status') }}</a>
+                    <a href="{{ route('player-passports.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.player_passports') }}</a>
+                    <a href="{{ route('health-records.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.player_health') }}</a>
+                    <a href="{{ route('performances.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.performances') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('teams.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.teams') }}</a>
+                    <a href="{{ route('club-player-assignments.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.player_assignments') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('match-sheet.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.match_sheets') }}</a>
+                    <a href="{{ route('transfers.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.transfers') }}</a>
+                    <a href="{{ route('performance-recommendations.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.recommendations') }}</a>
+                </div>
             </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <!-- Association Management -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.association_management') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('competitions.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.competitions') }}</a>
+                    <a href="{{ route('fixtures.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.fixtures') }}</a>
+                    <a href="{{ route('rankings.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.rankings') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('seasons.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.seasons') }}</a>
+                    <a href="{{ route('federations.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.federations') }}</a>
+                    <a href="{{ route('registration-requests.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.registration_requests') }}</a>
+                    <a href="{{ route('licenses.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.licenses') }}</a>
+                    <a href="{{ route('player-licenses.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">{{ __('navigation.player_license_requests') }}</a>
+                    <a href="{{ route('contracts.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.contracts') }}</a>
+                </div>
+            </div>
+            <!-- FIFA -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.fifa') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('fifa.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.fifa_dashboard') }}</a>
+                    <a href="{{ route('fifa.connectivity') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.fifa_connect') }}</a>
+                    <a href="{{ route('fifa.sync-dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.sync_dashboard') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('fifa.contracts') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.fifa_contracts') }}</a>
+                    <a href="{{ route('fifa.analytics') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.fifa_analytics') }}</a>
+                    <a href="{{ route('fifa.statistics') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.fifa_statistics') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('daily-passport.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.daily_passports') }}</a>
+                    <a href="{{ route('data-sync.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.data_sync') }}</a>
+                    <a href="{{ route('fifa.players.search') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.player_search') }}</a>
+                </div>
+            </div>
+            <!-- Device Connections -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.device_connections') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('device-connections.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.device_dashboard') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('apple-health-kit.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.apple_health_kit') }}</a>
+                    <a href="{{ route('catapult-connect.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.catapult_connect') }}</a>
+                    <a href="{{ route('garmin-connect.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.garmin_connect') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('device-connections.oauth2.tokens') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.oauth2_tokens') }}</a>
+                </div>
+            </div>
+            <!-- Healthcare -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.healthcare') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('healthcare.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.healthcare_dashboard') }}</a>
+                    <a href="{{ route('healthcare.predictions') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.medical_predictions') }}</a>
+                    <a href="{{ route('healthcare.export') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.export_data') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('health-records.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.health_records') }}</a>
+                    <a href="{{ route('medical-predictions.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.prediction_models') }}</a>
+                </div>
+            </div>
+            <!-- Referee Portal -->
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.referee_portal') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('referee.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.dashboard') }}</a>
+                    <a href="{{ route('referee.match-assignments') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.match_assignments') }}</a>
+                    <a href="{{ route('referee.competition-schedule') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.competition_schedule') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('referee.create-match-report') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.create_match_report') }}</a>
+                    <a href="{{ route('referee.performance-stats') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.performance_stats') }}</a>
+                    <a href="{{ route('referee.settings') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.settings') }}</a>
+                </div>
+            </div>
+            <li>
+                <a href="{{ url('/performances') }}" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.performance') }}</a>
+            </li>
+            <!-- DTN Manager -->
+            <li>
+                <a href="{{ url('/dtn') }}" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.dtn_manager') }}</a>
+            </li>
+            <!-- RPM -->
+            <li>
+                <a href="{{ url('/rpm') }}" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.rpm') }}</a>
+            </li>
+        </div>
+        <!-- Notifications -->
+        <div class="mt-2 sm:mt-0 mr-4">
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="flex items-center px-3 py-2 rounded hover:bg-blue-100 relative">
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
+                    @php $unread = auth()->user() ? auth()->user()->unreadNotifications()->count() : 0; @endphp
+                    @if($unread > 0)
+                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $unread }}</span>
+                    @endif
                 </button>
+                <div x-show="open" @click.away="open = false" class="absolute right-0 z-20 bg-white border rounded shadow-lg mt-2 min-w-[300px] max-h-96 overflow-y-auto">
+                    <div class="p-2 font-semibold border-b">{{ __('navigation.notifications') }}</div>
+                    @forelse(auth()->user() ? auth()->user()->unreadNotifications : collect() as $notification)
+                        <div class="px-4 py-2 border-b hover:bg-blue-50">
+                            <div class="text-sm">{!! $notification->data['new_status'] ?? '' !!} - <a href="{{ route('license-requests.show', $notification->data['license_request_id'] ?? 0) }}" class="text-blue-600 hover:underline">Voir la demande</a></div>
+                            @if(!empty($notification->data['comment']))
+                                <div class="text-xs text-gray-600 mt-1">{{ $notification->data['comment'] }}</div>
+                            @endif
+                            <form method="POST" action="{{ route('notifications.markAsRead', $notification->id) }}" class="mt-1">
+                                @csrf
+                                <button type="submit" class="text-xs text-green-600 hover:underline">{{ __('navigation.mark_as_read') }}</button>
+                            </form>
+                        </div>
+                    @empty
+                        <div class="px-4 py-2 text-gray-500">{{ __('navigation.no_unread_notifications') }}</div>
+                    @endforelse
+                    <div class="p-2 text-right">
+                        <a href="{{ route('profile.show') }}#notifications" class="text-blue-600 hover:underline text-xs">{{ __('navigation.view_all_notifications') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Profil utilisateur / Logout -->
+        <div class="mt-2 sm:mt-0">
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="flex items-center px-3 py-2 rounded hover:bg-blue-100">
+                    <span class="mr-2 font-semibold">{{ $user ? $user->name : __('navigation.user') }}</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                <div x-show="open" @click.away="open = false" class="absolute right-0 z-20 bg-white border rounded shadow-lg mt-2 min-w-[150px]">
+                    <a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.profile') }}</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-50">{{ __('navigation.logout') }}</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Mon profil') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
-    </div>
-</nav>
+</nav> 

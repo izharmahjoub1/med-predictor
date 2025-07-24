@@ -13,9 +13,38 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <!-- Profile Picture Section -->
+        <div>
+            <x-input-label for="profile_picture" :value="__('Profile Picture')" />
+            <div class="mt-2 flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    @if($user->profile_picture_url)
+                        <img src="{{ $user->profile_picture_url }}" 
+                             alt="{{ $user->profile_picture_alt }}" 
+                             class="w-16 h-16 rounded-full object-cover border-2 border-gray-200">
+                    @else
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center border-2 border-gray-200">
+                            <span class="text-blue-600 font-semibold text-xl">
+                                {{ $user->getInitials() }}
+                            </span>
+                        </div>
+                    @endif
+                </div>
+                <div class="flex-1">
+                    <input type="file" 
+                           id="profile_picture" 
+                           name="profile_picture" 
+                           accept="image/*"
+                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="mt-1 text-sm text-gray-500">Upload a profile picture (JPEG, PNG, JPG, GIF up to 2MB)</p>
+                    <x-input-error class="mt-2" :messages="$errors->get('profile_picture')" />
+                </div>
+            </div>
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />

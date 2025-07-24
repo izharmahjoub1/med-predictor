@@ -13,7 +13,7 @@
                     <p class="text-gray-600 mt-2">{{ $player->full_name }} • {{ $player->position }} • {{ $player->nationality }}</p>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="{{ route('player-registration.players.show', $player) }}" 
+                    <a href="{{ route('player-registration.show', $player) }}" 
                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
                         ← Retour au joueur
                     </a>

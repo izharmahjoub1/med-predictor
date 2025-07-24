@@ -44,10 +44,10 @@
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900">
-                                                        {{ $teamPlayer->player->name }}
+                                                        {{ $teamPlayer->name }}
                                                     </div>
                                                     <div class="text-sm text-gray-500">
-                                                        {{ $teamPlayer->player->position }} • Rating: {{ $teamPlayer->player->overall_rating }}
+                                                        {{ $teamPlayer->position }} • Rating: {{ $teamPlayer->overall_rating }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -55,7 +55,7 @@
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     {{ $teamPlayer->position }}
                                                 </span>
-                                                <form method="POST" action="{{ route('club-management.teams.remove-player', [$club, $team, $teamPlayer->player]) }}" class="inline">
+                                                <form method="POST" action="{{ route('club-management.teams.remove-player', [$club, $team, $teamPlayer]) }}" class="inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" onclick="return confirm('Are you sure you want to remove this player from the team?')"
@@ -87,7 +87,7 @@
                     <form method="POST" action="{{ route('club-management.teams.add-player', [$club, $team]) }}" class="space-y-4">
                         @csrf
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                             <!-- Player Selection -->
                             <div>
                                 <label for="player_id" class="block text-sm font-medium text-gray-700">Player</label>
@@ -127,12 +127,45 @@
                                 @enderror
                             </div>
 
+                            <!-- Role -->
+                            <div>
+                                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                                <select name="role" id="role" required
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option value="">Select role</option>
+                                    <option value="starter" {{ old('role') == 'starter' ? 'selected' : '' }}>Starter</option>
+                                    <option value="substitute" {{ old('role') == 'substitute' ? 'selected' : '' }}>Substitute</option>
+                                    <option value="reserve" {{ old('role') == 'reserve' ? 'selected' : '' }}>Reserve</option>
+                                    <option value="loan" {{ old('role') == 'loan' ? 'selected' : '' }}>Loan</option>
+                                </select>
+                                @error('role')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Jersey Number -->
                             <div>
                                 <label for="jersey_number" class="block text-sm font-medium text-gray-700">Jersey Number</label>
                                 <input type="number" name="jersey_number" id="jersey_number" value="{{ old('jersey_number') }}" min="1" max="99"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 @error('jersey_number')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Status -->
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <select name="status" id="status" required
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option value="">Select status</option>
+                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                    <option value="injured" {{ old('status') == 'injured' ? 'selected' : '' }}>Injured</option>
+                                    <option value="suspended" {{ old('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
+                                    <option value="loaned_out" {{ old('status') == 'loaned_out' ? 'selected' : '' }}>Loaned Out</option>
+                                    <option value="retired" {{ old('status') == 'retired' ? 'selected' : '' }}>Retired</option>
+                                </select>
+                                @error('status')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>

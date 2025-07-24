@@ -1,22 +1,9 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Competition Management') }}
-            </h2>
-            <div class="flex space-x-2">
-                <x-primary-button onclick="window.location.href='{{ route('competition-management.export') }}'">
-                    {{ __('Export') }}
-                </x-primary-button>
-                <x-primary-button onclick="window.location.href='{{ route('competition-management.competitions.create') }}'">
-                    {{ __('Create Competition') }}
-                </x-primary-button>
-            </div>
-        </div>
-    </x-slot>
+@extends('layouts.app')
 
+@section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -170,6 +157,8 @@
                                                        class="text-blue-600 hover:text-blue-900">{{ __('Edit') }}</a>
                                                     <a href="{{ route('competition-management.competitions.standings', $competition) }}" 
                                                        class="text-green-600 hover:text-green-900">{{ __('Standings') }}</a>
+                                                    <a href="{{ route('competition-management.competitions.register-team-form', $competition) }}" 
+                                                       class="text-orange-600 hover:text-orange-900">{{ __('Inscrire une équipe') }}</a>
                                                     <form action="{{ route('competition-management.competitions.sync', $competition) }}" method="POST" class="inline">
                                                         @csrf
                                                         <button type="submit" class="text-purple-600 hover:text-purple-900">
@@ -214,4 +203,6 @@
             </div>
         </div>
     </div>
-</x-app-layout> 
+@endsection
+
+@section('title', 'Competition Management') 

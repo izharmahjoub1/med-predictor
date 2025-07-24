@@ -15,9 +15,38 @@
                 <h2 class="text-xl font-semibold text-gray-800">Informations du Joueur</h2>
             </div>
             
-            <form action="{{ route('player-registration.players.update', $player) }}" method="POST" class="p-6">
+            <form action="{{ route('player-registration.update', $player) }}" method="POST" class="p-6" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                
+                <!-- Player Picture Upload Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Photo du Joueur</h3>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex-shrink-0">
+                            @if($player->has_picture)
+                                <img class="h-24 w-24 rounded-full border-4 border-gray-200 object-cover" src="{{ $player->player_picture_url }}" alt="{{ $player->full_name }}">
+                            @else
+                                <div class="h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center border-4 border-gray-200">
+                                    <span class="text-gray-500 font-bold text-2xl">
+                                        {{ substr($player->first_name, 0, 1) . substr($player->last_name, 0, 1) }}
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-1">
+                            <label for="player_picture" class="block text-sm font-medium text-gray-700 mb-2">
+                                Changer la photo
+                            </label>
+                            <input type="file" name="player_picture" id="player_picture" accept="image/*"
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPEG, PNG, JPG, GIF. Taille max: 2MB</p>
+                            @error('player_picture')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -216,8 +245,8 @@
                 </div>
 
                 <div class="mt-8 flex justify-end space-x-4">
-                    <a href="{{ route('player-registration.players.show', $player) }}" 
-                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
+                                    <a href="{{ route('player-registration.show', $player) }}" 
+                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
                         Annuler
                     </a>
                     <button type="submit" 

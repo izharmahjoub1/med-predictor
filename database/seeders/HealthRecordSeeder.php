@@ -12,6 +12,9 @@ class HealthRecordSeeder extends Seeder
 {
     public function run(): void
     {
+        // Clear existing health records first
+        HealthRecord::truncate();
+        
         // Créer un utilisateur de test si il n'existe pas
         $user = User::firstOrCreate(
             ['email' => 'test@medpredictor.com'],
@@ -51,20 +54,6 @@ class HealthRecordSeeder extends Seeder
                 'value_eur' => 15000000,
                 'wage_eur' => 200000,
             ],
-            [
-                'name' => 'Kylian Mbappé',
-                'first_name' => 'Kylian',
-                'last_name' => 'Mbappé',
-                'date_of_birth' => '1998-12-20',
-                'nationality' => 'France',
-                'position' => 'ST',
-                'height' => 178,
-                'weight' => 73,
-                'overall_rating' => 91,
-                'potential_rating' => 95,
-                'value_eur' => 180000000,
-                'wage_eur' => 400000,
-            ],
         ];
 
         foreach ($players as $playerData) {
@@ -74,7 +63,7 @@ class HealthRecordSeeder extends Seeder
             );
         }
 
-        // Créer des dossiers médicaux de test
+        // Créer exactement 2 dossiers médicaux actifs
         $healthRecords = [
             [
                 'player_id' => Player::where('name', 'Lionel Messi')->first()->id,
@@ -97,59 +86,21 @@ class HealthRecordSeeder extends Seeder
             ],
             [
                 'player_id' => Player::where('name', 'Cristiano Ronaldo')->first()->id,
-                'blood_pressure_systolic' => 135,
-                'blood_pressure_diastolic' => 85,
-                'heart_rate' => 58,
-                'temperature' => 37.1,
+                'blood_pressure_systolic' => 118,
+                'blood_pressure_diastolic' => 78,
+                'heart_rate' => 62,
+                'temperature' => 36.6,
                 'weight' => 83,
                 'height' => 187,
                 'blood_type' => 'O+',
                 'allergies' => [],
-                'medications' => ['Protéines', 'Créatine'],
+                'medications' => ['Vitamine C', 'Protéines'],
                 'medical_history' => ['Blessure à la cheville (2020)'],
                 'symptoms' => [],
-                'diagnosis' => 'Condition physique excellente',
-                'treatment_plan' => 'Continuer le programme d\'entraînement personnalisé',
+                'diagnosis' => 'État de santé optimal',
+                'treatment_plan' => 'Continuer l\'entraînement intensif et la nutrition sportive',
                 'record_date' => now()->subDays(3),
-                'next_checkup_date' => now()->addMonths(3),
-                'status' => 'active',
-            ],
-            [
-                'player_id' => Player::where('name', 'Kylian Mbappé')->first()->id,
-                'blood_pressure_systolic' => 118,
-                'blood_pressure_diastolic' => 78,
-                'heart_rate' => 62,
-                'temperature' => 36.9,
-                'weight' => 73,
-                'height' => 178,
-                'blood_type' => 'B+',
-                'allergies' => ['Latex'],
-                'medications' => ['Vitamine C'],
-                'medical_history' => [],
-                'symptoms' => ['Douleur légère au mollet'],
-                'diagnosis' => 'État de santé très bon, surveillance recommandée pour la douleur au mollet',
-                'treatment_plan' => 'Repos relatif, étirements, surveillance de la douleur',
-                'record_date' => now()->subDays(1),
-                'next_checkup_date' => now()->addWeeks(2),
-                'status' => 'active',
-            ],
-            [
-                'player_id' => null, // Patient anonyme
-                'blood_pressure_systolic' => 145,
-                'blood_pressure_diastolic' => 95,
-                'heart_rate' => 85,
-                'temperature' => 37.5,
-                'weight' => 85,
-                'height' => 175,
-                'blood_type' => 'A-',
-                'allergies' => ['Arachides', 'Sulfamides'],
-                'medications' => ['Médicament pour l\'hypertension'],
-                'medical_history' => ['Hypertension', 'Diabète de type 2'],
-                'symptoms' => ['Maux de tête', 'Fatigue', 'Essoufflement'],
-                'diagnosis' => 'Hypertension artérielle non contrôlée',
-                'treatment_plan' => 'Ajustement du traitement antihypertenseur, surveillance rapprochée',
-                'record_date' => now()->subHours(12),
-                'next_checkup_date' => now()->addWeeks(1),
+                'next_checkup_date' => now()->addMonths(4),
                 'status' => 'active',
             ],
         ];
@@ -167,5 +118,6 @@ class HealthRecordSeeder extends Seeder
         }
 
         $this->command->info('Health records seeded successfully!');
+        $this->command->info('Created 2 active records, 0 pending, 0 archived');
     }
 }

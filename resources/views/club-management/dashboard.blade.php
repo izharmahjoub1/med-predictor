@@ -3,6 +3,8 @@
 @section('title', 'Club Management Dashboard')
 
 @section('content')
+
+
 <div class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative">
         <!-- Header -->
@@ -92,17 +94,40 @@
                             </div>
                             <!-- Club Logo -->
                             <div class="w-24 h-24 bg-white rounded-lg shadow-lg p-3 border-2 border-gray-200 flex items-center justify-center">
-                                @if(isset($dashboardData['club']) && $dashboardData['club']->club_logo_url)
-                                    <img src="{{ $dashboardData['club']->club_logo_url }}" 
-                                         alt="{{ $dashboardData['club']->name }} Logo" 
-                                         class="w-full h-full object-contain"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-xl" style="display: none;">
-                                        {{ substr($dashboardData['club']->name, 0, 2) }}
-                                    </div>
+                                @if($dashboardData['is_association_admin'] ?? false)
+                                    <!-- Association Admin - Show association logo or initials -->
+                                    @if(isset($dashboardData['association']) && $dashboardData['association']->logo_url)
+                                        <img src="{{ $dashboardData['association']->logo_url }}" 
+                                             alt="{{ $dashboardData['association']->name }} Logo" 
+                                             class="w-full h-full object-contain"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-xl" style="display: none;">
+                                            {{ substr($dashboardData['association']->name, 0, 2) }}
+                                        </div>
+                                    @else
+                                        <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-xl">
+                                            {{ isset($dashboardData['association']) ? substr($dashboardData['association']->name, 0, 2) : 'FA' }}
+                                        </div>
+                                    @endif
+                                @elseif(isset($dashboardData['club']))
+                                    <!-- Club User - Show club logo or initials -->
+                                    @if($dashboardData['club']->club_logo_url)
+                                        <img src="{{ $dashboardData['club']->club_logo_url }}" 
+                                             alt="{{ $dashboardData['club']->name }} Logo" 
+                                             class="w-full h-full object-contain"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-xl" style="display: none;">
+                                            {{ substr($dashboardData['club']->name, 0, 2) }}
+                                        </div>
+                                    @else
+                                        <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-xl">
+                                            {{ substr($dashboardData['club']->name, 0, 2) }}
+                                        </div>
+                                    @endif
                                 @else
+                                    <!-- System Admin - Show default logo -->
                                     <div class="w-full h-full bg-red-100 rounded flex items-center justify-center text-red-600 font-bold text-xl">
-                                        {{ substr($dashboardData['club']->name, 0, 2) }}
+                                        SA
                                     </div>
                                 @endif
                             </div>
@@ -113,7 +138,13 @@
                                 <p class="text-gray-600 mt-1">
                                     Manage your football clubs, teams, and player licensing
                                 </p>
-                                @if(isset($dashboardData['club']) && $dashboardData['club']->association)
+                                @if($dashboardData['is_association_admin'] ?? false)
+                                    @if(isset($dashboardData['association']))
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            {{ $dashboardData['association']->name }}
+                                        </p>
+                                    @endif
+                                @elseif(isset($dashboardData['club']) && $dashboardData['club']->association)
                                     <p class="text-sm text-gray-500 mt-1">
                                         {{ $dashboardData['club']->association->name }}
                                     </p>
@@ -175,7 +206,7 @@
                             </div>
                         </div>
                     </div>
-                @else
+                @elseif(isset($dashboardData['club']))
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
                         <div class="p-6">
                             <div class="flex items-center justify-between">
@@ -198,6 +229,23 @@
                                             {{ substr($dashboardData['club']->name, 0, 2) }}
                                         </div>
                                     @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-100 text-sm font-medium">System Admin</p>
+                                    <p class="text-xl font-bold text-white">All Clubs</p>
+                                    <p class="text-blue-200 text-xs mt-1">Overview</p>
+                                </div>
+                                <div class="bg-blue-400 bg-opacity-30 rounded-full p-3">
+                                    <div class="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-xs">
+                                        SA
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -360,7 +408,7 @@
                                 </svg>
                                 <span class="font-medium">FIFA Connect Status</span>
                             </a>
-                            <a href="{{ route('fifa.search') }}" class="flex items-center p-3 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200 group">
+                            <a href="{{ route('fifa.players.search') }}" class="flex items-center p-3 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
@@ -388,21 +436,21 @@
                                     <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                                     <span class="text-sm font-medium text-gray-700">Squad Size</span>
                                 </div>
-                                <span class="text-xs text-blue-600 font-medium">{{ $dashboardData['club']['squad_size'] }}</span>
+                                <span class="text-xs text-blue-600 font-medium">{{ $dashboardData['stats']['total_players'] }}</span>
                             </div>
                             <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                                 <div class="flex items-center">
                                     <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                                    <span class="text-sm font-medium text-gray-700">Avg Rating</span>
+                                    <span class="text-sm font-medium text-gray-700">Teams</span>
                                 </div>
-                                <span class="text-xs text-green-600 font-medium">{{ number_format($dashboardData['club']['average_rating'], 1) }}</span>
+                                <span class="text-xs text-green-600 font-medium">{{ $dashboardData['stats']['total_teams'] }}</span>
                             </div>
                             <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                                 <div class="flex items-center">
                                     <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                                    <span class="text-sm font-medium text-gray-700">Budget</span>
+                                    <span class="text-sm font-medium text-gray-700">Active Licenses</span>
                                 </div>
-                                <span class="text-xs text-purple-600 font-medium">€{{ number_format($dashboardData['club']['available_budget']) }}</span>
+                                <span class="text-xs text-purple-600 font-medium">{{ $dashboardData['stats']['active_licenses'] }}</span>
                             </div>
                         </div>
                     </div>
@@ -469,14 +517,14 @@
                 </div>
             </div>
             @endif
-            @else
+            @elseif(isset($dashboardData['club']))
             <!-- Club User Overview -->
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-900">Club Overview</h3>
                         <div class="flex items-center space-x-2">
-                            <span class="text-sm text-gray-500">{{ $dashboardData['club']['name'] }}</span>
+                            <span class="text-sm text-gray-500">{{ $dashboardData['club']->name }}</span>
                             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
                         </div>
                     </div>
@@ -484,8 +532,8 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-gray-900">{{ $dashboardData['club']['name'] }}</div>
-                            <div class="text-sm text-gray-500">{{ $dashboardData['club']['country'] }}</div>
+                            <div class="text-2xl font-bold text-gray-900">{{ $dashboardData['club']->name }}</div>
+                            <div class="text-sm text-gray-500">{{ $dashboardData['club']->country }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-blue-600">{{ $dashboardData['stats']['total_players'] }}</div>

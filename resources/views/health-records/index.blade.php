@@ -9,7 +9,7 @@
             <h1 class="text-3xl font-bold text-gray-900">🏥 Dossiers Médicaux</h1>
             <p class="text-gray-600 mt-2">Gestion des dossiers médicaux et prédictions</p>
         </div>
-        <a href="{{ route('legacy.health-records.create') }}" 
+        <a href="{{ route('health-records.create') }}" 
            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
             + Nouveau dossier
         </a>
@@ -101,18 +101,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('legacy.health-records.show', $record) }}" 
+                                        <a href="{{ route('health-records.show', $record) }}" 
                                            class="text-blue-600 hover:text-blue-900">Voir</a>
-                                        <a href="{{ route('legacy.health-records.edit', $record) }}" 
-                                           class="text-indigo-600 hover:text-indigo-900">Modifier</a>
-                                        <form action="{{ route('legacy.health-records.destroy', $record) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" 
-                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
-                                                Supprimer
-                                            </button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -133,7 +123,7 @@
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun dossier médical</h3>
                 <p class="text-gray-500 mb-6">Commencez par créer votre premier dossier médical.</p>
-                <a href="{{ route('legacy.health-records.create') }}" 
+                <a href="{{ route('health-records.create') }}" 
                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     Créer le premier dossier
                 </a>

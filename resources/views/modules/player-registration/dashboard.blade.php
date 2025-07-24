@@ -81,7 +81,7 @@
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{{ route('player-registration.players.create') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <a href="{{ route('player-registration.create') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -105,7 +105,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('player-registration.players.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <a href="{{ route('player-registration.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -124,7 +124,7 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">Recent Players</h3>
-                <a href="{{ route('player-registration.players.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All</a>
+                                        <a href="{{ route('player-registration.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All</a>
             </div>
             <div class="space-y-3">
                 @forelse($recentPlayers as $player)
@@ -141,7 +141,7 @@
                                 <p class="text-xs text-blue-600 font-mono">{{ $player->fifa_connect_id }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('player-registration.players.show', $player) }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                                                        <a href="{{ route('player-registration.show', $player) }}" class="text-blue-600 hover:text-blue-800 text-sm">
                             View
                         </a>
                     </div>
@@ -151,7 +151,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <p>No players registered yet</p>
-                        <a href="{{ route('player-registration.players.create') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block">
+                        <a href="{{ route('player-registration.create') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block">
                             Register your first player
                         </a>
                     </div>

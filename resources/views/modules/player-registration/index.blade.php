@@ -26,7 +26,7 @@
                     <span class="hidden sm:inline">Sync FIFA</span>
                     <span class="sm:hidden">Sync</span>
                 </button>
-                <a href="{{ route('player-registration.players.create') }}" 
+                <a href="{{ route('player-registration.create') }}" 
                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -287,12 +287,10 @@
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-10 w-10 lg:h-12 lg:w-12">
-                                                    {{-- DEBUG: Show player_face_url --}}
-                                                    <div style="font-size:10px;color:red;">{{ $player->player_face_url }}</div>
-                                                    @if($player->player_face_url)
+                                                    @if($player->has_picture)
                                                         <img class="h-10 w-10 lg:h-12 lg:w-12 rounded-full object-cover border-2 border-gray-200" 
-                                                             src="{{ $player->player_face_url }}" 
-                                                             alt="{{ $player->name }}"
+                                                             src="{{ $player->player_picture_url }}" 
+                                                             alt="{{ $player->full_name }}"
                                                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                                              onload="this.nextElementSibling.style.display='none';">
                                                         <div class="h-10 w-10 lg:h-12 lg:w-12 rounded-full bg-blue-100 flex items-center justify-center border-2 border-gray-200" style="display: none;">
@@ -381,13 +379,13 @@
                                         </td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex flex-col sm:flex-row gap-2">
-                                                <a href="{{ route('player-registration.players.show', $player) }}" 
+                                                <a href="{{ route('player-registration.show', $player) }}" 
                                                    class="text-blue-600 hover:text-blue-900">Voir</a>
-                                                <a href="{{ route('player-registration.players.edit', $player) }}" 
+                                                <a href="{{ route('player-registration.edit', $player) }}" 
                                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
-                                                <a href="{{ route('player-registration.players.health-records', $player) }}" 
+                                                <a href="{{ route('player-registration.health-records', $player) }}" 
                                                    class="text-green-600 hover:text-green-900">Dossiers</a>
-                                                <form action="{{ route('player-registration.players.destroy', $player) }}" method="POST" class="inline">
+                                                <form action="{{ route('player-registration.destroy', $player) }}" method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900" 
@@ -420,7 +418,7 @@
                                     class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 🔄 Synchroniser FIFA
                             </button>
-                            <a href="{{ route('player-registration.players.create') }}" 
+                            <a href="{{ route('player-registration.create') }}" 
                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 Créer un joueur
                             </a>

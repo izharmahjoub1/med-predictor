@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 use App\Models\Player;
 use App\Models\Club;
 use App\Models\Association;
+use App\Models\PlayerLicense;
+use App\Models\User;
 
 class PlayerSeeder extends Seeder
 {
@@ -233,5 +235,119 @@ class PlayerSeeder extends Seeder
                 $playerData
             );
         }
+
+        // Generate 40 players for each EPL club
+        $eplClubs = Club::where('league', 'Premier League')->get();
+        $positions = ['GK', 'RB', 'CB', 'CB', 'LB', 'CDM', 'CM', 'CM', 'RM', 'LM', 'CAM', 'RW', 'LW', 'ST', 'CF'];
+        $nationalities = ['England', 'France', 'Spain', 'Germany', 'Brazil', 'Portugal', 'Netherlands', 'Belgium', 'Italy', 'Argentina', 'Nigeria', 'Senegal', 'Ivory Coast', 'USA', 'Japan', 'South Korea', 'Norway', 'Sweden', 'Denmark', 'Scotland'];
+        $firstNames = ['John', 'James', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua', 'Kenneth'];
+        $lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
+        $associationId = Association::where('name', 'The Football Association')->first()?->id;
+
+        foreach ($eplClubs as $club) {
+            for ($i = 1; $i <= 40; $i++) {
+                $firstName = $firstNames[array_rand($firstNames)];
+                $lastName = $lastNames[array_rand($lastNames)];
+                $position = $positions[array_rand($positions)];
+                $nationality = $nationalities[array_rand($nationalities)];
+                $dob = now()->subYears(rand(18, 35))->subDays(rand(0, 364))->format('Y-m-d');
+                $rating = rand(60, 90);
+                $potential = $rating + rand(0, 10);
+                $height = rand(170, 200);
+                $weight = rand(65, 95);
+                $fifaId = strtoupper(substr($club->short_name, 0, 3)) . sprintf('%03d', $i);
+                $player = Player::updateOrCreate(
+                    ['fifa_connect_id' => $fifaId],
+                    [
+                        'name' => "$firstName $lastName",
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'date_of_birth' => $dob,
+                        'nationality' => $nationality,
+                        'position' => $position,
+                        'overall_rating' => $rating,
+                        'potential_rating' => $potential,
+                        'age' => now()->diffInYears($dob),
+                        'height' => $height,
+                        'weight' => $weight,
+                        'preferred_foot' => rand(0, 1) ? 'Right' : 'Left',
+                        'work_rate' => 'Medium/Medium',
+                        'player_face_url' => 'https://picsum.photos/400/400?random=' . rand(1000, 9999),
+                        'club_id' => $club->id,
+                        'association_id' => $associationId,
+                        'status' => 'active',
+                    ]
+                );
+                // Add sample performance data for last season
+                $player->performances()->updateOrCreate(
+                    ['season' => '2023/24'],
+                    [
+                        'appearances' => rand(0, 38),
+                        'goals' => rand(0, 20),
+                        'assists' => rand(0, 15),
+                        'minutes_played' => rand(0, 3420),
+                        'yellow_cards' => rand(0, 8),
+                        'red_cards' => rand(0, 2),
+                        'clean_sheets' => $position === 'GK' ? rand(0, 20) : null,
+                        'season_rating' => rand(60, 90),
+                        'performance_date' => '2024-05-19',
+                        'created_by' => 1,
+                    ]
+                );
+            }
+        }
+
+        $testClub = Club::where('name', 'Test Club')->first();
+        $testAssociation = Association::where('name', 'Test Association')->first();
+        Player::updateOrCreate(
+            ['fifa_connect_id' => 'TEST_PLAYER_001'],
+            [
+                'name' => 'Test Player',
+                'first_name' => 'Test',
+                'last_name' => 'Player',
+                'date_of_birth' => '2000-01-01',
+                'nationality' => 'Testland',
+                'position' => 'CM',
+                'overall_rating' => 75,
+                'potential_rating' => 85,
+                'age' => 24,
+                'height' => 180,
+                'weight' => 75,
+                'preferred_foot' => 'Right',
+                'work_rate' => 'Medium/Medium',
+                'player_face_url' => 'https://via.placeholder.com/100x100.png?text=Test+Player',
+                'club_id' => $testClub ? $testClub->id : null,
+                'association_id' => $testAssociation ? $testAssociation->id : null,
+                'status' => 'active',
+            ]
+        );
+
+        // Seed 25 player license requests in 'pending' status for association review
+        echo "Seeding 25 player license requests...\n";
+        $playersForLicense = Player::inRandomOrder()->limit(25)->get();
+        $created = 0;
+        foreach ($playersForLicense as $player) {
+            try {
+                // Only create if not already pending
+                $existing = PlayerLicense::where('player_id', $player->id)->where('status', 'pending')->first();
+                if (!$existing) {
+                    $license = PlayerLicense::create([
+                        'player_id' => $player->id,
+                        'club_id' => $player->club_id,
+                        'status' => 'pending',
+                        'requested_by' => User::where('club_id', $player->club_id)->whereIn('role', ['club_admin', 'club_manager'])->inRandomOrder()->first()?->id ?? 1,
+                    ]);
+                    if ($license) {
+                        $created++;
+                        echo "Created license for player_id={$player->id}, club_id={$player->club_id}\n";
+                    } else {
+                        echo "Failed to create license for player_id={$player->id}\n";
+                    }
+                }
+            } catch (\Exception $e) {
+                echo "Exception for player_id={$player->id}: " . $e->getMessage() . "\n";
+            }
+        }
+        echo "Total licenses created: $created\n";
     }
 }

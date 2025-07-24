@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditTrailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,6 +13,11 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
+        // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        
         return view('auth.login');
     }
 
@@ -28,11 +34,15 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            // Log de connexion
-            \Log::info('User logged in: ' . Auth::user()->email);
+            // Log successful login
+            AuditTrailService::logLogin(Auth::user(), true);
 
-            return redirect()->intended($this->redirectTo);
+            // Rediriger vers le dashboard principal
+            return redirect()->intended(route('dashboard'));
         }
+
+        // Log failed login attempt
+        AuditTrailService::logFailedLogin($request->email, 'Invalid credentials');
 
         return back()->withErrors([
             'email' => 'Les identifiants fournis ne correspondent pas à nos enregistrements.',
@@ -41,6 +51,11 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        // Log logout before destroying session
+        if (Auth::check()) {
+            AuditTrailService::logLogout(Auth::user());
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

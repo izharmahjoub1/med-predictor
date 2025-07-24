@@ -18,9 +18,13 @@ class DatabaseSeeder extends Seeder
             AssociationSeeder::class,
             ClubSeeder::class,
             PlayerSeeder::class,
+            RoleSeeder::class,
             UserSeeder::class,
+            // SeasonSeeder::class, // Run this separately to avoid duplicate season errors
+            MatchRosterSeeder::class,
             HealthRecordSeeder::class,
             PlayerLicenseSeeder::class,
+            CompetitionTeamsSeeder::class, // Add the new seeder
         ]);
 
         $this->command->info('All data seeded successfully!');

@@ -10,12 +10,15 @@ class FifaConnectId extends Model
     protected $fillable = [
         'fifa_id',
         'entity_type',
+        'entity_id',
         'status',
+        'synced_at',
         'metadata'
     ];
 
     protected $casts = [
-        'metadata' => 'array'
+        'metadata' => 'array',
+        'synced_at' => 'datetime'
     ];
 
     public function players(): HasMany

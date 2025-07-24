@@ -6,6 +6,7 @@ use App\Models\MedicalPrediction;
 use App\Models\Player;
 use App\Models\HealthRecord;
 use App\Models\User;
+use App\Events\MedicalPredictionCreated;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -209,42 +210,40 @@ class MedicalPredictionController extends Controller
      */
     private function generatePrediction(array $data, Player $player): MedicalPrediction
     {
-        $healthRecord = HealthRecord::find($data['health_record_id']);
+        $healthRecord = HealthRecord::findOrFail($data['health_record_id']);
         
-        // Calculate risk factors based on player data and health record
         $riskFactors = $this->calculateRiskFactors($player, $healthRecord, $data['prediction_type']);
-        
-        // Generate prediction based on type
         $prediction = $this->generatePredictionByType($data['prediction_type'], $riskFactors, $player, $healthRecord);
-        
-        // Calculate confidence score
         $confidenceScore = $this->calculateConfidenceScore($riskFactors, $healthRecord);
-        
-        // Generate recommendations
         $recommendations = $this->generateRecommendations($prediction, $riskFactors, $data['prediction_type']);
 
-        return MedicalPrediction::create([
-            'health_record_id' => $data['health_record_id'],
+        $medicalPrediction = MedicalPrediction::create([
+            'health_record_id' => $healthRecord->id,
             'player_id' => $player->id,
             'user_id' => Auth::id(),
             'prediction_type' => $data['prediction_type'],
             'predicted_condition' => $prediction['condition'],
-            'risk_probability' => $prediction['risk'],
+            'risk_probability' => $prediction['probability'],
             'confidence_score' => $confidenceScore,
             'prediction_factors' => $riskFactors,
             'recommendations' => $recommendations,
             'prediction_date' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'active',
-            'ai_model_version' => '2.0',
+            'ai_model_version' => '1.0',
             'prediction_notes' => [
                 'generated_at' => now()->toISOString(),
-                'model_version' => '2.0',
-                'data_points_analyzed' => count($riskFactors),
+                'model_version' => '1.0',
                 'manual_factors' => $data['manual_factors'] ?? [],
-                'notes' => $data['notes'] ?? null
+                'notes' => $data['notes'] ?? null,
+                'data_points_analyzed' => count($riskFactors)
             ]
         ]);
+
+        // Broadcast medical prediction created event
+        event(new MedicalPredictionCreated($medicalPrediction));
+
+        return $medicalPrediction;
     }
 
     /**

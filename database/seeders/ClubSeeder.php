@@ -2,15 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Models\Association;
 use App\Models\Club;
-use App\Models\Team;
-use App\Models\Player;
-use App\Models\TeamPlayer;
 use App\Models\Competition;
-use App\Models\GameMatch;
+use App\Models\MatchModel;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ClubSeeder extends Seeder
 {
@@ -29,139 +30,28 @@ class ClubSeeder extends Seeder
         $englishFA = \App\Models\Association::where('name', 'The Football Association')->first();
         $associationId = $englishFA ? $englishFA->id : null;
 
-        // Create Premier League Clubs
+        // Create Premier League Clubs (2023/24)
         $premierLeagueClubs = [
-            [
-                'name' => 'Manchester United',
-                'short_name' => 'Man Utd',
-                'country' => 'England',
-                'city' => 'Manchester',
-                'stadium' => 'Old Trafford',
-                'founded_year' => 1878,
-                'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg',
-                'website' => 'https://www.manutd.com',
-                'email' => 'info@manutd.com',
-                'phone' => '+44 161 868 8000',
-                'address' => 'Sir Matt Busby Way, Manchester M16 0RA',
-                'fifa_connect_id' => 'MUFC001',
-                'association_id' => $associationId,
-                'league' => 'Premier League',
-                'division' => '1',
-                'status' => 'active',
-                'budget_eur' => 500000000,
-                'wage_budget_eur' => 200000000,
-                'transfer_budget_eur' => 100000000,
-                'reputation' => 95,
-                'facilities_level' => 5,
-                'youth_development' => 5,
-                'scouting_network' => 5,
-                'medical_team' => 5,
-                'coaching_staff' => 5,
-            ],
-            [
-                'name' => 'Liverpool FC',
-                'short_name' => 'Liverpool',
-                'country' => 'England',
-                'city' => 'Liverpool',
-                'stadium' => 'Anfield',
-                'founded_year' => 1892,
-                'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg',
-                'website' => 'https://www.liverpoolfc.com',
-                'email' => 'info@liverpoolfc.com',
-                'phone' => '+44 151 260 6677',
-                'address' => 'Anfield Road, Liverpool L4 0TH',
-                'fifa_connect_id' => 'LFC001',
-                'league' => 'Premier League',
-                'division' => '1',
-                'status' => 'active',
-                'budget_eur' => 450000000,
-                'wage_budget_eur' => 180000000,
-                'transfer_budget_eur' => 80000000,
-                'reputation' => 92,
-                'facilities_level' => 5,
-                'youth_development' => 4,
-                'scouting_network' => 5,
-                'medical_team' => 5,
-                'coaching_staff' => 5,
-            ],
-            [
-                'name' => 'Arsenal FC',
-                'short_name' => 'Arsenal',
-                'country' => 'England',
-                'city' => 'London',
-                'stadium' => 'Emirates Stadium',
-                'founded_year' => 1886,
-                'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg',
-                'website' => 'https://www.arsenal.com',
-                'email' => 'info@arsenal.com',
-                'phone' => '+44 20 7619 5003',
-                'address' => 'Hornsey Road, London N7 7AJ',
-                'fifa_connect_id' => 'AFC001',
-                'league' => 'Premier League',
-                'division' => '1',
-                'status' => 'active',
-                'budget_eur' => 400000000,
-                'wage_budget_eur' => 160000000,
-                'transfer_budget_eur' => 70000000,
-                'reputation' => 90,
-                'facilities_level' => 5,
-                'youth_development' => 5,
-                'scouting_network' => 4,
-                'medical_team' => 5,
-                'coaching_staff' => 4,
-            ],
-            [
-                'name' => 'Chelsea FC',
-                'short_name' => 'Chelsea',
-                'country' => 'England',
-                'city' => 'London',
-                'stadium' => 'Stamford Bridge',
-                'founded_year' => 1905,
-                'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg',
-                'website' => 'https://www.chelseafc.com',
-                'email' => 'info@chelseafc.com',
-                'phone' => '+44 20 7386 9373',
-                'address' => 'Fulham Road, London SW6 1HS',
-                'fifa_connect_id' => 'CFC001',
-                'league' => 'Premier League',
-                'division' => '1',
-                'status' => 'active',
-                'budget_eur' => 600000000,
-                'wage_budget_eur' => 250000000,
-                'transfer_budget_eur' => 150000000,
-                'reputation' => 88,
-                'facilities_level' => 5,
-                'youth_development' => 4,
-                'scouting_network' => 5,
-                'medical_team' => 5,
-                'coaching_staff' => 5,
-            ],
-            [
-                'name' => 'Manchester City',
-                'short_name' => 'Man City',
-                'country' => 'England',
-                'city' => 'Manchester',
-                'stadium' => 'Etihad Stadium',
-                'founded_year' => 1880,
-                'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
-                'website' => 'https://www.mancity.com',
-                'email' => 'info@mancity.com',
-                'phone' => '+44 161 444 1894',
-                'address' => 'Etihad Stadium, Manchester M11 3FF',
-                'fifa_connect_id' => 'MCFC001',
-                'league' => 'Premier League',
-                'division' => '1',
-                'status' => 'active',
-                'budget_eur' => 800000000,
-                'wage_budget_eur' => 300000000,
-                'transfer_budget_eur' => 200000000,
-                'reputation' => 96,
-                'facilities_level' => 5,
-                'youth_development' => 5,
-                'scouting_network' => 5,
-                'medical_team' => 5,
-                'coaching_staff' => 5,
-            ]
+            [ 'name' => 'Arsenal FC', 'short_name' => 'Arsenal', 'country' => 'England', 'city' => 'London', 'stadium' => 'Emirates Stadium', 'founded_year' => 1886, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg', 'website' => 'https://www.arsenal.com', 'email' => 'info@arsenal.com', 'phone' => '+44 20 7619 5003', 'address' => 'Hornsey Road, London N7 7AJ', 'fifa_connect_id' => 'AFC001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 400000000, 'wage_budget_eur' => 160000000, 'transfer_budget_eur' => 70000000, 'reputation' => 90, 'facilities_level' => 5, 'youth_development' => 5, 'scouting_network' => 4, 'medical_team' => 5, 'coaching_staff' => 4 ],
+            [ 'name' => 'Aston Villa', 'short_name' => 'Aston Villa', 'country' => 'England', 'city' => 'Birmingham', 'stadium' => 'Villa Park', 'founded_year' => 1874, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/9/9f/Aston_Villa_logo.svg', 'website' => 'https://www.avfc.co.uk', 'email' => 'info@avfc.co.uk', 'phone' => '+44 121 327 2299', 'address' => 'Trinity Road, Birmingham B6 6HE', 'fifa_connect_id' => 'AVFC001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 150000000, 'wage_budget_eur' => 60000000, 'transfer_budget_eur' => 30000000, 'reputation' => 75, 'facilities_level' => 4, 'youth_development' => 4, 'scouting_network' => 3, 'medical_team' => 4, 'coaching_staff' => 4 ],
+            [ 'name' => 'AFC Bournemouth', 'short_name' => 'Bournemouth', 'country' => 'England', 'city' => 'Bournemouth', 'stadium' => 'Vitality Stadium', 'founded_year' => 1899, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/e/e5/AFC_Bournemouth.svg', 'website' => 'https://www.afcb.co.uk', 'email' => 'enquiries@afcb.co.uk', 'phone' => '+44 344 576 1910', 'address' => 'Dean Court, Bournemouth BH7 7AF', 'fifa_connect_id' => 'BOU001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 90000000, 'wage_budget_eur' => 35000000, 'transfer_budget_eur' => 15000000, 'reputation' => 65, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 2, 'medical_team' => 3, 'coaching_staff' => 3 ],
+            [ 'name' => 'Brentford FC', 'short_name' => 'Brentford', 'country' => 'England', 'city' => 'Brentford', 'stadium' => 'Gtech Community Stadium', 'founded_year' => 1889, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/2/2a/Brentford_FC_crest.svg', 'website' => 'https://www.brentfordfc.com', 'email' => 'enquiries@brentfordfc.com', 'phone' => '+44 20 8847 2511', 'address' => 'Lionel Road South, Brentford TW8 0RU', 'fifa_connect_id' => 'BRE001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 95000000, 'wage_budget_eur' => 40000000, 'transfer_budget_eur' => 20000000, 'reputation' => 68, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 3, 'medical_team' => 3, 'coaching_staff' => 3 ],
+            [ 'name' => 'Brighton & Hove Albion', 'short_name' => 'Brighton', 'country' => 'England', 'city' => 'Brighton', 'stadium' => 'Amex Stadium', 'founded_year' => 1901, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/f/fd/Brighton_%26_Hove_Albion_logo.svg', 'website' => 'https://www.brightonandhovealbion.com', 'email' => 'seagulls@bhafc.co.uk', 'phone' => '+44 1273 878288', 'address' => 'Village Way, Brighton BN1 9BL', 'fifa_connect_id' => 'BHA001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 120000000, 'wage_budget_eur' => 50000000, 'transfer_budget_eur' => 25000000, 'reputation' => 70, 'facilities_level' => 4, 'youth_development' => 4, 'scouting_network' => 3, 'medical_team' => 4, 'coaching_staff' => 4 ],
+            [ 'name' => 'Burnley FC', 'short_name' => 'Burnley', 'country' => 'England', 'city' => 'Burnley', 'stadium' => 'Turf Moor', 'founded_year' => 1882, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/6/62/Burnley_FC_logo.svg', 'website' => 'https://www.burnleyfootballclub.com', 'email' => 'info@burnleyfc.com', 'phone' => '+44 1282 446800', 'address' => 'Harry Potts Way, Burnley BB10 4BX', 'fifa_connect_id' => 'BUR001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 80000000, 'wage_budget_eur' => 30000000, 'transfer_budget_eur' => 10000000, 'reputation' => 60, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 2, 'medical_team' => 3, 'coaching_staff' => 3 ],
+            [ 'name' => 'Chelsea FC', 'short_name' => 'Chelsea', 'country' => 'England', 'city' => 'London', 'stadium' => 'Stamford Bridge', 'founded_year' => 1905, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg', 'website' => 'https://www.chelseafc.com', 'email' => 'info@chelseafc.com', 'phone' => '+44 20 7386 9373', 'address' => 'Fulham Road, London SW6 1HS', 'fifa_connect_id' => 'CFC001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 600000000, 'wage_budget_eur' => 250000000, 'transfer_budget_eur' => 150000000, 'reputation' => 88, 'facilities_level' => 5, 'youth_development' => 4, 'scouting_network' => 5, 'medical_team' => 5, 'coaching_staff' => 5 ],
+            [ 'name' => 'Crystal Palace', 'short_name' => 'Crystal Palace', 'country' => 'England', 'city' => 'London', 'stadium' => 'Selhurst Park', 'founded_year' => 1905, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/0/0c/Crystal_Palace_FC_logo.svg', 'website' => 'https://www.cpfc.co.uk', 'email' => 'info@cpfc.co.uk', 'phone' => '+44 20 8768 6000', 'address' => 'Holmesdale Road, London SE25 6PU', 'fifa_connect_id' => 'CRY001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 95000000, 'wage_budget_eur' => 40000000, 'transfer_budget_eur' => 20000000, 'reputation' => 68, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 3, 'medical_team' => 3, 'coaching_staff' => 3 ],
+            [ 'name' => 'Everton FC', 'short_name' => 'Everton', 'country' => 'England', 'city' => 'Liverpool', 'stadium' => 'Goodison Park', 'founded_year' => 1878, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/7/7c/Everton_FC_logo.svg', 'website' => 'https://www.evertonfc.com', 'email' => 'everton@evertonfc.com', 'phone' => '+44 151 556 1878', 'address' => 'Goodison Road, Liverpool L4 4EL', 'fifa_connect_id' => 'EVE001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 120000000, 'wage_budget_eur' => 50000000, 'transfer_budget_eur' => 25000000, 'reputation' => 70, 'facilities_level' => 4, 'youth_development' => 4, 'scouting_network' => 3, 'medical_team' => 4, 'coaching_staff' => 4 ],
+            [ 'name' => 'Fulham FC', 'short_name' => 'Fulham', 'country' => 'England', 'city' => 'London', 'stadium' => 'Craven Cottage', 'founded_year' => 1879, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/e/eb/Fulham_FC_%28shield%29.svg', 'website' => 'https://www.fulhamfc.com', 'email' => 'enquiries@fulhamfc.com', 'phone' => '+44 20 8336 7529', 'address' => 'Stevenage Road, London SW6 6HH', 'fifa_connect_id' => 'FUL001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 90000000, 'wage_budget_eur' => 35000000, 'transfer_budget_eur' => 15000000, 'reputation' => 65, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 2, 'medical_team' => 3, 'coaching_staff' => 3 ],
+            [ 'name' => 'Luton Town', 'short_name' => 'Luton', 'country' => 'England', 'city' => 'Luton', 'stadium' => 'Kenilworth Road', 'founded_year' => 1885, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/8/8b/Luton_Town_FC_logo.svg', 'website' => 'https://www.lutontown.co.uk', 'email' => 'info@lutontown.co.uk', 'phone' => '+44 1582 411622', 'address' => '1 Maple Road East, Luton LU4 8AW', 'fifa_connect_id' => 'LUT001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 60000000, 'wage_budget_eur' => 20000000, 'transfer_budget_eur' => 8000000, 'reputation' => 55, 'facilities_level' => 2, 'youth_development' => 2, 'scouting_network' => 1, 'medical_team' => 2, 'coaching_staff' => 2 ],
+            [ 'name' => 'Liverpool FC', 'short_name' => 'Liverpool', 'country' => 'England', 'city' => 'Liverpool', 'stadium' => 'Anfield', 'founded_year' => 1892, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg', 'website' => 'https://www.liverpoolfc.com', 'email' => 'info@liverpoolfc.com', 'phone' => '+44 151 260 6677', 'address' => 'Anfield Road, Liverpool L4 0TH', 'fifa_connect_id' => 'LFC001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 450000000, 'wage_budget_eur' => 180000000, 'transfer_budget_eur' => 80000000, 'reputation' => 92, 'facilities_level' => 5, 'youth_development' => 4, 'scouting_network' => 5, 'medical_team' => 5, 'coaching_staff' => 5 ],
+            [ 'name' => 'Manchester City', 'short_name' => 'Man City', 'country' => 'England', 'city' => 'Manchester', 'stadium' => 'Etihad Stadium', 'founded_year' => 1880, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg', 'website' => 'https://www.mancity.com', 'email' => 'info@mancity.com', 'phone' => '+44 161 444 1894', 'address' => 'Etihad Stadium, Manchester M11 3FF', 'fifa_connect_id' => 'MCFC001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 800000000, 'wage_budget_eur' => 300000000, 'transfer_budget_eur' => 200000000, 'reputation' => 96, 'facilities_level' => 5, 'youth_development' => 5, 'scouting_network' => 5, 'medical_team' => 5, 'coaching_staff' => 5 ],
+            [ 'name' => 'Manchester United', 'short_name' => 'Man Utd', 'country' => 'England', 'city' => 'Manchester', 'stadium' => 'Old Trafford', 'founded_year' => 1878, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg', 'website' => 'https://www.manutd.com', 'email' => 'info@manutd.com', 'phone' => '+44 161 868 8000', 'address' => 'Sir Matt Busby Way, Manchester M16 0RA', 'fifa_connect_id' => 'MUFC001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 500000000, 'wage_budget_eur' => 200000000, 'transfer_budget_eur' => 100000000, 'reputation' => 95, 'facilities_level' => 5, 'youth_development' => 5, 'scouting_network' => 5, 'medical_team' => 5, 'coaching_staff' => 5 ],
+            [ 'name' => 'Newcastle United', 'short_name' => 'Newcastle', 'country' => 'England', 'city' => 'Newcastle', 'stadium' => "St James' Park", 'founded_year' => 1892, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg', 'website' => 'https://www.nufc.co.uk', 'email' => 'admin@nufc.co.uk', 'phone' => '+44 191 201 8400', 'address' => "St James' Park, Newcastle upon Tyne NE1 4ST", 'fifa_connect_id' => 'NEW001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 200000000, 'wage_budget_eur' => 80000000, 'transfer_budget_eur' => 40000000, 'reputation' => 80, 'facilities_level' => 4, 'youth_development' => 4, 'scouting_network' => 4, 'medical_team' => 4, 'coaching_staff' => 4 ],
+            [ 'name' => 'Nottingham Forest', 'short_name' => 'Nottm Forest', 'country' => 'England', 'city' => 'Nottingham', 'stadium' => 'City Ground', 'founded_year' => 1865, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/1/13/Nottingham_Forest_FC_logo.svg', 'website' => 'https://www.nottinghamforest.co.uk', 'email' => 'info@nottinghamforest.co.uk', 'phone' => '+44 115 982 4444', 'address' => 'City Ground, Nottingham NG2 5FJ', 'fifa_connect_id' => 'NFO001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 90000000, 'wage_budget_eur' => 35000000, 'transfer_budget_eur' => 15000000, 'reputation' => 65, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 2, 'medical_team' => 3, 'coaching_staff' => 3 ],
+            [ 'name' => 'Sheffield United', 'short_name' => 'Sheffield Utd', 'country' => 'England', 'city' => 'Sheffield', 'stadium' => 'Bramall Lane', 'founded_year' => 1889, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/3/3e/Sheffield_United_FC_logo.svg', 'website' => 'https://www.sufc.co.uk', 'email' => 'info@sufc.co.uk', 'phone' => '+44 114 253 7200', 'address' => 'Bramall Lane, Sheffield S2 4SU', 'fifa_connect_id' => 'SHU001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 70000000, 'wage_budget_eur' => 25000000, 'transfer_budget_eur' => 10000000, 'reputation' => 60, 'facilities_level' => 2, 'youth_development' => 2, 'scouting_network' => 1, 'medical_team' => 2, 'coaching_staff' => 2 ],
+            [ 'name' => 'Tottenham Hotspur', 'short_name' => 'Tottenham', 'country' => 'England', 'city' => 'London', 'stadium' => 'Tottenham Hotspur Stadium', 'founded_year' => 1882, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg', 'website' => 'https://www.tottenhamhotspur.com', 'email' => 'contactus@tottenhamhotspur.com', 'phone' => '+44 344 499 5000', 'address' => '782 High Road, London N17 0BX', 'fifa_connect_id' => 'TOT001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 350000000, 'wage_budget_eur' => 140000000, 'transfer_budget_eur' => 60000000, 'reputation' => 85, 'facilities_level' => 5, 'youth_development' => 4, 'scouting_network' => 4, 'medical_team' => 5, 'coaching_staff' => 5 ],
+            [ 'name' => 'West Ham United', 'short_name' => 'West Ham', 'country' => 'England', 'city' => 'London', 'stadium' => 'London Stadium', 'founded_year' => 1895, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/c/c2/West_Ham_United_FC_logo.svg', 'website' => 'https://www.whufc.com', 'email' => 'info@westhamunited.co.uk', 'phone' => '+44 20 8548 2748', 'address' => 'London Stadium, London E20 2ST', 'fifa_connect_id' => 'WHU001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 120000000, 'wage_budget_eur' => 50000000, 'transfer_budget_eur' => 25000000, 'reputation' => 70, 'facilities_level' => 4, 'youth_development' => 4, 'scouting_network' => 3, 'medical_team' => 4, 'coaching_staff' => 4 ],
+            [ 'name' => 'Wolverhampton Wanderers', 'short_name' => 'Wolves', 'country' => 'England', 'city' => 'Wolverhampton', 'stadium' => 'Molineux Stadium', 'founded_year' => 1877, 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg', 'website' => 'https://www.wolves.co.uk', 'email' => 'info@wolves.co.uk', 'phone' => '+44 871 222 2220', 'address' => 'Waterloo Road, Wolverhampton WV1 4QR', 'fifa_connect_id' => 'WOL001', 'association_id' => $associationId, 'league' => 'Premier League', 'division' => '1', 'status' => 'active', 'budget_eur' => 95000000, 'wage_budget_eur' => 40000000, 'transfer_budget_eur' => 20000000, 'reputation' => 68, 'facilities_level' => 3, 'youth_development' => 3, 'scouting_network' => 3, 'medical_team' => 3, 'coaching_staff' => 3 ]
         ];
 
         foreach ($premierLeagueClubs as $clubData) {
@@ -232,13 +122,13 @@ class ClubSeeder extends Seeder
                 $team = $club->teams()->create($teamData);
 
                 // Assign players to teams based on their existing club
-                $players = Player::where('club_id', $club->id)->get();
+                $players = \App\Models\Player::where('club_id', $club->id)->get();
                 
                 foreach ($players as $index => $player) {
                     $role = $index < 11 ? 'starter' : ($index < 18 ? 'substitute' : 'reserve');
                     $squadNumber = $index < 25 ? $index + 1 : null;
                     
-                    TeamPlayer::create([
+                    \App\Models\TeamPlayer::create([
                         'team_id' => $team->id,
                         'player_id' => $player->id,
                         'role' => $role,
@@ -329,12 +219,12 @@ class ClubSeeder extends Seeder
         ];
 
         foreach ($competitions as $competitionData) {
-            Competition::create($competitionData);
+            \App\Models\Competition::create($competitionData);
         }
 
         // Create some sample matches
-        $clubs = Club::all();
-        $competition = Competition::where('name', 'Premier League')->first();
+        $clubs = \App\Models\Club::all();
+        $competition = \App\Models\Competition::where('name', 'Premier League')->first();
 
         if ($clubs->count() >= 2 && $competition) {
             for ($i = 0; $i < 10; $i++) {
@@ -345,7 +235,7 @@ class ClubSeeder extends Seeder
                 $awayTeam = $awayClub->teams()->where('type', 'first_team')->first();
 
                 if ($homeTeam && $awayTeam) {
-                    GameMatch::create([
+                    \App\Models\MatchModel::create([
                         'competition_id' => $competition->id,
                         'home_team_id' => $homeTeam->id,
                         'away_team_id' => $awayTeam->id,
@@ -382,6 +272,37 @@ class ClubSeeder extends Seeder
                 }
             }
         }
+
+        $testAssociation = \App\Models\Association::where('name', 'Test Association')->first();
+        Club::updateOrCreate(
+            ['name' => 'Test Club'],
+            [
+                'short_name' => 'TClub',
+                'country' => 'Testland',
+                'city' => 'Test City',
+                'stadium' => 'Test Stadium',
+                'founded_year' => 2020,
+                'logo_url' => 'https://via.placeholder.com/100x100.png?text=Test+Club',
+                'website' => 'https://testclub.com',
+                'email' => 'info@testclub.com',
+                'phone' => '+1234567890',
+                'address' => '123 Test St',
+                'fifa_connect_id' => 'TEST_CLUB_001',
+                'association_id' => $testAssociation ? $testAssociation->id : null,
+                'league' => 'Test League',
+                'division' => '1',
+                'status' => 'active',
+                'budget_eur' => 1000000,
+                'wage_budget_eur' => 500000,
+                'transfer_budget_eur' => 200000,
+                'reputation' => 50,
+                'facilities_level' => 2,
+                'youth_development' => 2,
+                'scouting_network' => 1,
+                'medical_team' => 1,
+                'coaching_staff' => 1,
+            ]
+        );
 
         $this->command->info('Club management system seeded successfully!');
         $this->command->info('Created ' . count($premierLeagueClubs) . ' clubs with teams and sample matches.');

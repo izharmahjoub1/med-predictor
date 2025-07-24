@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -32,9 +33,37 @@ class ProfileController extends Controller
             $request->user()->email_verified_at = null;
         }
 
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $this->updateProfilePicture($request);
+        }
+
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update profile picture
+     */
+    private function updateProfilePicture(Request $request): void
+    {
+        $request->validate([
+            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $user = $request->user();
+        
+        // Delete old profile picture if exists
+        if ($user->profile_picture_url && !str_contains($user->profile_picture_url, 'dicebear.com')) {
+            Storage::delete($user->profile_picture_url);
+        }
+
+        // Store new profile picture
+        $path = $request->file('profile_picture')->store('profile-pictures', 'public');
+        
+        $user->profile_picture_url = $path;
+        $user->profile_picture_alt = $user->name . ' Profile Picture';
     }
 
     /**
@@ -74,20 +103,16 @@ class ProfileController extends Controller
     public function updateSettings(Request $request): RedirectResponse
     {
         $request->validate([
-            'timezone' => ['nullable', 'string', 'max:100'],
-            'language' => ['nullable', 'string', 'in:en,fr'],
-            'notifications_email' => ['nullable', 'boolean'],
-            'notifications_sms' => ['nullable', 'boolean'],
+            'timezone' => 'string|max:50',
+            'language' => 'string|max:10',
+            'notifications_email' => 'boolean',
+            'notifications_sms' => 'boolean',
         ]);
 
-        $user = $request->user();
-        $user->update($request->only([
-            'timezone',
-            'language', 
-            'notifications_email',
-            'notifications_sms'
+        $request->user()->update($request->only([
+            'timezone', 'language', 'notifications_email', 'notifications_sms'
         ]));
 
-        return Redirect::route('settings')->with('status', 'settings-updated');
+        return Redirect::route('profile.settings')->with('status', 'settings-updated');
     }
 }

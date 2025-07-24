@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GameMatch extends Model
 {
@@ -12,36 +11,64 @@ class GameMatch extends Model
 
     protected $table = 'game_matches';
 
-    protected $fillable = [
-        'competition_id',
-        'home_team_id',
-        'away_team_id',
-        'match_date',
-        'home_score',
-        'away_score',
-        'status',
-        'venue',
-        'referee',
-        'fifa_connect_id',
+    protected $guarded = [];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'match_date' => 'date',
+        'kickoff_time' => 'datetime',
+        'completed_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    public function competition(): BelongsTo
+    public function competition()
     {
         return $this->belongsTo(Competition::class);
     }
 
-    public function homeTeam(): BelongsTo
+    public function homeTeam()
     {
-        return $this->belongsTo(Club::class, 'home_team_id');
+        return $this->belongsTo(Team::class, 'home_team_id');
     }
 
-    public function awayTeam(): BelongsTo
+    public function awayTeam()
     {
-        return $this->belongsTo(Club::class, 'away_team_id');
+        return $this->belongsTo(Team::class, 'away_team_id');
     }
 
-    public function fifaConnect(): BelongsTo
+    public function officials()
     {
-        return $this->belongsTo(FifaConnectId::class, 'fifa_connect_id');
+        return $this->hasMany(MatchOfficial::class, 'match_id');
+    }
+
+    public function rosters()
+    {
+        return $this->hasMany(\App\Models\MatchRoster::class, 'match_id');
+    }
+
+    public function events()
+    {
+        return $this->hasMany(\App\Models\MatchEvent::class, 'match_id');
+    }
+
+    /**
+     * Get the status attribute (maps to match_status for API compatibility)
+     */
+    public function getStatusAttribute()
+    {
+        return $this->match_status;
+    }
+
+    /**
+     * Set the status attribute (maps to match_status for API compatibility)
+     */
+    public function setStatusAttribute($value)
+    {
+        $this->match_status = $value;
     }
 } 

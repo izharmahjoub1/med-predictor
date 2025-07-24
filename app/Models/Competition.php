@@ -14,22 +14,39 @@ class Competition extends Model
 
     protected $fillable = [
         'name',
+        'short_name',
         'type',
-        'season',
+        'season_id',
         'start_date',
         'end_date',
-        'description',
+        'registration_deadline',
+        'min_teams',
         'max_teams',
         'format',
         'status',
+        'description',
+        'rules',
+        'entry_fee',
+        'prize_pool',
         'association_id',
         'fifa_connect_id',
+        'require_federation_license',
+        'fixtures_validated',
+        'fixtures_validated_at',
+        'validated_by',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'registration_deadline' => 'date',
+        'min_teams' => 'integer',
         'max_teams' => 'integer',
+        'entry_fee' => 'decimal:2',
+        'prize_pool' => 'decimal:2',
+        'require_federation_license' => 'boolean',
+        'fixtures_validated' => 'boolean',
+        'fixtures_validated_at' => 'datetime',
     ];
 
     public function association(): BelongsTo
@@ -37,9 +54,29 @@ class Competition extends Model
         return $this->belongsTo(Association::class);
     }
 
+    public function season(): BelongsTo
+    {
+        return $this->belongsTo(Season::class, 'season_id');
+    }
+
+    public function seasonRelation(): BelongsTo
+    {
+        return $this->belongsTo(Season::class, 'season_id');
+    }
+
+    public function seasons(): HasMany
+    {
+        return $this->hasMany(Season::class);
+    }
+
     public function fifaConnectId(): BelongsTo
     {
         return $this->belongsTo(FifaConnectId::class, 'fifa_connect_id');
+    }
+
+    public function validatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validated_by');
     }
 
     public function clubs(): BelongsToMany
@@ -48,7 +85,18 @@ class Competition extends Model
             ->withTimestamps();
     }
 
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'competition_team')
+            ->withTimestamps();
+    }
+
     public function matches()
+    {
+        return $this->hasMany(MatchModel::class, 'competition_id');
+    }
+
+    public function gameMatches()
     {
         return $this->hasMany(GameMatch::class, 'competition_id');
     }
@@ -72,10 +120,13 @@ class Competition extends Model
     public function getTypeLabelAttribute(): string
     {
         return match($this->type) {
-            'league' => 'League',
-            'cup' => 'Cup',
-            'friendly' => 'Friendly',
-            'international' => 'International',
+            'league' => 'Championnat',
+            'cup' => 'Coupe',
+            'friendly' => 'Match amical',
+            'international' => 'Compétition internationale',
+            'tournament' => 'Tournoi',
+            'playoff' => 'Playoff',
+            'exhibition' => 'Match d\'exhibition',
             default => ucfirst($this->type),
         };
     }
@@ -83,9 +134,11 @@ class Competition extends Model
     public function getFormatLabelAttribute(): string
     {
         return match($this->format) {
-            'round_robin' => 'Round Robin',
-            'knockout' => 'Knockout',
-            'mixed' => 'Mixed',
+            'round_robin' => 'Aller-retour',
+            'knockout' => 'Élimination directe',
+            'mixed' => 'Mixte',
+            'single_round' => 'Match unique',
+            'group_stage' => 'Phase de groupes + élimination',
             default => ucfirst($this->format),
         };
     }

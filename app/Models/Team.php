@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Team extends Model
 {
@@ -13,6 +15,7 @@ class Team extends Model
 
     protected $fillable = [
         'club_id',
+        'association_id',
         'name',
         'type', // first_team, reserve, youth, academy
         'formation',
@@ -30,12 +33,20 @@ class Team extends Model
         'budget_allocation',
         'training_facility',
         'home_ground',
+        'founded_year',
+        'capacity',
+        'colors',
+        'logo_url',
+        'website',
+        'description',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
         'budget_allocation' => 'decimal:2',
+        'founded_year' => 'integer',
+        'capacity' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -46,19 +57,44 @@ class Team extends Model
         return $this->belongsTo(Club::class);
     }
 
+    public function association(): BelongsTo
+    {
+        return $this->belongsTo(Association::class);
+    }
+
     public function lineups(): HasMany
     {
         return $this->hasMany(Lineup::class);
     }
 
-    public function players(): HasMany
+    public function players(): BelongsToMany
     {
-        return $this->hasMany(TeamPlayer::class);
+        return $this->belongsToMany(Player::class, 'team_players')
+            ->withPivot(['joined_date', 'role', 'squad_number', 'status'])
+            ->withTimestamps();
     }
 
-    public function competitions(): HasMany
+    public function competitions(): BelongsToMany
     {
-        return $this->hasMany(TeamCompetition::class);
+        return $this->belongsToMany(Competition::class, 'competition_team')
+            ->withPivot(['joined_at', 'season_id'])
+            ->withTimestamps();
+    }
+
+    public function matches(): HasMany
+    {
+        return $this->hasMany(MatchModel::class, 'home_team_id')
+            ->orWhere('away_team_id', $this->id);
+    }
+
+    public function standings(): HasMany
+    {
+        return $this->hasMany(Standing::class);
+    }
+
+    public function matchRosters()
+    {
+        return $this->hasMany(\App\Models\MatchRoster::class, 'team_id');
     }
 
     // Scopes
@@ -77,6 +113,24 @@ class Team extends Model
         return $query->where('season', $season);
     }
 
+    // Audit Trail Methods
+    public function getAuditTrailIdentifier(): string
+    {
+        return "Team: {$this->name} (ID: {$this->id})";
+    }
+
+    public function getAuditTrailData(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'club_id' => $this->club_id,
+            'association_id' => $this->association_id,
+            'status' => $this->status,
+            'type' => $this->type,
+        ];
+    }
+
     // Methods
     public function getSquadSize(): int
     {
@@ -85,16 +139,13 @@ class Team extends Model
 
     public function getAverageRating(): float
     {
-        $average = $this->players()->join('players', 'team_players.player_id', '=', 'players.id')
-            ->avg('players.overall_rating');
+        $average = $this->players()->avg('players.overall_rating');
         return $average ?? 0.0;
     }
 
     public function getFormationPlayers(string $position): \Illuminate\Database\Eloquent\Collection
     {
-        return $this->players()->whereHas('player', function ($query) use ($position) {
-            $query->where('position', $position);
-        })->get();
+        return $this->players()->where('position', $position)->get();
     }
 
     public function getBestLineup(): array
@@ -105,10 +156,8 @@ class Team extends Model
 
         foreach ($positions as $position => $count) {
             $players = $this->players()
-                ->whereHas('player', function ($query) use ($position) {
-                    $query->where('position', $position);
-                })
-                ->orderBy('players.overall_rating', 'desc')
+                ->where('position', $position)
+                ->orderBy('overall_rating', 'desc')
                 ->limit($count)
                 ->get();
 
@@ -153,29 +202,17 @@ class Team extends Model
 
     public function getTacticalAnalysis(): array
     {
-        $players = $this->players()->with('player')->get();
+        $players = $this->players()->get();
         
         $analysis = [
             'total_players' => $players->count(),
-            'average_age' => $players->avg(function ($teamPlayer) {
-                return $teamPlayer->player->age;
-            }) ?? 0.0,
-            'average_rating' => $players->avg(function ($teamPlayer) {
-                return $teamPlayer->player->overall_rating;
-            }) ?? 0.0,
-            'positions' => $players->groupBy(function ($teamPlayer) {
-                return $teamPlayer->player->position;
-            })->map->count(),
-            'nationalities' => $players->groupBy(function ($teamPlayer) {
-                return $teamPlayer->player->nationality;
-            })->map->count(),
+            'average_age' => $players->avg('age') ?? 0.0,
+            'average_rating' => $players->avg('overall_rating') ?? 0.0,
+            'positions' => $players->groupBy('position')->map->count(),
+            'nationalities' => $players->groupBy('nationality')->map->count(),
             'value_distribution' => [
-                'total_value' => $players->sum(function ($teamPlayer) {
-                    return $teamPlayer->player->value_eur;
-                }) ?? 0.0,
-                'average_value' => $players->avg(function ($teamPlayer) {
-                    return $teamPlayer->player->value_eur;
-                }) ?? 0.0
+                'total_value' => $players->sum('value_eur') ?? 0.0,
+                'average_value' => $players->avg('value_eur') ?? 0.0
             ]
         ];
 
@@ -184,13 +221,13 @@ class Team extends Model
 
     public function getTeamStrength(): array
     {
-        $players = $this->players()->with('player')->get();
+        $players = $this->players()->get();
         
         $strengths = [
-            'attack' => $players->whereIn('player.position', ['ST', 'RW', 'LW', 'CAM'])->avg('player.overall_rating') ?? 0.0,
-            'midfield' => $players->whereIn('player.position', ['CM', 'CDM', 'CAM'])->avg('player.overall_rating') ?? 0.0,
-            'defense' => $players->whereIn('player.position', ['CB', 'RB', 'LB'])->avg('player.overall_rating') ?? 0.0,
-            'goalkeeping' => $players->where('player.position', 'GK')->avg('player.overall_rating') ?? 0.0,
+            'attack' => $players->whereIn('position', ['ST', 'RW', 'LW', 'CAM'])->avg('overall_rating') ?? 0.0,
+            'midfield' => $players->whereIn('position', ['CM', 'CDM', 'CAM'])->avg('overall_rating') ?? 0.0,
+            'defense' => $players->whereIn('position', ['CB', 'RB', 'LB'])->avg('overall_rating') ?? 0.0,
+            'goalkeeping' => $players->where('position', 'GK')->avg('overall_rating') ?? 0.0,
         ];
 
         return $strengths;

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('name')->after('id');
             $table->string('short_name')->nullable()->after('name');
             $table->string('country')->after('short_name');
-            $table->string('confederation')->after('country');
+            $table->string('confederation')->nullable()->after('country');
             $table->integer('fifa_ranking')->nullable()->after('confederation');
             $table->string('association_logo_url')->nullable()->after('fifa_ranking');
             $table->string('nation_flag_url')->nullable()->after('association_logo_url');

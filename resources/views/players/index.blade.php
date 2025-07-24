@@ -33,7 +33,7 @@
                     <span class="hidden sm:inline">New Player</span>
                     <span class="sm:hidden">New</span>
                 </a>
-                <a href="{{ route('players.bulk-import') }}" 
+                <a href="{{ route('players.bulk-import-form') }}" 
                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:from-purple-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -256,10 +256,13 @@
                                         Joueur
                                     </th>
                                     <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        FIFA ID
+                                    </th>
+                                    <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Position
                                     </th>
                                     <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Note
+                                        FIFA Stats
                                     </th>
                                     <th class="hidden md:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Club
@@ -273,6 +276,8 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- dending avant foreach -->
+                                <tr><td colspan="7" style="color:red;font-weight:bold;">dending</td></tr>
                                 @foreach($players as $player)
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
@@ -291,32 +296,87 @@
                                                 <div class="ml-3 lg:ml-4">
                                                     <div class="text-sm font-medium text-gray-900">
                                                         {{ $player->full_name }}
+                                                        @if($player->fifa_connect_id)
+                                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                                </svg>
+                                                                FIFA
+                                                            </span>
+                                                        @endif
                                                     </div>
                                                     <div class="text-xs lg:text-sm text-gray-500">
                                                         {{ $player->nationality }} • {{ $player->age }} ans
+                                                        @if($player->preferred_foot)
+                                                            • {{ $player->preferred_foot }}
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                {{ $player->position }}
-                                            </span>
+                                            @if($player->fifa_connect_id)
+                                                <div class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                                                    {{ $player->fifa_connect_id }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    {{ $player->fifa_version ?? 'FIFA 24' }}
+                                                </div>
+                                            @else
+                                                <span class="text-xs text-gray-400 italic">Non synchronisé</span>
+                                            @endif
                                         </td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $player->overall_rating ?? 'N/A' }}
+                                            <div class="flex flex-col">
+                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 mb-1">
+                                                    {{ $player->position }}
+                                                </span>
+                                                @if($player->work_rate)
+                                                    <span class="text-xs text-gray-500">{{ $player->work_rate }}</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                                            <div class="flex flex-col space-y-1">
+                                                <div class="flex items-center">
+                                                    <span class="text-sm font-bold text-gray-900 mr-2">{{ $player->overall_rating ?? 'N/A' }}</span>
+                                                    @if($player->potential_rating && $player->potential_rating > $player->overall_rating)
+                                                        <span class="text-xs text-green-600 bg-green-100 px-1 rounded">+{{ $player->potential_rating - $player->overall_rating }}</span>
+                                                    @endif
                                                 </div>
-                                                @if($player->potential_rating && $player->potential_rating > $player->overall_rating)
-                                                    <div class="ml-2 text-xs text-green-600">
-                                                        +{{ $player->potential_rating - $player->overall_rating }}
+                                                @if($player->value_eur)
+                                                    <div class="text-xs text-gray-600">
+                                                        €{{ number_format($player->value_eur / 1000000, 1) }}M
+                                                    </div>
+                                                @endif
+                                                @if($player->weak_foot || $player->skill_moves)
+                                                    <div class="flex space-x-1">
+                                                        @if($player->weak_foot)
+                                                            <span class="text-xs bg-orange-100 text-orange-800 px-1 rounded" title="Weak Foot">{{ $player->weak_foot }}★</span>
+                                                        @endif
+                                                        @if($player->skill_moves)
+                                                            <span class="text-xs bg-purple-100 text-purple-800 px-1 rounded" title="Skill Moves">{{ $player->skill_moves }}★</span>
+                                                        @endif
                                                     </div>
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $player->club ? $player->club->name : 'Sans club' }}
+                                        <td class="hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap">
+                                            @if($player->club)
+                                                <div class="flex items-center">
+                                                    @if($player->club->club_logo_url)
+                                                        <img class="h-6 w-6 mr-2 object-contain" src="{{ $player->club->club_logo_url }}" alt="{{ $player->club->name }}">
+                                                    @endif
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900">{{ $player->club->name }}</div>
+                                                        @if($player->club->association)
+                                                            <div class="text-xs text-gray-500">{{ $player->club->association->name }}</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <span class="text-sm text-gray-400 italic">Sans club</span>
+                                            @endif
                                         </td>
                                         <td class="hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             <div class="flex space-x-2">
@@ -332,6 +392,11 @@
                                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
                                                 <a href="{{ route('players.health-records', $player) }}" 
                                                    class="text-green-600 hover:text-green-900">Dossiers</a>
+                                                @if($player->fifa_connect_id)
+                                                    <button onclick="syncPlayer('{{ $player->fifa_connect_id }}')" 
+                                                            class="text-orange-600 hover:text-orange-900">Sync FIFA</button>
+                                                @endif
+                                                <a href="{{ route('player-licenses.request.request', $player) }}" class="text-green-600 hover:text-green-900 font-semibold">Request License</a>
                                                 <form action="{{ route('players.destroy', $player) }}" method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -448,8 +513,8 @@ function searchPlayers() {
     const table = document.getElementById('playersTable');
     table.innerHTML = '<div class="p-8 text-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2 text-gray-600">Recherche en cours...</p></div>';
     
-    // Make AJAX request
-    fetch(`/fifa/search?${params.toString()}`)
+    // Make AJAX request to FIFA search endpoint
+    fetch(`/fifa/players/search?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -457,6 +522,7 @@ function searchPlayers() {
                 document.getElementById('resultsCount').textContent = data.total;
             } else {
                 console.error('Search error:', data.message);
+                table.innerHTML = '<div class="p-8 text-center text-red-600">Erreur lors de la recherche: ' + data.message + '</div>';
             }
         })
         .catch(error => {
@@ -489,8 +555,9 @@ function updatePlayersTable(players) {
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FIFA ID</th>
                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note</th>
+                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FIFA Stats</th>
                         <th class="hidden md:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
                         <th class="hidden lg:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dossiers</th>
                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -502,6 +569,50 @@ function updatePlayersTable(players) {
     players.forEach(player => {
         const initials = (player.first_name?.charAt(0) || '') + (player.last_name?.charAt(0) || '');
         const age = player.date_of_birth ? new Date().getFullYear() - new Date(player.date_of_birth).getFullYear() : 'N/A';
+        const fifaBadge = player.fifa_connect_id ? 
+            `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                FIFA
+            </span>` : '';
+        
+        const fifaIdCell = player.fifa_connect_id ? 
+            `<div class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">${player.fifa_connect_id}</div>
+             <div class="text-xs text-gray-500 mt-1">${player.fifa_version || 'FIFA 24'}</div>` :
+            `<span class="text-xs text-gray-400 italic">Non synchronisé</span>`;
+        
+        const positionCell = `<div class="flex flex-col">
+            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 mb-1">${player.position}</span>
+            ${player.work_rate ? `<span class="text-xs text-gray-500">${player.work_rate}</span>` : ''}
+        </div>`;
+        
+        const statsCell = `<div class="flex flex-col space-y-1">
+            <div class="flex items-center">
+                <span class="text-sm font-bold text-gray-900 mr-2">${player.overall_rating || 'N/A'}</span>
+                ${player.potential_rating && player.potential_rating > player.overall_rating ? 
+                    `<span class="text-xs text-green-600 bg-green-100 px-1 rounded">+${player.potential_rating - player.overall_rating}</span>` : ''}
+            </div>
+            ${player.value_eur ? `<div class="text-xs text-gray-600">€${(player.value_eur / 1000000).toFixed(1)}M</div>` : ''}
+            ${(player.weak_foot || player.skill_moves) ? 
+                `<div class="flex space-x-1">
+                    ${player.weak_foot ? `<span class="text-xs bg-orange-100 text-orange-800 px-1 rounded" title="Weak Foot">${player.weak_foot}★</span>` : ''}
+                    ${player.skill_moves ? `<span class="text-xs bg-purple-100 text-purple-800 px-1 rounded" title="Skill Moves">${player.skill_moves}★</span>` : ''}
+                </div>` : ''}
+        </div>`;
+        
+        const clubCell = player.club ? 
+            `<div class="flex items-center">
+                ${player.club.club_logo_url ? `<img class="h-6 w-6 mr-2 object-contain" src="${player.club.club_logo_url}" alt="${player.club.name}">` : ''}
+                <div>
+                    <div class="text-sm font-medium text-gray-900">${player.club.name}</div>
+                    ${player.club.association ? `<div class="text-xs text-gray-500">${player.club.association.name}</div>` : ''}
+                </div>
+            </div>` :
+            `<span class="text-sm text-gray-400 italic">Sans club</span>`;
+        
+        const syncButton = player.fifa_connect_id ? 
+            `<button onclick="syncPlayer('${player.fifa_connect_id}')" class="text-orange-600 hover:text-orange-900">Sync FIFA</button>` : '';
         
         tableHTML += `
             <tr class="hover:bg-gray-50">
@@ -516,23 +627,15 @@ function updatePlayersTable(players) {
                             }
                         </div>
                         <div class="ml-3 lg:ml-4">
-                            <div class="text-sm font-medium text-gray-900">${player.name}</div>
-                            <div class="text-xs lg:text-sm text-gray-500">${player.nationality} • ${age} ans</div>
+                            <div class="text-sm font-medium text-gray-900">${player.name}${fifaBadge}</div>
+                            <div class="text-xs lg:text-sm text-gray-500">${player.nationality} • ${age} ans${player.preferred_foot ? ` • ${player.preferred_foot}` : ''}</div>
                         </div>
                     </div>
                 </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">${player.position}</span>
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <div class="text-sm font-medium text-gray-900">${player.overall_rating || 'N/A'}</div>
-                        ${player.potential_rating && player.potential_rating > player.overall_rating ? 
-                            `<div class="ml-2 text-xs text-green-600">+${player.potential_rating - player.overall_rating}</div>` : ''
-                        }
-                    </div>
-                </td>
-                <td class="hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${player.club?.name || 'Sans club'}</td>
+                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">${fifaIdCell}</td>
+                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">${positionCell}</td>
+                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">${statsCell}</td>
+                <td class="hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap">${clubCell}</td>
                 <td class="hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div class="flex space-x-2">
                         <span class="text-blue-600">0 dossiers</span>
@@ -544,6 +647,7 @@ function updatePlayersTable(players) {
                         <a href="/players/${player.id}" class="text-blue-600 hover:text-blue-900">Voir</a>
                         <a href="/players/${player.id}/edit" class="text-indigo-600 hover:text-indigo-900">Modifier</a>
                         <a href="/players/${player.id}/health-records" class="text-green-600 hover:text-green-900">Dossiers</a>
+                        ${syncButton}
                     </div>
                 </td>
             </tr>
@@ -559,6 +663,40 @@ function updatePlayersTable(players) {
     table.innerHTML = tableHTML;
 }
 
+function syncPlayer(fifaId) {
+    const button = event.target;
+    const originalText = button.textContent;
+    
+    button.textContent = '⏳ Syncing...';
+    button.disabled = true;
+    
+    fetch(`/fifa/sync-player/${fifaId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(`Joueur ${data.action} avec succès`, 'success');
+            // Reload the page to show updated data
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            showNotification('Erreur lors de la synchronisation: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Sync failed:', error);
+        showNotification('Erreur lors de la synchronisation', 'error');
+    })
+    .finally(() => {
+        button.textContent = originalText;
+        button.disabled = false;
+    });
+}
+
 function syncFifaPlayers() {
     const button = event.target;
     const originalText = button.innerHTML;
@@ -566,7 +704,7 @@ function syncFifaPlayers() {
     button.innerHTML = '<span class="mr-2">⏳</span>Synchronisation...';
     button.disabled = true;
     
-    fetch('/fifa/sync', {
+    fetch('/fifa/sync-players', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -577,7 +715,7 @@ function syncFifaPlayers() {
     .then(data => {
         if (data.success) {
             // Show success message
-            const message = `Synchronisation réussie: ${data.new_players} nouveaux joueurs, ${data.updated_players} mis à jour`;
+            const message = `Synchronisation réussie: ${data.results.new_players} nouveaux joueurs, ${data.results.updated_players} mis à jour`;
             showNotification(message, 'success');
             
             // Reload the page to show updated data
@@ -651,17 +789,43 @@ function checkFifaStatus() {
         });
 }
 
-function showNotification(message, type) {
+function showNotification(message, type = 'info') {
+    // Create notification element
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-    }`;
-    notification.textContent = message;
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+    
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+    notification.className += ` ${bgColor} text-white`;
+    
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium">${message}</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
     
     document.body.appendChild(notification);
     
+    // Animate in
     setTimeout(() => {
-        notification.remove();
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
     }, 5000);
 }
 

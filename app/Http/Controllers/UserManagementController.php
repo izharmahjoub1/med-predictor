@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Club;
 use App\Models\Association;
+use App\Models\Role;
 use App\Services\FifaConnectService;
+use App\Services\AuditTrailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserManagementController extends Controller
 {
+    use AuthorizesRequests;
+    
     protected $fifaConnectService;
 
     public function __construct(FifaConnectService $fifaConnectService)
@@ -114,7 +119,7 @@ class UserManagementController extends Controller
      */
     public function create()
     {
-        $roles = $this->getAvailableRoles();
+        $roles = Role::active()->orderBy('display_name')->get();
         $clubs = Club::orderBy('name')->get();
         $associations = Association::orderBy('name')->get();
         
@@ -145,8 +150,10 @@ class UserManagementController extends Controller
             // Generate FIFA Connect ID
             $fifaConnectId = $this->generateFifaConnectId($request->role);
 
-            // Set default permissions based on role
-            $permissions = $this->getDefaultPermissions($request->role);
+            // Use custom permissions if provided, otherwise use default permissions
+            $permissions = $request->has('permissions') && is_array($request->permissions) 
+                ? $request->permissions 
+                : $this->getDefaultPermissions($request->role);
 
             $user = User::create([
                 'name' => $request->name,
@@ -166,12 +173,8 @@ class UserManagementController extends Controller
                 $this->syncUserWithFifa($user);
             }
 
-            Log::info('User created', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role' => $user->role,
-                'created_by' => auth()->id()
-            ]);
+            // Log user creation
+            AuditTrailService::logModelChange('create', $user, null, $user->toArray(), "User {$user->name} created");
 
             return redirect()->route('user-management.index')
                 ->with('success', 'User created successfully with FIFA Connect ID: ' . $fifaConnectId);
@@ -264,12 +267,13 @@ class UserManagementController extends Controller
                 }
             }
 
-            Log::info('User updated', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role' => $user->role,
-                'updated_by' => auth()->id()
-            ]);
+            // Log user update
+            AuditTrailService::logModelChange('update', $user, $user->getOriginal(), $user->toArray(), "User {$user->name} updated");
+            
+            // Log role change if it changed
+            if ($oldRole !== $request->role) {
+                AuditTrailService::logRoleAssignment($user, $oldRole, $request->role);
+            }
 
             return redirect()->route('user-management.index')
                 ->with('success', 'User updated successfully');
@@ -294,13 +298,10 @@ class UserManagementController extends Controller
                 return back()->with('error', 'Cannot delete this user.');
             }
 
-            $user->delete();
+            // Log user deletion before deleting
+            AuditTrailService::logModelChange('delete', $user, $user->toArray(), null, "User {$user->name} deleted");
 
-            Log::info('User deleted', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'deleted_by' => auth()->id()
-            ]);
+            $user->delete();
 
             return redirect()->route('user-management.index')
                 ->with('success', 'User deleted successfully');
@@ -351,11 +352,8 @@ class UserManagementController extends Controller
                 }
             }
 
-            Log::info('Bulk user action performed', [
-                'action' => $action,
-                'user_count' => count($users),
-                'performed_by' => auth()->id()
-            ]);
+            // Log bulk operation
+            AuditTrailService::logBulkOperation(auth()->user(), $action, 'users', count($users), true);
 
             return back()->with('success', ucfirst($action) . ' completed for ' . count($users) . ' users');
 
@@ -388,6 +386,9 @@ class UserManagementController extends Controller
                     'Login Count' => $user->login_count,
                 ];
             });
+
+        // Log data export
+        AuditTrailService::logDataExport(auth()->user(), 'users', $users->count());
 
         $filename = 'users_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
         
@@ -431,6 +432,16 @@ class UserManagementController extends Controller
                 'association_admin' => 'Association Administrator',
                 'association_registrar' => 'Association Registrar',
                 'association_medical' => 'Association Medical Director',
+                'referee' => 'Referee',
+                'assistant_referee' => 'Assistant Referee',
+                'fourth_official' => 'Fourth Official',
+                'var_official' => 'VAR Official',
+                'match_commissioner' => 'Match Commissioner',
+                'match_official' => 'Match Official',
+                'team_doctor' => 'Team Doctor',
+                'physiotherapist' => 'Physiotherapist',
+                'sports_scientist' => 'Sports Scientist',
+                'player' => 'Player',
             ];
         }
 
@@ -442,6 +453,15 @@ class UserManagementController extends Controller
                 'club_admin' => 'Club Administrator',
                 'club_manager' => 'Club Manager',
                 'club_medical' => 'Club Medical Staff',
+                'referee' => 'Referee',
+                'assistant_referee' => 'Assistant Referee',
+                'fourth_official' => 'Fourth Official',
+                'var_official' => 'VAR Official',
+                'match_commissioner' => 'Match Commissioner',
+                'match_official' => 'Match Official',
+                'team_doctor' => 'Team Doctor',
+                'physiotherapist' => 'Physiotherapist',
+                'sports_scientist' => 'Sports Scientist',
             ];
         }
 
@@ -459,33 +479,109 @@ class UserManagementController extends Controller
                 'competition_management_access',
                 'healthcare_access',
                 'system_administration',
-                'user_management'
+                'user_management',
+                'back_office_access',
+                'fifa_connect_access',
+                'fifa_data_sync',
+                'account_request_management',
+                'audit_trail_access',
+                'role_management',
+                'system_configuration',
+                'club_management',
+                'team_management',
+                'association_management',
+                'license_management',
+                'match_sheet_management',
+                'referee_access',
+                'player_dashboard_access',
+                'health_record_management',
+                'league_championship_access',
+                'registration_requests_management_access'
             ],
             'club_admin' => [
                 'player_registration_access',
                 'competition_management_access',
-                'healthcare_access'
+                'healthcare_access',
+                'fifa_connect_access',
+                'club_management',
+                'team_management'
             ],
             'club_manager' => [
                 'player_registration_access',
                 'competition_management_access',
-                'healthcare_access'
+                'healthcare_access',
+                'fifa_connect_access',
+                'team_management'
             ],
             'club_medical' => [
-                'healthcare_access'
+                'healthcare_access',
+                'health_record_management',
+                'fifa_connect_access'
             ],
             'association_admin' => [
                 'player_registration_access',
                 'competition_management_access',
                 'healthcare_access',
-                'user_management'
+                'user_management',
+                'fifa_connect_access',
+                'fifa_data_sync',
+                'account_request_management',
+                'association_management',
+                'license_management'
             ],
             'association_registrar' => [
                 'player_registration_access',
-                'competition_management_access'
+                'competition_management_access',
+                'fifa_connect_access',
+                'license_management'
             ],
             'association_medical' => [
-                'healthcare_access'
+                'healthcare_access',
+                'health_record_management',
+                'fifa_connect_access'
+            ],
+            'referee' => [
+                'match_sheet_management',
+                'referee_access',
+                'fifa_connect_access'
+            ],
+            'assistant_referee' => [
+                'match_sheet_management',
+                'fifa_connect_access'
+            ],
+            'fourth_official' => [
+                'match_sheet_management',
+                'fifa_connect_access'
+            ],
+            'var_official' => [
+                'match_sheet_management',
+                'fifa_connect_access'
+            ],
+            'match_commissioner' => [
+                'match_sheet_management',
+                'competition_management_access',
+                'fifa_connect_access'
+            ],
+            'match_official' => [
+                'match_sheet_management',
+                'fifa_connect_access'
+            ],
+            'team_doctor' => [
+                'healthcare_access',
+                'health_record_management',
+                'fifa_connect_access'
+            ],
+            'physiotherapist' => [
+                'healthcare_access',
+                'fifa_connect_access'
+            ],
+            'sports_scientist' => [
+                'healthcare_access',
+                'fifa_connect_access'
+            ],
+            'player' => [
+                'player_dashboard_access',
+                'fifa_connect_access'
             ],
             default => []
         };
@@ -504,6 +600,16 @@ class UserManagementController extends Controller
             'association_admin' => 'FIFA_ASSOC_ADMIN',
             'association_registrar' => 'FIFA_ASSOC_REG',
             'association_medical' => 'FIFA_ASSOC_MED',
+            'referee' => 'FIFA_REF',
+            'assistant_referee' => 'FIFA_ASST_REF',
+            'fourth_official' => 'FIFA_4TH_OFF',
+            'var_official' => 'FIFA_VAR_OFF',
+            'match_commissioner' => 'FIFA_MATCH_COMM',
+            'match_official' => 'FIFA_MATCH_OFF',
+            'team_doctor' => 'FIFA_TEAM_DOC',
+            'physiotherapist' => 'FIFA_PHYSIO',
+            'sports_scientist' => 'FIFA_SPORTS_SCI',
+            'player' => 'FIFA_PLAYER',
             default => 'FIFA_USER'
         };
 
@@ -525,10 +631,13 @@ class UserManagementController extends Controller
         }
 
         if ($user->isAssociationAdmin()) {
-            return User::where('entity_type', 'association')
-                      ->where('entity_id', $user->entity_id)
-                      ->orWhere('entity_type', 'club')
+            return User::where(function($query) use ($user) {
+                $query->where('association_id', $user->association_id)
+                      ->orWhereHas('club', function($clubQuery) use ($user) {
+                          $clubQuery->where('association_id', $user->association_id);
+                      })
                       ->orWhere('role', 'system_admin');
+            });
         }
 
         return User::query();
@@ -557,7 +666,16 @@ class UserManagementController extends Controller
             'club_medical',
             'association_admin',
             'association_registrar',
-            'association_medical'
+            'association_medical',
+            'referee',
+            'assistant_referee',
+            'fourth_official',
+            'var_official',
+            'match_commissioner',
+            'match_official',
+            'team_doctor',
+            'physiotherapist',
+            'sports_scientist'
         ]);
     }
 

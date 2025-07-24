@@ -28,6 +28,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Check if there's a specific intended URL for this user type
+        $intendedUrl = $request->session()->get('intended_url');
+        if ($intendedUrl) {
+            $request->session()->forget('intended_url');
+            return redirect($intendedUrl);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

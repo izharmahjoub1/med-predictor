@@ -73,7 +73,7 @@ class Lineup extends Model
 
     public function match(): BelongsTo
     {
-        return $this->belongsTo(GameMatch::class);
+        return $this->belongsTo(MatchModel::class);
     }
 
     public function captain(): BelongsTo

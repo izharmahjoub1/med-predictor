@@ -42,6 +42,8 @@ class PlayerLicense extends Model
         'approved_at',
         'rejection_reason',
         'notes',
+        'requested_by',
+        'document_path',
         'created_at',
         'updated_at'
     ];
@@ -73,6 +75,21 @@ class PlayerLicense extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function requestedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function approvedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function fraudAnalysis()
+    {
+        return $this->hasOne(\App\Models\PlayerFraudAnalysis::class, 'player_license_id');
     }
 
     // Scopes
@@ -212,11 +229,10 @@ class PlayerLicense extends Model
     public function approve($approvedBy): bool
     {
         $errors = $this->validateLicense();
-        
         if (!empty($errors)) {
             return false;
         }
-
+        $oldStatus = $this->status;
         $this->update([
             'status' => 'active',
             'approval_status' => 'approved',
@@ -225,12 +241,17 @@ class PlayerLicense extends Model
             'issue_date' => now(),
             'license_number' => $this->generateLicenseNumber()
         ]);
-
+        // Notify player and club
+        $player = $this->player;
+        $club = $this->club;
+        if ($player) { $player->notify(new \App\Notifications\LicenseStatusChanged($this, $oldStatus, 'active', $club ? $club->user : null)); }
+        if ($club && $club->user) { $club->user->notify(new \App\Notifications\LicenseStatusChanged($this, $oldStatus, 'active', $club->user)); }
         return true;
     }
 
     public function reject($reason, $rejectedBy): bool
     {
+        $oldStatus = $this->status;
         $this->update([
             'status' => 'revoked',
             'approval_status' => 'rejected',
@@ -238,7 +259,29 @@ class PlayerLicense extends Model
             'approved_by' => $rejectedBy,
             'approved_at' => now()
         ]);
+        // Notify player and club
+        $player = $this->player;
+        $club = $this->club;
+        if ($player) { $player->notify(new \App\Notifications\LicenseStatusChanged($this, $oldStatus, 'revoked', $club ? $club->user : null, $reason)); }
+        if ($club && $club->user) { $club->user->notify(new \App\Notifications\LicenseStatusChanged($this, $oldStatus, 'revoked', $club->user, $reason)); }
+        return true;
+    }
 
+    public function requestExplanation($explanationRequest, $requestedBy): bool
+    {
+        $oldStatus = $this->status;
+        $this->update([
+            'status' => 'justification_requested',
+            'approval_status' => 'pending',
+            'rejection_reason' => $explanationRequest,
+            'approved_by' => $requestedBy,
+            'approved_at' => now()
+        ]);
+        // Notify club about the explanation request
+        $club = $this->club;
+        if ($club && $club->user) { 
+            $club->user->notify(new \App\Notifications\LicenseStatusChanged($this, $oldStatus, 'justification_requested', $club->user, $explanationRequest)); 
+        }
         return true;
     }
 
@@ -276,5 +319,35 @@ class PlayerLicense extends Model
         ]);
 
         return true;
+    }
+
+    // Audit Trail Methods
+    public function getAuditIdentifier(): string
+    {
+        return "PlayerLicense:{$this->id}";
+    }
+
+    public function getAuditDisplayName(): string
+    {
+        $playerName = $this->player ? $this->player->name : 'Unknown Player';
+        return "License #{$this->license_number} - {$playerName}";
+    }
+
+    public function getAuditType(): string
+    {
+        return 'player_license';
+    }
+
+    public function getAuditData(): array
+    {
+        return [
+            'id' => $this->id,
+            'player_id' => $this->player_id,
+            'club_id' => $this->club_id,
+            'license_number' => $this->license_number,
+            'license_type' => $this->license_type,
+            'status' => $this->status,
+            'approval_status' => $this->approval_status,
+        ];
     }
 } 

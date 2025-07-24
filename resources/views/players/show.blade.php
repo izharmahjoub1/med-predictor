@@ -210,10 +210,9 @@
                                 </div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun dossier médical</h3>
                                 <p class="text-gray-500 mb-4">Ce joueur n'a pas encore de dossier médical enregistré.</p>
-                                <a href="{{ route('legacy.health-records.create', ['player_id' => $player->id]) }}" 
-                                   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                    Créer un dossier
-                                </a>
+                                <button class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg cursor-not-allowed" disabled>
+                                    Créer un dossier (fonctionnalité à venir)
+                                </button>
                             </div>
                         @endif
                     </div>
@@ -261,13 +260,13 @@
                         <h2 class="text-xl font-semibold text-gray-800">Actions Rapides</h2>
                     </div>
                     <div class="p-6 space-y-4">
-                        <a href="{{ route('legacy.health-records.create', ['player_id' => $player->id]) }}" 
-                           class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                        <button onclick="loadFifaStats()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             Nouveau dossier médical
-                        </a>
+                        </button>
                         <a href="{{ route('medical-predictions.create', ['player_id' => $player->id]) }}" 
                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

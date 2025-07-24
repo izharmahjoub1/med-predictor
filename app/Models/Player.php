@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 
 class Player extends Model
 {
+    use HasFactory, Notifiable;
+
     protected $fillable = [
         'fifa_connect_id',
         'name',
@@ -29,6 +34,7 @@ class Player extends Model
         'real_face',
         'release_clause_eur',
         'player_face_url',
+        'player_picture',
         'club_logo_url',
         'nation_flag_url',
         'overall_rating',
@@ -38,7 +44,34 @@ class Player extends Model
         'age',
         'contract_valid_until',
         'fifa_version',
-        'last_updated'
+        'last_updated',
+        // Player Dashboard fields
+        'ghs_physical_score',
+        'ghs_mental_score',
+        'ghs_civic_score',
+        'ghs_sleep_score',
+        'ghs_overall_score',
+        'ghs_color_code',
+        'ghs_ai_suggestions',
+        'ghs_last_updated',
+        'contribution_score',
+        'data_value_estimate',
+        'matches_contributed',
+        'training_sessions_logged',
+        'health_records_contributed',
+        'injury_risk_score',
+        'injury_risk_level',
+        'injury_risk_reason',
+        'weekly_health_tips',
+        'injury_risk_last_assessed',
+        'match_availability',
+        'last_availability_update',
+        'last_data_export',
+        'data_export_count',
+        // FIFA Sync fields
+        'fifa_sync_status',
+        'fifa_sync_date',
+        'fifa_last_error'
     ];
 
     protected $casts = [
@@ -56,7 +89,25 @@ class Player extends Model
         'value_eur' => 'float',
         'wage_eur' => 'float',
         'age' => 'integer',
-        'real_face' => 'boolean'
+        'real_face' => 'boolean',
+        // Player Dashboard casts
+        'ghs_physical_score' => 'decimal:2',
+        'ghs_mental_score' => 'decimal:2',
+        'ghs_civic_score' => 'decimal:2',
+        'ghs_sleep_score' => 'decimal:2',
+        'ghs_overall_score' => 'decimal:2',
+        'ghs_ai_suggestions' => 'array',
+        'ghs_last_updated' => 'datetime',
+        'contribution_score' => 'decimal:2',
+        'data_value_estimate' => 'decimal:2',
+        'injury_risk_score' => 'decimal:4',
+        'weekly_health_tips' => 'array',
+        'injury_risk_last_assessed' => 'datetime',
+        'match_availability' => 'boolean',
+        'last_availability_update' => 'datetime',
+        'last_data_export' => 'datetime',
+        // FIFA Sync casts
+        'fifa_sync_date' => 'datetime'
     ];
 
     public function club(): BelongsTo
@@ -74,6 +125,12 @@ class Player extends Model
         return $this->belongsTo(FifaConnectId::class);
     }
 
+    public function fifaSyncLogs(): HasMany
+    {
+        return $this->hasMany(FifaSyncLog::class, 'entity_id')
+                    ->where('entity_type', 'player');
+    }
+
     public function healthRecords(): HasMany
     {
         return $this->hasMany(HealthRecord::class);
@@ -84,9 +141,73 @@ class Player extends Model
         return $this->hasMany(MedicalPrediction::class);
     }
 
+    public function performances(): HasMany
+    {
+        return $this->hasMany(PlayerPerformance::class);
+    }
+
+    public function passport(): HasOne
+    {
+        return $this->hasOne(PlayerPassport::class);
+    }
+
+    public function performanceRecommendations(): HasMany
+    {
+        return $this->hasMany(PerformanceRecommendation::class);
+    }
+
     public function licenses(): HasMany
     {
         return $this->hasMany(\App\Models\PlayerLicense::class);
+    }
+
+    public function playerLicenses(): HasMany
+    {
+        return $this->hasMany(\App\Models\PlayerLicense::class, 'player_id');
+    }
+
+    public function teamPlayers(): HasMany
+    {
+        return $this->hasMany(TeamPlayer::class);
+    }
+
+    public function seasonStats(): HasMany
+    {
+        return $this->hasMany(PlayerSeasonStat::class);
+    }
+
+    public function matchEvents(): HasMany
+    {
+        return $this->hasMany(MatchEvent::class);
+    }
+
+    public function matchRosterPlayers(): HasMany
+    {
+        return $this->hasMany(MatchRosterPlayer::class);
+    }
+
+    public function matchRosters()
+    {
+        return $this->hasMany(\App\Models\MatchRoster::class, 'player_id');
+    }
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_players')
+                    ->withPivot(['role', 'squad_number', 'joined_date', 'contract_end_date', 'position_preference', 'notes', 'status'])
+                    ->withTimestamps();
+    }
+
+    public function competitions()
+    {
+        return $this->belongsToMany(Competition::class, 'player_season_stats')
+                    ->withPivot(['matches_played', 'minutes_played', 'goals', 'assists', 'yellow_cards', 'red_cards', 'clean_sheets', 'saves', 'goals_conceded'])
+                    ->withTimestamps();
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(\App\Models\Team::class, 'team_id');
     }
 
     public function getFullNameAttribute(): string
@@ -115,5 +236,288 @@ class Player extends Model
     public function getAgeAttribute(): int
     {
         return $this->date_of_birth ? $this->date_of_birth->age : 0;
+    }
+
+    public function getCurrentTeamAttribute()
+    {
+        return $this->teamPlayers()
+                    ->where('status', 'active')
+                    ->with('team.club')
+                    ->first();
+    }
+
+    public function getCurrentSquadNumberAttribute()
+    {
+        $currentTeam = $this->currentTeam;
+        return $currentTeam ? $currentTeam->squad_number : null;
+    }
+
+    public function getCurrentRoleAttribute()
+    {
+        $currentTeam = $this->currentTeam;
+        return $currentTeam ? $currentTeam->role : null;
+    }
+
+    public function getTotalMatchesPlayedAttribute()
+    {
+        return $this->seasonStats()->sum('matches_played');
+    }
+
+    public function getTotalGoalsAttribute()
+    {
+        return $this->seasonStats()->sum('goals');
+    }
+
+    public function getTotalAssistsAttribute()
+    {
+        return $this->seasonStats()->sum('assists');
+    }
+
+    public function getTotalYellowCardsAttribute()
+    {
+        return $this->seasonStats()->sum('yellow_cards');
+    }
+
+    public function getTotalRedCardsAttribute()
+    {
+        return $this->seasonStats()->sum('red_cards');
+    }
+
+    public function getTotalCleanSheetsAttribute()
+    {
+        return $this->seasonStats()->sum('clean_sheets');
+    }
+
+    public function getTotalMinutesPlayedAttribute()
+    {
+        return $this->seasonStats()->sum('minutes_played');
+    }
+
+    public function getGoalsPerMatchAttribute()
+    {
+        $matches = $this->total_matches_played;
+        return $matches > 0 ? round($this->total_goals / $matches, 2) : 0;
+    }
+
+    public function getAssistsPerMatchAttribute()
+    {
+        $matches = $this->total_matches_played;
+        return $matches > 0 ? round($this->total_assists / $matches, 2) : 0;
+    }
+
+    public function getMinutesPerMatchAttribute()
+    {
+        $matches = $this->total_matches_played;
+        return $matches > 0 ? round($this->total_minutes_played / $matches, 2) : 0;
+    }
+
+    public function getCurrentSeasonStatsAttribute()
+    {
+        return $this->seasonStats()
+                    ->with('competition')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+    }
+
+    public function getRecentMatchEventsAttribute()
+    {
+        return $this->matchEvents()
+                    ->with(['match', 'team'])
+                    ->orderBy('created_at', 'desc')
+                    ->limit(10)
+                    ->get();
+    }
+
+    public function getPlayerPictureUrlAttribute()
+    {
+        // First try uploaded player picture
+        if ($this->player_picture) {
+            // Check if it's an external URL (like DiceBear)
+            if (filter_var($this->player_picture, FILTER_VALIDATE_URL)) {
+                return $this->player_picture;
+            }
+            // Otherwise, it's a stored file
+            return asset('storage/' . $this->player_picture);
+        }
+        
+        // Then try FIFA face URL
+        if ($this->player_face_url) {
+            return $this->player_face_url;
+        }
+        
+        // Return null if no picture available
+        return null;
+    }
+
+    public function hasPictureAttribute()
+    {
+        return !empty($this->player_picture) || !empty($this->player_face_url);
+    }
+
+    // Player Dashboard Relationships
+    public function documents(): HasMany
+    {
+        return $this->hasMany(PlayerDocument::class);
+    }
+
+    public function fitnessLogs(): HasMany
+    {
+        return $this->hasMany(PlayerFitnessLog::class);
+    }
+
+    // Player Dashboard Methods
+    public function calculateGHS(): void
+    {
+        $scores = [
+            $this->ghs_physical_score ?? 0,
+            $this->ghs_mental_score ?? 0,
+            $this->ghs_civic_score ?? 0,
+            $this->ghs_sleep_score ?? 0
+        ];
+
+        $validScores = array_filter($scores, function($score) { return $score > 0; });
+        
+        if (empty($validScores)) {
+            $this->ghs_overall_score = null;
+            $this->ghs_color_code = null;
+            return;
+        }
+
+        $this->ghs_overall_score = round(array_sum($validScores) / count($validScores), 2);
+        
+        // Determine color code
+        if ($this->ghs_overall_score >= 80) {
+            $this->ghs_color_code = 'blue';
+        } elseif ($this->ghs_overall_score >= 60) {
+            $this->ghs_color_code = 'green';
+        } else {
+            $this->ghs_color_code = 'red';
+        }
+
+        $this->ghs_last_updated = now();
+    }
+
+    public function getGHSColorClass(): string
+    {
+        return match($this->ghs_color_code) {
+            'blue' => 'text-blue-600 bg-blue-50',
+            'green' => 'text-green-600 bg-green-50',
+            'red' => 'text-red-600 bg-red-50',
+            default => 'text-gray-600 bg-gray-50'
+        };
+    }
+
+    public function getInjuryRiskColorClass(): string
+    {
+        return match($this->injury_risk_level) {
+            'low' => 'text-green-600 bg-green-50',
+            'medium' => 'text-yellow-600 bg-yellow-50',
+            'high' => 'text-red-600 bg-red-50',
+            default => 'text-gray-600 bg-gray-50'
+        };
+    }
+
+    public function updateContributionScore(): void
+    {
+        $totalContributions = $this->matches_contributed + $this->training_sessions_logged + $this->health_records_contributed;
+        
+        if ($totalContributions > 0) {
+            $this->contribution_score = min(100, round(($totalContributions / 100) * 100, 2));
+        } else {
+            $this->contribution_score = 0;
+        }
+    }
+
+    public function calculateDataValue(): void
+    {
+        $baseValue = 100; // Base value per data point
+        $totalDataPoints = $this->matches_contributed + $this->training_sessions_logged + $this->health_records_contributed;
+        
+        // Add premium for active players
+        $activityMultiplier = $this->match_availability ? 1.5 : 1.0;
+        
+        // Add premium for high-performing players
+        $performanceMultiplier = 1.0;
+        if ($this->overall_rating && $this->overall_rating > 80) {
+            $performanceMultiplier = 1.3;
+        } elseif ($this->overall_rating && $this->overall_rating > 70) {
+            $performanceMultiplier = 1.1;
+        }
+        
+        $this->data_value_estimate = round($totalDataPoints * $baseValue * $activityMultiplier * $performanceMultiplier, 2);
+    }
+
+    public function getCurrentLicense()
+    {
+        return $this->playerLicenses()
+                    ->where('status', 'active')
+                    ->where('expiry_date', '>', now())
+                    ->latest('issued_date')
+                    ->first();
+    }
+
+    public function getUpcomingMatches($limit = 5)
+    {
+        return $this->matchRosters()
+                    ->with(['match.homeTeam', 'match.awayTeam', 'match.competition'])
+                    ->whereHas('match', function($query) {
+                        $query->where('match_date', '>', now());
+                    })
+                    ->orderBy('match_date')
+                    ->limit($limit)
+                    ->get();
+    }
+
+    public function getRecentPerformanceStats($days = 30)
+    {
+        $startDate = now()->subDays($days);
+        
+        return $this->matchEvents()
+                    ->where('created_at', '>=', $startDate)
+                    ->selectRaw('
+                        COUNT(*) as total_events,
+                        SUM(CASE WHEN event_type = "goal" THEN 1 ELSE 0 END) as goals,
+                        SUM(CASE WHEN event_type = "assist" THEN 1 ELSE 0 END) as assists,
+                        SUM(CASE WHEN event_type = "yellow_card" THEN 1 ELSE 0 END) as yellow_cards,
+                        SUM(CASE WHEN event_type = "red_card" THEN 1 ELSE 0 END) as red_cards
+                    ')
+                    ->first();
+    }
+
+    public function generateWeeklyHealthTips(): array
+    {
+        $tips = [];
+        
+        // Generate tips based on GHS scores
+        if ($this->ghs_physical_score && $this->ghs_physical_score < 70) {
+            $tips[] = 'Consider increasing your physical training intensity gradually';
+        }
+        
+        if ($this->ghs_sleep_score && $this->ghs_sleep_score < 70) {
+            $tips[] = 'Focus on improving sleep quality - aim for 7-9 hours per night';
+        }
+        
+        if ($this->ghs_mental_score && $this->ghs_mental_score < 70) {
+            $tips[] = 'Practice stress management techniques and mental wellness exercises';
+        }
+        
+        // Generate tips based on injury risk
+        if ($this->injury_risk_level === 'high') {
+            $tips[] = 'High injury risk detected - consult with medical staff for preventive measures';
+        } elseif ($this->injury_risk_level === 'medium') {
+            $tips[] = 'Moderate injury risk - focus on proper warm-up and recovery protocols';
+        }
+        
+        // Add general tips if no specific ones
+        if (empty($tips)) {
+            $tips = [
+                'Maintain consistent training schedule',
+                'Stay hydrated throughout the day',
+                'Follow proper nutrition guidelines',
+                'Get adequate rest between sessions'
+            ];
+        }
+        
+        return array_slice($tips, 0, 3); // Return max 3 tips
     }
 }

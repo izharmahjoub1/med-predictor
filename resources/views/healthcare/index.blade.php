@@ -1,22 +1,27 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Healthcare Management') }}
-            </h2>
-            <div class="flex space-x-2">
-                <x-primary-button onclick="window.location.href='{{ route('healthcare.predictions') }}'">
-                    {{ __('Predictions') }}
-                </x-primary-button>
-                <x-primary-button onclick="window.location.href='{{ route('healthcare.export') }}'">
-                    {{ __('Export') }}
-                </x-primary-button>
-                <x-primary-button onclick="window.location.href='{{ route('healthcare.records.create') }}'">
-                    {{ __('Add Record') }}
-                </x-primary-button>
+@extends('layouts.app')
+
+@section('content')
+<div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="p-6 bg-white border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-900">{{ __('healthcare.healthcare_management') }}</h2>
+                    <div class="flex space-x-2">
+                        <a href="{{ route('healthcare.predictions') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            {{ __('healthcare.predictions') }}
+                        </a>
+                        <a href="{{ route('healthcare.export') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            {{ __('healthcare.export') }}
+                        </a>
+                        <a href="{{ route('healthcare.records.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            {{ __('healthcare.add_record') }}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -31,7 +36,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">{{ __('Total Records') }}</p>
+                                <p class="text-sm font-medium text-gray-500">{{ __('healthcare.total_records') }}</p>
                                 <p class="text-2xl font-semibold text-gray-900">{{ $stats['total'] }}</p>
                             </div>
                         </div>
@@ -47,7 +52,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">{{ __('Healthy') }}</p>
+                                <p class="text-sm font-medium text-gray-500">{{ __('healthcare.active') }}</p>
                                 <p class="text-2xl font-semibold text-gray-900">{{ $stats['healthy'] }}</p>
                             </div>
                         </div>
@@ -63,7 +68,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">{{ __('Injured') }}</p>
+                                <p class="text-sm font-medium text-gray-500">{{ __('healthcare.archived') }}</p>
                                 <p class="text-2xl font-semibold text-gray-900">{{ $stats['injured'] }}</p>
                             </div>
                         </div>
@@ -79,7 +84,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-500">{{ __('Recovering') }}</p>
+                                <p class="text-sm font-medium text-gray-500">{{ __('healthcare.pending') }}</p>
                                 <p class="text-2xl font-semibold text-gray-900">{{ $stats['recovering'] }}</p>
                             </div>
                         </div>
@@ -91,11 +96,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">{{ __('Health Records') }}</h3>
+                        <h3 class="text-lg font-medium text-gray-900">{{ __('healthcare.health_records') }}</h3>
                         <form action="{{ route('healthcare.bulk-sync') }}" method="POST" class="inline">
                             @csrf
                             <x-secondary-button type="submit">
-                                {{ __('Sync All with FIFA') }}
+                                {{ __('healthcare.sync_all_with_fifa') }}
                             </x-secondary-button>
                         </form>
                     </div>
@@ -106,22 +111,22 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Player') }}
+                                            {{ __('healthcare.player') }}
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('FIFA ID') }}
+                                            {{ __('healthcare.fifa_id') }}
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Record Type') }}
+                                            {{ __('healthcare.record_type') }}
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Status') }}
+                                            {{ __('healthcare.status') }}
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Severity') }}
+                                            {{ __('healthcare.severity') }}
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Actions') }}
+                                            {{ __('healthcare.actions') }}
                                         </th>
                                     </tr>
                                 </thead>
@@ -142,24 +147,24 @@
                                                             {{ $record->player?->first_name }} {{ $record->player?->last_name }}
                                                         </div>
                                                         <div class="text-sm text-gray-500">
-                                                            {{ $record->player?->club?->name ?? 'N/A' }}
+                                                            {{ $record->player?->club?->name ?? __('healthcare.na') }}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ $record->fifaConnectId?->fifa_id ?? 'N/A' }}
+                                                {{ $record->player?->fifaConnectId?->fifa_id ?? __('healthcare.na') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {{ ucfirst(str_replace('_', ' ', $record->record_type)) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                                    @if($record->status === 'healthy') bg-green-100 text-green-800
-                                                    @elseif($record->status === 'injured') bg-red-100 text-red-800
-                                                    @elseif($record->status === 'recovering') bg-yellow-100 text-yellow-800
+                                                    @if($record->status === 'active') bg-green-100 text-green-800
+                                                    @elseif($record->status === 'archived') bg-red-100 text-red-800
+                                                    @elseif($record->status === 'pending') bg-yellow-100 text-yellow-800
                                                     @else bg-gray-100 text-gray-800 @endif">
-                                                    {{ ucfirst($record->status) }}
+                                                    {{ __('healthcare.status_' . $record->status) }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -169,30 +174,30 @@
                                                         @elseif($record->severity === 'medium') bg-yellow-100 text-yellow-800
                                                         @elseif($record->severity === 'high') bg-orange-100 text-orange-800
                                                         @else bg-red-100 text-red-800 @endif">
-                                                        {{ ucfirst($record->severity) }}
+                                                        {{ __('healthcare.severity_' . $record->severity) }}
                                                     </span>
                                                 @else
-                                                    <span class="text-gray-400">N/A</span>
+                                                    <span class="text-gray-400">{{ __('healthcare.na') }}</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
                                                     <a href="{{ route('healthcare.records.show', $record) }}" 
-                                                       class="text-indigo-600 hover:text-indigo-900">{{ __('View') }}</a>
+                                                       class="text-indigo-600 hover:text-indigo-900">{{ __('healthcare.view') }}</a>
                                                     <a href="{{ route('healthcare.records.edit', $record) }}" 
-                                                       class="text-blue-600 hover:text-blue-900">{{ __('Edit') }}</a>
+                                                       class="text-blue-600 hover:text-blue-900">{{ __('healthcare.edit') }}</a>
                                                     <form action="{{ route('healthcare.records.sync', $record) }}" method="POST" class="inline">
                                                         @csrf
                                                         <button type="submit" class="text-green-600 hover:text-green-900">
-                                                            {{ __('Sync') }}
+                                                            {{ __('healthcare.sync') }}
                                                         </button>
                                                     </form>
                                                     <form action="{{ route('healthcare.records.destroy', $record) }}" method="POST" class="inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="text-red-600 hover:text-red-900" 
-                                                                onclick="return confirm('{{ __('Are you sure?') }}')">
-                                                            {{ __('Delete') }}
+                                                                onclick="return confirm('{{ __('healthcare.are_you_sure') }}')">
+                                                            {{ __('healthcare.delete') }}
                                                         </button>
                                                     </form>
                                                 </div>
@@ -211,12 +216,12 @@
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No health records') }}</h3>
-                            <p class="mt-1 text-sm text-gray-500">{{ __('Get started by creating a new health record.') }}</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('healthcare.no_health_records') }}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('healthcare.get_started_message') }}</p>
                             <div class="mt-6">
                                 <a href="{{ route('healthcare.records.create') }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                    {{ __('Add Record') }}
+                                    {{ __('healthcare.add_record') }}
                                 </a>
                             </div>
                         </div>
@@ -225,4 +230,4 @@
             </div>
         </div>
     </div>
-</x-app-layout> 
+@endsection 

@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Association extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'short_name',
@@ -16,12 +19,16 @@ class Association extends Model
         'association_logo_url',
         'nation_flag_url',
         'fifa_version',
-        'last_updated'
+        'last_updated',
+        'fifa_sync_status',
+        'fifa_sync_date',
+        'fifa_last_error'
     ];
 
     protected $casts = [
         'last_updated' => 'datetime',
-        'fifa_ranking' => 'integer'
+        'fifa_ranking' => 'integer',
+        'fifa_sync_date' => 'datetime'
     ];
 
     public function clubs(): HasMany

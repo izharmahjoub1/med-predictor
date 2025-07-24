@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('associations', function (Blueprint $table) {
             $table->id();
+            $table->string('logo')->nullable();
+            $table->string('fifa_id')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

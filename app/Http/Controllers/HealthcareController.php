@@ -11,6 +11,7 @@ use App\Services\FifaConnectService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 class HealthcareController extends Controller
@@ -21,36 +22,72 @@ class HealthcareController extends Controller
     {
         $this->fifaConnectService = $fifaConnectService;
         $this->middleware('auth');
-        $this->middleware('role:club,association');
+        $this->middleware('role:club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin');
     }
 
     public function index()
     {
         $user = Auth::user();
-        $healthRecords = collect();
+        $cacheKey = "healthcare_index_{$user->id}_" . request()->get('page', 1);
+        
+        $data = Cache::remember($cacheKey, 300, function () use ($user) {
+            $healthRecords = collect();
 
-        if ($user->role === 'club') {
-            $healthRecords = HealthRecord::whereHas('player', function ($query) use ($user) {
-                $query->where('club_id', $user->club_id);
-            })
-            ->with(['player', 'player.club', 'fifaConnectId'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-        } elseif ($user->role === 'association') {
-            $healthRecords = HealthRecord::whereHas('player.club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })
-            ->with(['player', 'player.club', 'fifaConnectId'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-        }
+            if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
+                $healthRecords = HealthRecord::whereHas('player', function ($query) use ($user) {
+                    $query->where('club_id', $user->club_id);
+                })
+                ->with(['player', 'player.club', 'player.fifaConnectId'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+            } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
+                $healthRecords = HealthRecord::whereHas('player.club', function ($query) use ($user) {
+                    $query->where('association_id', $user->association_id);
+                })
+                ->with(['player', 'player.club', 'player.fifaConnectId'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+            } elseif ($user->role === 'system_admin') {
+                // System admin can see all records
+                $healthRecords = HealthRecord::with(['player', 'player.club', 'player.fifaConnectId'])
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(15);
+            }
 
-        $stats = [
-            'total' => $healthRecords->total(),
-            'healthy' => $healthRecords->where('status', 'healthy')->count(),
-            'injured' => $healthRecords->where('status', 'injured')->count(),
-            'recovering' => $healthRecords->where('status', 'recovering')->count(),
-        ];
+            // Optimize stats calculation with single query
+            $statsQuery = HealthRecord::query();
+            
+            if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
+                $statsQuery->whereHas('player', function ($query) use ($user) {
+                    $query->where('club_id', $user->club_id);
+                });
+            } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
+                $statsQuery->whereHas('player.club', function ($query) use ($user) {
+                    $query->where('association_id', $user->association_id);
+                });
+            }
+            // system_admin can see all stats
+            
+            $stats = $statsQuery->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as healthy,
+                SUM(CASE WHEN status = "archived" THEN 1 ELSE 0 END) as injured,
+                SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as recovering
+            ')->first();
+            
+            return [
+                'healthRecords' => $healthRecords,
+                'stats' => [
+                    'total' => $stats->total ?? 0,
+                    'healthy' => $stats->healthy ?? 0,
+                    'injured' => $stats->injured ?? 0,
+                    'recovering' => $stats->recovering ?? 0,
+                ]
+            ];
+        });
+        
+        $healthRecords = $data['healthRecords'];
+        $stats = $data['stats'];
 
         return view('healthcare.index', compact('healthRecords', 'stats'));
     }
@@ -60,21 +97,27 @@ class HealthcareController extends Controller
         $user = Auth::user();
         $players = collect();
 
-        if ($user->role === 'club') {
+        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
             $players = Player::where('club_id', $user->club_id)
                 ->orderBy('first_name')
                 ->orderBy('last_name')
                 ->get();
-        } elseif ($user->role === 'association') {
+        } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
             $players = Player::whereHas('club', function ($query) use ($user) {
                 $query->where('association_id', $user->association_id);
             })
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
+        } elseif ($user->role === 'system_admin') {
+            // System admin can see all players
+            $players = Player::with('club')
+                ->orderBy('first_name')
+                ->orderBy('last_name')
+                ->get();
         }
 
-        return view('healthcare.create', compact('players'));
+        return view('healthcare.records.create', compact('players'));
     }
 
     public function store(Request $request)
@@ -153,9 +196,9 @@ class HealthcareController extends Controller
     {
         $this->authorizeHealthRecordAccess($healthRecord);
         
-        $healthRecord->load(['player', 'player.club', 'fifaConnectId']);
+        $healthRecord->load(['player', 'player.club']);
         
-        return view('healthcare.show', compact('healthRecord'));
+        return view('healthcare.records.show', compact('healthRecord'));
     }
 
     public function edit(HealthRecord $healthRecord)
@@ -181,7 +224,7 @@ class HealthcareController extends Controller
 
         $healthRecord->load(['player', 'fifaConnectId']);
         
-        return view('healthcare.edit', compact('healthRecord', 'players'));
+        return view('healthcare.records.edit', compact('healthRecord', 'players'));
     }
 
     public function update(Request $request, HealthRecord $healthRecord)
@@ -351,18 +394,23 @@ class HealthcareController extends Controller
         $user = Auth::user();
         $players = collect();
 
-        if ($user->role === 'club') {
+        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
             $players = Player::where('club_id', $user->club_id)
                 ->with(['healthRecords' => function ($query) {
-                    $query->latest()->take(5);
+                    $query->latest()->take(10);
                 }])
                 ->get();
-        } elseif ($user->role === 'association') {
+        } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
             $players = Player::whereHas('club', function ($query) use ($user) {
                 $query->where('association_id', $user->association_id);
             })
             ->with(['healthRecords' => function ($query) {
-                $query->latest()->take(5);
+                $query->latest()->take(10);
+            }])
+            ->get();
+        } elseif ($user->role === 'system_admin') {
+            $players = Player::with(['healthRecords' => function ($query) {
+                $query->latest()->take(10);
             }])
             ->get();
         }
@@ -371,36 +419,75 @@ class HealthcareController extends Controller
         $predictions = [];
         foreach ($players as $player) {
             $recentRecords = $player->healthRecords;
-            $injuryCount = $recentRecords->where('status', 'injured')->count();
-            $recoveryTime = $recentRecords->where('status', 'recovering')->count();
+            $activeRecords = $recentRecords->where('status', 'active');
+            $archivedRecords = $recentRecords->where('status', 'archived');
+            $pendingRecords = $recentRecords->where('status', 'pending');
             
+            // Calculate risk factors
+            $highRiskFactors = $activeRecords->filter(function ($record) {
+                return $record->risk_score > 0.7;
+            })->count();
+            
+            $mediumRiskFactors = $activeRecords->filter(function ($record) {
+                return $record->risk_score > 0.4 && $record->risk_score <= 0.7;
+            })->count();
+            
+            $avgRiskScore = $activeRecords->avg('risk_score') ?? 0;
+            $avgConfidence = $activeRecords->avg('prediction_confidence') ?? 0;
+            
+            // Determine risk level
             $riskLevel = 'low';
-            if ($injuryCount > 2) {
+            if ($highRiskFactors > 2 || $avgRiskScore > 0.7) {
                 $riskLevel = 'high';
-            } elseif ($injuryCount > 1) {
+            } elseif ($highRiskFactors > 0 || $mediumRiskFactors > 2 || $avgRiskScore > 0.4) {
                 $riskLevel = 'medium';
             }
             
+            // Generate predictions
             $predictions[] = [
                 'player' => $player,
                 'risk_level' => $riskLevel,
-                'injury_count' => $injuryCount,
-                'recovery_time' => $recoveryTime,
-                'recommendation' => $this->generateRecommendation($riskLevel, $injuryCount, $recoveryTime),
+                'risk_score' => round($avgRiskScore, 3),
+                'confidence' => round($avgConfidence, 3),
+                'active_records' => $activeRecords->count(),
+                'archived_records' => $archivedRecords->count(),
+                'pending_records' => $pendingRecords->count(),
+                'high_risk_factors' => $highRiskFactors,
+                'medium_risk_factors' => $mediumRiskFactors,
+                'recommendation' => $this->generateRecommendation($riskLevel, $avgRiskScore, $highRiskFactors),
+                'next_checkup' => $activeRecords->first()?->next_checkup_date,
             ];
         }
+
+        // Sort by risk level (high first)
+        usort($predictions, function ($a, $b) {
+            $riskOrder = ['high' => 3, 'medium' => 2, 'low' => 1];
+            return $riskOrder[$b['risk_level']] - $riskOrder[$a['risk_level']];
+        });
 
         return view('healthcare.predictions', compact('predictions'));
     }
 
-    protected function generateRecommendation($riskLevel, $injuryCount, $recoveryTime)
+    protected function generateRecommendation($riskLevel, $avgRiskScore, $highRiskFactors)
     {
         if ($riskLevel === 'high') {
-            return 'High injury risk. Recommend reduced training intensity and regular medical monitoring.';
+            if ($avgRiskScore > 0.8) {
+                return 'Risque très élevé. Recommandation : Arrêt immédiat des activités sportives, consultation médicale urgente, surveillance intensive.';
+            } else {
+                return 'Risque élevé. Recommandation : Réduction significative de l\'intensité d\'entraînement, monitoring médical régulier, évaluation complète.';
+            }
         } elseif ($riskLevel === 'medium') {
-            return 'Moderate injury risk. Monitor training load and ensure proper recovery protocols.';
+            if ($highRiskFactors > 0) {
+                return 'Risque modéré avec facteurs de risque élevés. Recommandation : Surveillance accrue, ajustement de l\'entraînement, contrôles médicaux fréquents.';
+            } else {
+                return 'Risque modéré. Recommandation : Monitoring de la charge d\'entraînement, protocoles de récupération appropriés, contrôles réguliers.';
+            }
         } else {
-            return 'Low injury risk. Continue current training regimen with standard monitoring.';
+            if ($avgRiskScore > 0.2) {
+                return 'Risque faible mais surveillance recommandée. Continuer l\'entraînement actuel avec monitoring standard.';
+            } else {
+                return 'Risque faible. Continuer le régime d\'entraînement actuel avec surveillance standard.';
+            }
         }
     }
 
@@ -408,15 +495,20 @@ class HealthcareController extends Controller
     {
         $user = Auth::user();
         $player = $healthRecord->player;
-        
+
+        if ($user->role === 'system_admin') {
+            // System admin can access all records
+            return;
+        }
+
         if (!$player) {
             abort(404, 'Player not found');
         }
-        
+
         if ($user->role === 'club' && $player->club_id !== $user->club_id) {
             abort(403, 'Unauthorized access to health record');
         }
-        
+
         if ($user->role === 'association') {
             $club = $player->club;
             if (!$club || $club->association_id !== $user->association_id) {

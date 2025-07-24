@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HealthRecord;
 use App\Models\Player;
 use App\Models\MedicalPrediction;
+use App\Events\HealthRecordCreated;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -58,6 +59,9 @@ class HealthRecordController extends Controller
         $validated['status'] = 'active';
 
         $healthRecord = HealthRecord::create($validated);
+
+        // Broadcast health record created event
+        event(new HealthRecordCreated($healthRecord));
 
         // Générer une prédiction médicale automatiquement
         $this->generateMedicalPrediction($healthRecord);

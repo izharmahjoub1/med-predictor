@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Models\Player;
 use App\Models\Club;
 use App\Models\Association;
-use App\Models\Player;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class FifaConnectService
 {
@@ -18,393 +18,178 @@ class FifaConnectService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.fifa.base_url', 'https://api.fifa.com/v1');
-        $this->apiKey = config('services.fifa.api_key', 'demo-key');
-        $this->timeout = config('services.fifa.timeout', 30);
+        $this->baseUrl = config('services.fifa_connect.base_url', 'https://api.fifa.com/v1');
+        $this->apiKey = config('services.fifa_connect.api_key');
+        $this->timeout = config('services.fifa_connect.timeout', 30);
     }
 
     /**
-     * Generate a unique FIFA Connect ID for a user
+     * Check if mock mode is enabled
      */
-    public function generateConnectId(User $user): string
+    private function isMockMode(): bool
     {
-        $prefix = $this->getRolePrefix($user->role);
-        $entityCode = $this->getEntityCode($user);
-        $timestamp = time();
-        $random = strtoupper(substr(md5(uniqid()), 0, 6));
-        
-        return "FIFA-{$prefix}-{$entityCode}-{$timestamp}-{$random}";
+        return config('services.fifa_connect.mock_mode', false) || 
+               config('app.env') === 'local' && !$this->apiKey;
     }
 
     /**
-     * Sync user data with FIFA Connect
+     * Sync player data from FIFA Connect
      */
-    public function syncUser(User $user): bool
+    public function syncPlayerData(string $fifaId): array
     {
         try {
-            $payload = $this->prepareUserPayload($user);
-            
+            // Check cache first
+            $cacheKey = "fifa_player_{$fifaId}";
+            if (Cache::has($cacheKey)) {
+                return Cache::get($cacheKey);
+            }
+
             $response = Http::timeout($this->timeout)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ])
-                ->post($this->baseUrl . '/users/sync', $payload);
+                ->get("{$this->baseUrl}/players/{$fifaId}");
 
             if ($response->successful()) {
                 $data = $response->json();
                 
-                // Update user with FIFA Connect response data
-                $user->update([
-                    'fifa_connect_id' => $data['fifa_connect_id'] ?? $user->fifa_connect_id,
-                    'fifa_sync_status' => 'synced',
-                    'fifa_sync_date' => now(),
-                ]);
-
-                Log::info('User synced with FIFA Connect', [
-                    'user_id' => $user->id,
-                    'fifa_connect_id' => $user->fifa_connect_id,
-                    'response' => $data
-                ]);
-
-                return true;
-            } else {
-                Log::error('FIFA Connect sync failed', [
-                    'user_id' => $user->id,
-                    'status' => $response->status(),
-                    'response' => $response->body()
-                ]);
-
-                $user->update([
-                    'fifa_sync_status' => 'failed',
-                    'fifa_sync_date' => now(),
-                ]);
-
-                return false;
+                // Cache the response for 1 hour
+                Cache::put($cacheKey, $data, 3600);
+                
+                // Update local player record
+                $this->updatePlayerFromFifaData($fifaId, $data);
+                
+                return $data;
             }
-        } catch (\Exception $e) {
-            Log::error('FIFA Connect sync exception', [
-                'user_id' => $user->id,
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA Connect sync error', [
+                'fifa_id' => $fifaId,
                 'error' => $e->getMessage()
             ]);
-
-            $user->update([
-                'fifa_sync_status' => 'failed',
-                'fifa_sync_date' => now(),
-            ]);
-
-            return false;
+            throw $e;
         }
     }
 
     /**
-     * Get FIFA Connect status for a user
+     * Check FIFA Connect service connectivity
      */
-    public function getUserStatus(string $fifaConnectId): ?array
+    public function checkConnectivity(): array
     {
-        try {
-            $cacheKey = "fifa_user_status_{$fifaConnectId}";
-            
-            return Cache::remember($cacheKey, 300, function () use ($fifaConnectId) {
-                $response = Http::timeout($this->timeout)
-                    ->withHeaders([
-                        'Authorization' => 'Bearer ' . $this->apiKey,
-                        'Accept' => 'application/json',
-                    ])
-                    ->get($this->baseUrl . '/users/' . $fifaConnectId);
-
-                if ($response->successful()) {
-                    return $response->json();
-                }
-
-                return null;
-            });
-        } catch (\Exception $e) {
-            Log::error('Failed to get FIFA Connect user status', [
-                'fifa_connect_id' => $fifaConnectId,
-                'error' => $e->getMessage()
-            ]);
-
-            return null;
+        // Check if mock mode is enabled
+        if ($this->isMockMode()) {
+            return [
+                'connected' => true,
+                'status' => 'mock',
+                'response_time' => 0.1,
+                'timestamp' => now()->toISOString(),
+                'mock_mode' => true
+            ];
         }
-    }
 
-    /**
-     * Validate FIFA Connect ID format
-     */
-    public function validateConnectId(string $fifaConnectId): bool
-    {
-        $pattern = '/^FIFA-[A-Z]{2,4}-[A-Z0-9]{3,8}-\d{10}-[A-Z0-9]{6}$/';
-        return preg_match($pattern, $fifaConnectId) === 1;
-    }
-
-    /**
-     * Get FIFA Connect connectivity status
-     */
-    public function getConnectivityStatus(): array
-    {
         try {
-            $response = Http::timeout(10)
+            $response = Http::timeout($this->timeout)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'Accept' => 'application/json',
                 ])
-                ->get($this->baseUrl . '/health');
+                ->get("{$this->baseUrl}/health");
+
+            if ($response->successful()) {
+                return [
+                    'connected' => true,
+                    'status' => 'online',
+                    'response_time' => $response->handlerStats()['total_time'] ?? null,
+                    'timestamp' => now()->toISOString()
+                ];
+            }
+
+            // If we get a 503 or other server error, fall back to mock mode in development
+            if (in_array($response->status(), [503, 502, 504]) && config('app.env') === 'local') {
+                Log::warning('FIFA Connect service unavailable, using mock mode', [
+                    'status' => $response->status(),
+                    'base_url' => $this->baseUrl
+                ]);
+                
+                return [
+                    'connected' => true,
+                    'status' => 'mock',
+                    'response_time' => 0.1,
+                    'timestamp' => now()->toISOString(),
+                    'mock_mode' => true,
+                    'fallback_reason' => 'Service unavailable (HTTP ' . $response->status() . ')'
+                ];
+            }
 
             return [
-                'status' => $response->successful() ? 'connected' : 'disconnected',
-                'response_time' => $response->handlerStats()['total_time'] ?? null,
-                'last_check' => now(),
-                'details' => $response->successful() ? $response->json() : null,
-            ];
-        } catch (\Exception $e) {
-            return [
+                'connected' => false,
                 'status' => 'error',
+                'error' => 'FIFA Connect service returned status: ' . $response->status(),
+                'timestamp' => now()->toISOString()
+            ];
+        } catch (Exception $e) {
+            Log::error('FIFA Connect connectivity check failed', [
                 'error' => $e->getMessage(),
-                'last_check' => now(),
-            ];
-        }
-    }
-
-    /**
-     * Get role prefix for FIFA Connect ID
-     */
-    private function getRolePrefix(string $role): string
-    {
-        $prefixes = [
-            'system_admin' => 'SA',
-            'association_admin' => 'AA',
-            'association_registrar' => 'AR',
-            'association_medical' => 'AM',
-            'club_admin' => 'CA',
-            'club_manager' => 'CM',
-            'club_medical' => 'CMED',
-            'club_staff' => 'CS',
-        ];
-
-        return $prefixes[$role] ?? 'USR';
-    }
-
-    /**
-     * Get entity code for FIFA Connect ID
-     */
-    private function getEntityCode(User $user): string
-    {
-        if ($user->entity_type === 'club' && $user->club) {
-            return strtoupper(substr($user->club->name, 0, 3));
-        }
-
-        if ($user->entity_type === 'association' && $user->association) {
-            return strtoupper(substr($user->association->name, 0, 3));
-        }
-
-        return 'SYS';
-    }
-
-    /**
-     * Prepare user payload for FIFA Connect sync
-     */
-    private function prepareUserPayload(User $user): array
-    {
-        $payload = [
-            'user_id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => $user->role,
-            'status' => $user->status,
-            'fifa_connect_id' => $user->fifa_connect_id,
-            'permissions' => $user->permissions,
-            'created_at' => $user->created_at->toISOString(),
-        ];
-
-        // Add entity information
-        if ($user->entity_type === 'club' && $user->club) {
-            $payload['entity'] = [
-                'type' => 'club',
-                'id' => $user->club->id,
-                'name' => $user->club->name,
-                'fifa_id' => $user->club->fifa_id,
-            ];
-        } elseif ($user->entity_type === 'association' && $user->association) {
-            $payload['entity'] = [
-                'type' => 'association',
-                'id' => $user->association->id,
-                'name' => $user->association->name,
-                'fifa_id' => $user->association->fifa_id,
-            ];
-        }
-
-        return $payload;
-    }
-
-    /**
-     * Generate a unique FIFA Connect ID for a player
-     */
-    public function generatePlayerId(): \App\Models\FifaConnectId
-    {
-        $timestamp = time();
-        $random = strtoupper(substr(md5(uniqid()), 0, 6));
-        $fifaId = "PLR-{$timestamp}-{$random}";
-        
-        return \App\Models\FifaConnectId::create([
-            'fifa_id' => $fifaId,
-            'entity_type' => 'player',
-            'status' => 'active'
-        ]);
-    }
-
-    /**
-     * Sync player data with FIFA Connect
-     */
-    public function syncPlayer(\App\Models\Player $player): bool
-    {
-        try {
-            $payload = $this->preparePlayerPayload($player);
-            
-            $response = Http::timeout($this->timeout)
-                ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                ])
-                ->post($this->baseUrl . '/players/sync', $payload);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                
-                // Update player with FIFA Connect response data
-                $player->update([
-                    'fifa_version' => $data['fifa_version'] ?? null,
-                    'last_updated' => now(),
-                ]);
-
-                // Update FIFA Connect ID if provided
-                if (isset($data['fifa_connect_id']) && $player->fifaConnectId) {
-                    $player->fifaConnectId->update([
-                        'fifa_id' => $data['fifa_connect_id'],
-                        'status' => 'active'
-                    ]);
-                }
-
-                Log::info('Player synced with FIFA Connect', [
-                    'player_id' => $player->id,
-                    'fifa_connect_id' => $player->fifaConnectId?->fifa_id,
-                    'response' => $data
-                ]);
-
-                return true;
-            } else {
-                Log::error('FIFA Connect player sync failed', [
-                    'player_id' => $player->id,
-                    'status' => $response->status(),
-                    'response' => $response->body()
-                ]);
-
-                return false;
-            }
-        } catch (\Exception $e) {
-            Log::error('FIFA Connect player sync exception', [
-                'player_id' => $player->id,
-                'error' => $e->getMessage()
+                'base_url' => $this->baseUrl
             ]);
 
-            return false;
-        }
-    }
+            // In development, fall back to mock mode for connection errors
+            if (config('app.env') === 'local') {
+                Log::warning('FIFA Connect connection failed, using mock mode', [
+                    'error' => $e->getMessage()
+                ]);
+                
+                return [
+                    'connected' => true,
+                    'status' => 'mock',
+                    'response_time' => 0.1,
+                    'timestamp' => now()->toISOString(),
+                    'mock_mode' => true,
+                    'fallback_reason' => 'Connection failed: ' . $e->getMessage()
+                ];
+            }
 
-    /**
-     * Prepare player payload for FIFA Connect sync
-     */
-    private function preparePlayerPayload(\App\Models\Player $player): array
-    {
-        $payload = [
-            'player_id' => $player->id,
-            'first_name' => $player->first_name,
-            'last_name' => $player->last_name,
-            'date_of_birth' => $player->date_of_birth->toISOString(),
-            'nationality' => $player->nationality,
-            'position' => $player->position,
-            'jersey_number' => $player->jersey_number,
-            'height' => $player->height,
-            'weight' => $player->weight,
-            'email' => $player->email,
-            'phone' => $player->phone,
-            'fifa_connect_id' => $player->fifaConnectId?->fifa_id,
-            'created_at' => $player->created_at->toISOString(),
-        ];
-
-        // Add club information
-        if ($player->club) {
-            $payload['club'] = [
-                'id' => $player->club->id,
-                'name' => $player->club->name,
-                'fifa_id' => $player->club->fifa_id,
+            return [
+                'connected' => false,
+                'status' => 'offline',
+                'error' => 'Unable to connect to FIFA Connect service: ' . $e->getMessage(),
+                'timestamp' => now()->toISOString()
             ];
         }
-
-        return $payload;
     }
 
     /**
-     * Bulk sync multiple players
+     * Handle FIFA API errors gracefully
      */
-    public function bulkSyncPlayers(array $playerIds): array
+    public function handleApiError(Exception $e): array
     {
-        $results = [
-            'success' => 0,
-            'failed' => 0,
-            'errors' => []
+        Log::error('FIFA Connect API error', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return [
+            'success' => false,
+            'error' => 'FIFA Connect service temporarily unavailable',
+            'retry_after' => 300 // 5 minutes
         ];
-
-        $players = Player::whereIn('id', $playerIds)->get();
-
-        foreach ($players as $player) {
-            try {
-                if ($this->syncPlayer($player)) {
-                    $results['success']++;
-                } else {
-                    $results['failed']++;
-                    $results['errors'][] = "Failed to sync player {$player->id}: {$player->first_name} {$player->last_name}";
-                }
-            } catch (\Exception $e) {
-                $results['failed']++;
-                $results['errors'][] = "Exception syncing player {$player->id}: " . $e->getMessage();
-            }
-        }
-
-        return $results;
     }
 
     /**
-     * Bulk sync multiple users
+     * Cache player data for performance
      */
-    public function bulkSyncUsers(array $userIds): array
+    public function cachePlayerData(string $fifaId, array $data, int $ttl = 3600): void
     {
-        $results = [
-            'success' => 0,
-            'failed' => 0,
-            'errors' => []
-        ];
-
-        $users = User::whereIn('id', $userIds)->get();
-
-        foreach ($users as $user) {
-            if ($this->syncUser($user)) {
-                $results['success']++;
-            } else {
-                $results['failed']++;
-                $results['errors'][] = "Failed to sync user {$user->email}";
-            }
-        }
-
-        return $results;
+        $cacheKey = "fifa_player_{$fifaId}";
+        Cache::put($cacheKey, $data, $ttl);
     }
 
     /**
-     * Get FIFA Connect API statistics
+     * Validate FIFA compliance requirements
      */
-    public function getApiStats(): array
+    public function validateCompliance(string $fifaId): array
     {
         try {
             $response = Http::timeout($this->timeout)
@@ -412,19 +197,621 @@ class FifaConnectService
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'Accept' => 'application/json',
                 ])
-                ->get($this->baseUrl . '/stats');
+                ->get("{$this->baseUrl}/compliance/{$fifaId}");
 
             if ($response->successful()) {
                 return $response->json();
             }
 
-            return [];
-        } catch (\Exception $e) {
-            Log::error('Failed to get FIFA Connect API stats', [
+            return [
+                'compliant' => false,
+                'errors' => ['Unable to verify compliance status']
+            ];
+        } catch (Exception $e) {
+            Log::error('FIFA compliance check error', [
+                'fifa_id' => $fifaId,
                 'error' => $e->getMessage()
             ]);
 
-            return [];
+            return [
+                'compliant' => false,
+                'errors' => ['Compliance check failed']
+            ];
+        }
+    }
+
+    /**
+     * Sync club data from FIFA Connect
+     */
+    public function syncClubData(string $fifaClubId): array
+    {
+        try {
+            $cacheKey = "fifa_club_{$fifaClubId}";
+            if (Cache::has($cacheKey)) {
+                return Cache::get($cacheKey);
+            }
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/clubs/{$fifaClubId}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Cache::put($cacheKey, $data, 3600);
+                
+                // Update local club record
+                $this->updateClubFromFifaData($fifaClubId, $data);
+                
+                return $data;
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA club sync error', [
+                'fifa_club_id' => $fifaClubId,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Sync federation data from FIFA Connect
+     */
+    public function syncFederationData(string $fifaFederationId): array
+    {
+        try {
+            $cacheKey = "fifa_federation_{$fifaFederationId}";
+            if (Cache::has($cacheKey)) {
+                return Cache::get($cacheKey);
+            }
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/federations/{$fifaFederationId}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Cache::put($cacheKey, $data, 3600);
+                
+                // Update local federation record
+                $this->updateFederationFromFifaData($fifaFederationId, $data);
+                
+                return $data;
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA federation sync error', [
+                'fifa_federation_id' => $fifaFederationId,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Handle network timeouts
+     */
+    public function handleNetworkTimeout(): array
+    {
+        return [
+            'success' => false,
+            'error' => 'Network timeout occurred',
+            'retry_after' => 60 // 1 minute
+        ];
+    }
+
+    /**
+     * Log errors for debugging
+     */
+    public function logError(string $context, array $data): void
+    {
+        Log::error("FIFA Connect {$context}", $data);
+    }
+
+    /**
+     * Retry failed requests
+     */
+    public function retryRequest(callable $request, int $maxRetries = 3): array
+    {
+        $attempts = 0;
+        
+        while ($attempts < $maxRetries) {
+            try {
+                return $request();
+            } catch (Exception $e) {
+                $attempts++;
+                Log::warning("FIFA Connect retry attempt {$attempts}", [
+                    'error' => $e->getMessage()
+                ]);
+                
+                if ($attempts >= $maxRetries) {
+                    throw $e;
+                }
+                
+                // Exponential backoff
+                sleep(pow(2, $attempts));
+            }
+        }
+    }
+
+    /**
+     * Clear cache for a specific FIFA ID
+     */
+    public function clearCache(string $fifaId): void
+    {
+        $cacheKey = "fifa_player_{$fifaId}";
+        Cache::forget($cacheKey);
+    }
+
+    /**
+     * Generate a FIFA Connect ID for players
+     */
+    public function generatePlayerId(): string
+    {
+        return 'FIFA_' . uniqid() . '_' . time();
+    }
+
+    /**
+     * Generate a FIFA Connect ID for competitions
+     */
+    public function generateCompetitionId(): string
+    {
+        return 'COMP_' . uniqid() . '_' . time();
+    }
+
+    /**
+     * Generate a FIFA Connect ID for health records
+     */
+    public function generateHealthRecordId(): string
+    {
+        return 'HEALTH_' . uniqid() . '_' . time();
+    }
+
+    /**
+     * Generate a FIFA Connect ID for any entity type
+     */
+    public function generateFifaConnectId(string $type, string $prefix = ''): string
+    {
+        $type = strtoupper($type);
+        $prefix = $prefix ? $prefix . '_' : '';
+        return $prefix . $type . '_' . uniqid() . '_' . time();
+    }
+
+    /**
+     * Sync player data (alias for syncPlayerData)
+     */
+    public function syncPlayer($player): array
+    {
+        if (is_object($player) && method_exists($player, 'fifa_id')) {
+            return $this->syncPlayerData($player->fifa_id);
+        }
+        
+        if (is_string($player)) {
+            return $this->syncPlayerData($player);
+        }
+        
+        throw new Exception('Invalid player parameter');
+    }
+
+    /**
+     * Sync competition data
+     */
+    public function syncCompetition($competition): array
+    {
+        try {
+            if (is_object($competition) && method_exists($competition, 'fifa_id')) {
+                $fifaId = $competition->fifa_id;
+            } elseif (is_string($competition)) {
+                $fifaId = $competition;
+            } else {
+                throw new Exception('Invalid competition parameter');
+            }
+
+            $cacheKey = "fifa_competition_{$fifaId}";
+            if (Cache::has($cacheKey)) {
+                return Cache::get($cacheKey);
+            }
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/competitions/{$fifaId}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Cache::put($cacheKey, $data, 3600);
+                return $data;
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA competition sync error', [
+                'competition' => $competition,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Sync health record data
+     */
+    public function syncHealthRecord($healthRecord): array
+    {
+        try {
+            if (is_object($healthRecord) && method_exists($healthRecord, 'fifa_id')) {
+                $fifaId = $healthRecord->fifa_id;
+            } elseif (is_string($healthRecord)) {
+                $fifaId = $healthRecord;
+            } else {
+                throw new Exception('Invalid health record parameter');
+            }
+
+            $cacheKey = "fifa_health_record_{$fifaId}";
+            if (Cache::has($cacheKey)) {
+                return Cache::get($cacheKey);
+            }
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/health-records/{$fifaId}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Cache::put($cacheKey, $data, 3600);
+                return $data;
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA health record sync error', [
+                'health_record' => $healthRecord,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Bulk sync players
+     */
+    public function bulkSyncPlayers(array $playerIds): array
+    {
+        $results = [];
+        foreach ($playerIds as $playerId) {
+            try {
+                $results[$playerId] = $this->syncPlayerData($playerId);
+            } catch (Exception $e) {
+                $results[$playerId] = $this->handleApiError($e);
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * Fetch players from FIFA Connect
+     */
+    public function fetchPlayers(array $filters = [], int $page = 1, int $limit = 50): array
+    {
+        try {
+            $query = http_build_query(array_merge($filters, ['page' => $page, 'limit' => $limit]));
+            
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/players?{$query}");
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA fetch players error', [
+                'filters' => $filters,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Fetch a single player from FIFA Connect
+     */
+    public function fetchPlayer(string $id): array
+    {
+        return $this->syncPlayerData($id);
+    }
+
+    /**
+     * Fetch player stats from FIFA Connect
+     */
+    public function fetchPlayerStats(string $id): array
+    {
+        try {
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/players/{$id}/stats");
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA fetch player stats error', [
+                'player_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Clear all caches
+     */
+    public function clearCaches(): void
+    {
+        // Clear all FIFA-related caches
+        $keys = Cache::get('fifa_cache_keys', []);
+        foreach ($keys as $key) {
+            Cache::forget($key);
+        }
+        Cache::forget('fifa_cache_keys');
+    }
+
+    /**
+     * Sync players with filters
+     */
+    public function syncPlayers(array $filters = [], int $batchSize = 50): array
+    {
+        try {
+            $players = $this->fetchPlayers($filters, 1, $batchSize);
+            $results = [];
+            
+            if (isset($players['data'])) {
+                foreach ($players['data'] as $player) {
+                    if (isset($player['fifa_id'])) {
+                        $results[$player['fifa_id']] = $this->syncPlayerData($player['fifa_id']);
+                    }
+                }
+            }
+            
+            return $results;
+        } catch (Exception $e) {
+            Log::error('FIFA sync players error', [
+                'filters' => $filters,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Test connectivity (alias for checkConnectivity)
+     */
+    public function testConnectivity(): array
+    {
+        return $this->checkConnectivity();
+    }
+
+    /**
+     * Get FIFA Connect statistics
+     */
+    public function getStatistics(): array
+    {
+        try {
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/statistics");
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            return [
+                'total_players' => 0,
+                'total_clubs' => 0,
+                'total_federations' => 0,
+                'last_sync' => null,
+                'status' => 'offline'
+            ];
+        } catch (Exception $e) {
+            Log::error('FIFA get statistics error', [
+                'error' => $e->getMessage()
+            ]);
+            return [
+                'total_players' => 0,
+                'total_clubs' => 0,
+                'total_federations' => 0,
+                'last_sync' => null,
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Fetch clubs from FIFA Connect
+     */
+    public function fetchClubs(array $filters = [], int $page = 1, int $limit = 50): array
+    {
+        try {
+            $query = http_build_query(array_merge($filters, ['page' => $page, 'limit' => $limit]));
+            
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/clubs?{$query}");
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA fetch clubs error', [
+                'filters' => $filters,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Fetch associations from FIFA Connect
+     */
+    public function fetchAssociations(array $filters = [], int $page = 1, int $limit = 50): array
+    {
+        try {
+            $query = http_build_query(array_merge($filters, ['page' => $page, 'limit' => $limit]));
+            
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/federations?{$query}");
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA fetch associations error', [
+                'filters' => $filters,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Sync club players
+     */
+    public function syncClubPlayers($club): array
+    {
+        try {
+            if (is_object($club) && method_exists($club, 'fifa_id')) {
+                $fifaId = $club->fifa_id;
+            } elseif (is_string($club)) {
+                $fifaId = $club;
+            } else {
+                throw new Exception('Invalid club parameter');
+            }
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/clubs/{$fifaId}/players");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return $data;
+            }
+
+            throw new Exception("FIFA API error: " . $response->status());
+        } catch (Exception $e) {
+            Log::error('FIFA sync club players error', [
+                'club' => $club,
+                'error' => $e->getMessage()
+            ]);
+            return $this->handleApiError($e);
+        }
+    }
+
+    /**
+     * Check FIFA compliance for a player (alias for validateCompliance)
+     */
+    public function checkCompliance(string $fifaId): array
+    {
+        return $this->validateCompliance($fifaId);
+    }
+
+    /**
+     * Update local player record from FIFA data
+     */
+    protected function updatePlayerFromFifaData(string $fifaId, array $data): void
+    {
+        $player = Player::where('fifa_connect_id', $fifaId)->first();
+        
+        if ($player) {
+            $player->update([
+                'name' => $data['name'] ?? $player->name,
+                'first_name' => $data['first_name'] ?? $player->first_name,
+                'last_name' => $data['last_name'] ?? $player->last_name,
+                'birth_date' => $data['birth_date'] ?? $player->birth_date,
+                'nationality' => $data['nationality'] ?? $player->nationality,
+                'position' => $data['position'] ?? $player->position,
+                'jersey_number' => $data['jersey_number'] ?? $player->jersey_number,
+                'overall_rating' => $data['overall_rating'] ?? $player->overall_rating,
+                'potential_rating' => $data['potential_rating'] ?? $player->potential_rating,
+                'age' => $data['age'] ?? $player->age,
+                'height' => $data['height'] ?? $player->height,
+                'weight' => $data['weight'] ?? $player->weight,
+                'preferred_foot' => $data['preferred_foot'] ?? $player->preferred_foot,
+                'work_rate' => $data['work_rate'] ?? $player->work_rate,
+                'fifa_data' => json_encode($data)
+            ]);
+        }
+    }
+
+    /**
+     * Update local club record from FIFA data
+     */
+    protected function updateClubFromFifaData(string $fifaClubId, array $data): void
+    {
+        $club = Club::where('fifa_connect_id', $fifaClubId)->first();
+        
+        if ($club) {
+            $club->update([
+                'name' => $data['name'] ?? $club->name,
+                'country' => $data['country'] ?? $club->country,
+                'league' => $data['league'] ?? $club->league,
+                'fifa_data' => json_encode($data)
+            ]);
+        }
+    }
+
+    /**
+     * Update local federation record from FIFA data
+     */
+    protected function updateFederationFromFifaData(string $fifaFederationId, array $data): void
+    {
+        $federation = Association::where('fifa_connect_id', $fifaFederationId)->first();
+        
+        if ($federation) {
+            $federation->update([
+                'name' => $data['name'] ?? $federation->name,
+                'country' => $data['country'] ?? $federation->country,
+                'fifa_data' => json_encode($data)
+            ]);
         }
     }
 } 

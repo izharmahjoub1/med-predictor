@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('stadium')->nullable();
+            $table->string('stadium_name')->nullable();
+            $table->integer('stadium_capacity')->nullable();
             $table->integer('founded_year')->nullable();
             $table->string('logo_url')->nullable();
             $table->string('website')->nullable();
@@ -37,6 +39,7 @@ return new class extends Migration
             $table->integer('scouting_network')->nullable();
             $table->integer('medical_team')->nullable();
             $table->integer('coaching_staff')->nullable();
+            $table->string('logo_path')->nullable();
             $table->timestamps();
 
             $table->index(['name', 'country']);

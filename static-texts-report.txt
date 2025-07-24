@@ -1,0 +1,1114 @@
+\n--- resources/js/components/LeagueChampionship/AddMatchModal.vue ---
+     1	          {{ editingMatch ? 'Modifier le Match' : 'Ajouter un Match' }}
+     2	          ×
+     3	            v-model="form.matchday"
+     4	            type="number"
+     5	            min="1"
+     6	            required
+     7	            class="w-full px-3 py-2 border rounded-lg"
+     8	            v-model="form.home_team_id"
+     9	            required
+    10	            class="w-full px-3 py-2 border rounded-lg"
+    11	              v-for="team in availableHomeTeams"
+    12	              {{ team.name }}
+    13	            v-model="form.away_team_id"
+    14	            required
+    15	            class="w-full px-3 py-2 border rounded-lg"
+    16	              v-for="team in availableAwayTeams"
+    17	              {{ team.name }}
+    18	            v-model="form.scheduled_at"
+    19	            type="datetime-local"
+    20	            required
+    21	            class="w-full px-3 py-2 border rounded-lg"
+    22	            v-model="form.venue"
+    23	            class="w-full px-3 py-2 border rounded-lg"
+    24	              v-for="venue in venues"
+    25	              {{ venue }}
+    26	            v-for="error in errors"
+    27	            class="error-message"
+    28	            {{ error }}
+    29	            type="submit"
+    30	            type="button"
+    31	            Annuler
+\n--- resources/js/components/LeagueChampionship/ManualScheduler.vue ---
+     1	        Gestion Manuelle du Calendrier - {{ competition.name }}
+     2	        v-for="matchday in totalMatchdays"
+     3	        class="matchday-card"
+     4	            class="add-match-btn"
+     5	            + Ajouter un Match
+     6	            v-for="match in getMatchesForMatchday(matchday)"
+     7	            class="match-item"
+     8	                class="edit-btn"
+     9	                Modifier
+    10	                class="delete-btn"
+    11	                Supprimer
+    12	            v-if="getMatchesForMatchday(matchday).length === 0"
+    13	            class="no-matches"
+    14	            Aucun match programmé
+    15	      v-if="showMatchModal"
+    16	      v-if="showAutoScheduleModal"
+    17	      class="modal-overlay"
+    18	              v-model="autoScheduleData.start_date"
+    19	              type="date"
+    20	              required
+    21	              class="w-full px-3 py-2 border rounded-lg"
+    22	              v-model="autoScheduleData.match_interval_days"
+    23	              type="number"
+    24	              min="1"
+    25	              max="14"
+    26	              required
+    27	              class="w-full px-3 py-2 border rounded-lg"
+    28	              type="submit"
+    29	              Générer
+    30	              type="button"
+    31	              Annuler
+\n--- resources/js/components/LeagueChampionship/MatchSheet.vue ---
+     1	                  {{ formatStatus(match.status) }}
+     2	                Match Information
+     3	                Match Officials
+     4	              Match Workflow Status
+     5	            View Match Sheet
+     6	            Export Data
+     7	            Print Report
+\n--- resources/js/components/LeagueChampionship/LeagueDashboard.vue ---
+     1	          Try Again
+     2	              v-for="tab in tabs"
+     3	                activeTab === tab.id
+     4	                  ? 'border-indigo-500 text-indigo-600'
+     5	                'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+     6	              {{ tab.name }}
+     7	              No teams found for this competition.
+     8	                      {{ match.home_team?.club?.name || match.home_team?.name }}
+     9	                      {{ match.away_team?.club?.name || match.away_team?.name }}
+    10	                    {{ new Date(match.match_date).toLocaleDateString() }}
+    11	              No matches found for this competition.
+\n--- resources/js/components/LeagueChampionship/CompetitionSchedule.vue ---
+     1	              v-if="!scheduleGenerated"
+     2	              Generate Schedule
+     3	              Back
+     4	                  {{ competition.status }}
+     5	              v-model="selectedMatchday"
+     6	                Matchday {{ matchday }}
+     7	                  {{ match.home_team?.club?.name || match.home_team?.name }}
+     8	                  {{ match.away_team?.club?.name || match.away_team?.name }}
+     9	                  {{ formatDate(match.scheduled_at) }}
+    10	                  {{ match.status }}
+    11	                  {{ match.home_score }} - {{ match.away_score }}
+    12	                    View
+    13	                    v-if="match.status === 'scheduled'"
+    14	                    Start
+    15	                v-model="scheduleForm.start_date"
+    16	                type="date"
+    17	                required
+    18	                v-model="scheduleForm.match_interval_days"
+    19	                type="number"
+    20	                min="1"
+    21	                max="14"
+    22	                required
+    23	                type="button"
+    24	                Cancel
+    25	                type="submit"
+    26	                {{ generating ? 'Generating...' : 'Generate' }}
+\n--- resources/js/components/LeagueChampionship/RosterSubmission.vue ---
+     1	              Back
+     2	                  {{ match.status }}
+     3	                v-for="player in availablePlayers"
+     4	                  v-for="player in selectedPlayers"
+     5	                  class="p-4 border border-gray-200 rounded-lg"
+     6	                        v-model.number="player.jersey_number"
+     7	                        type="number"
+     8	                        min="1"
+     9	                        max="99"
+    10	                        required
+    11	                        v-model="player.is_starter"
+    12	                        type="checkbox"
+    13	                Submit Roster
+\n--- resources/js/components/LeagueChampionship/CompetitionStandings.vue ---
+     1	              Back
+     2	                  {{ standing.position }}
+     3	                    {{ standing.stats.goal_difference > 0 ? '+' : '' }}{{ standing.stats.goal_difference }}
+     4	                      v-for="(result, i) in standing.form"
+     5	                      class="inline-flex items-center justify-center w-6 h-6 text-xs font-medium rounded"
+     6	                      {{ result }}
+\n--- resources/js/components/CreateMatchModal.vue ---
+     1	                  v-model="form.competition_id" 
+     2	                  class="form-select" 
+     3	                  required
+     4	                    {{ competition.name }}
+     5	                  type="date" 
+     6	                  v-model="form.match_date" 
+     7	                  class="form-control" 
+     8	                  required
+     9	                  type="time" 
+    10	                  v-model="form.kickoff_time" 
+    11	                  class="form-control" 
+    12	                  required
+    13	                  type="text" 
+    14	                  v-model="form.venue" 
+    15	                  class="form-control"
+    16	                  v-model="form.home_team_id" 
+    17	                  class="form-select" 
+    18	                  required
+    19	                    {{ team.name }}
+    20	                  v-model="form.away_team_id" 
+    21	                  class="form-select" 
+    22	                  required
+    23	                    {{ team.name }}
+    24	              v-model="form.notes" 
+    25	              class="form-control" 
+    26	              rows="3"
+    27	            ></textarea>
+    28	            Cancel
+    29	            Create Match
+\n--- resources/js/components/FitDashboard.vue ---
+     1	                            src="https://via.placeholder.com/120x40/1e40af/ffffff?text=FIT"
+     2	                            alt="FIT Logo"
+     3	                            class="h-10 w-auto"
+     4	                            Welcome to FIT – Football Intelligence
+     5	                            {{ footballType }}
+     6	                            src="https://via.placeholder.com/120x40/059669/ffffff?text=TBHC"
+     7	                            alt="The Blue HealthTech Logo"
+     8	                            class="h-10 w-auto"
+     9	                        v-for="module in modules"
+    10	                            href="https://www.fifa.com"
+    11	                            target="_blank"
+    12	                            rel="noopener noreferrer"
+    13	                            FIFA
+    14	                            href="https://www.tbhc.uk"
+    15	                            target="_blank"
+    16	                            rel="noopener noreferrer"
+    17	                            The Blue HealthTech
+    18	                            href="#"
+    19	                            Language
+    20	                            href="/admin/login"
+    21	                            Admin Login
+    22	                            href="/support"
+    23	                            Support
+    24	                        © 2024 FIT – Football Intelligence & Tracking. Powered
+    25	                        by The Blue HealthTech.
+\n--- resources/js/components/ModuleCard.vue ---
+     1	                    {{ icon }}
+     2	                    {{ title }}
+     3	                    {{ description }}
+     4	                        fill="none"
+     5	                        stroke="currentColor"
+     6	                        viewBox="0 0 24 24"
+     7	                            stroke-linecap="round"
+     8	                            stroke-linejoin="round"
+     9	                            stroke-width="2"
+    10	                            d="M9 5l7 7-7 7"
+    11	                        ></path>
+\n--- resources/js/components/EligiblePlayersSelector.vue ---
+     1	          Joueurs Éligibles ({{ eligiblePlayers.length }})
+     2	            v-for="player in eligiblePlayers" 
+     3	                  type="checkbox" 
+     4	          Joueurs Non Éligibles ({{ ineligiblePlayers.length }})
+     5	            v-for="player in ineligiblePlayers" 
+     6	            class="bg-white border border-red-200 rounded-lg p-4 opacity-75"
+     7	          Joueurs sélectionnés ({{ selectedPlayers.length }})
+     8	            v-for="playerId in selectedPlayers" 
+     9	            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+    10	            {{ getPlayerName(playerId) }}
+\n--- resources/js/components/AnalyticsModule.vue ---
+     1	        ← Back to Dashboard
+\n--- resources/js/components/RefereeDashboard.vue ---
+     1	        Retour
+     2	                Feuille de match
+\n--- resources/js/components/RootComponent.vue ---
+\n--- resources/js/components/ForceDisplay.vue ---
+     1	        style="
+     2	            position: fixed;
+     3	            top: 0;
+     4	            left: 0;
+     5	            width: 100vw;
+     6	            height: 100vh;
+     7	            background: red;
+     8	            color: white;
+     9	            z-index: 99999;
+    10	            display: flex;
+    11	            flex-direction: column;
+    12	            justify-content: center;
+    13	            align-items: center;
+    14	            font-size: 48px;
+    15	            font-weight: bold;
+    16	            text-align: center;
+    17	            style="
+    18	                background: white;
+    19	                color: red;
+    20	                padding: 30px;
+    21	                border: none;
+    22	                font-size: 32px;
+    23	                cursor: pointer;
+    24	                margin: 30px;
+    25	                border-radius: 10px;
+    26	            CLICK ME
+    27	            Timestamp: {{ timestamp }}
+\n--- resources/js/components/FifaButton.vue ---
+     1	        class="fifa-btn"
+     2	            `fifa-btn--${variant}`,
+     3	            `fifa-btn--${size}`,
+     4	                'fifa-btn--loading': loading,
+     5	                'fifa-btn--full-width': fullWidth,
+     6	                'fifa-btn--rounded': rounded,
+     7	            v-if="iconLeft && !loading"
+     8	            viewBox="0 0 20 20"
+     9	            fill="currentColor"
+    10	            class="fifa-btn__icon fifa-btn__icon--left"
+    11	            v-if="iconRight && !loading"
+    12	            viewBox="0 0 20 20"
+    13	            fill="currentColor"
+    14	            class="fifa-btn__icon fifa-btn__icon--right"
+\n--- resources/js/components/CreatePlayerModal.vue ---
+     1	                  type="text" 
+     2	                  v-model="form.first_name" 
+     3	                  class="form-control" 
+     4	                  required
+     5	                  type="text" 
+     6	                  v-model="form.last_name" 
+     7	                  class="form-control" 
+     8	                  required
+     9	                  type="email" 
+    10	                  v-model="form.email" 
+    11	                  class="form-control" 
+    12	                  required
+    13	                  type="tel" 
+    14	                  v-model="form.phone" 
+    15	                  class="form-control"
+    16	                  type="date" 
+    17	                  v-model="form.date_of_birth" 
+    18	                  class="form-control" 
+    19	                  required
+    20	                  type="text" 
+    21	                  v-model="form.nationality" 
+    22	                  class="form-control"
+    23	                    {{ club.name }}
+    24	              v-model="form.notes" 
+    25	              class="form-control" 
+    26	              rows="3"
+    27	            ></textarea>
+    28	            Cancel
+    29	            Add Player
+\n--- resources/js/components/Dashboard.vue ---
+     1	      {{ error }}
+     2	                No matches found
+     3	                          {{ match.status }}
+     4	                          View
+     5	                    {{ currentSeason.status }}
+     6	                No active season
+     7	                No pending licenses
+     8	                          Approve
+     9	                          Reject
+    10	      v-if="showCreateMatchModal" 
+    11	      v-if="showCreatePlayerModal" 
+    12	      v-if="showLicenseQueue" 
+\n--- resources/js/components/EventModal.vue ---
+     1	              {{ player.first_name }} {{ player.last_name }}
+\n--- resources/js/components/licenses/LicenseQueue.vue ---
+     1	                            Examiner
+\n--- resources/js/components/licenses/LicenseRequestForm.vue ---
+     1	            Demande de licence pour {{ player.first_name }}
+     2	            {{ player.last_name }}
+\n--- resources/js/components/licenses/LicenseReview.vue ---
+\n--- resources/js/components/licenses/ClubPlayerManagement.vue ---
+     1	                                player.hasLicense
+     2	                                    ? "Voir la licence"
+     3	                                    : "Demander une licence"
+     4	            v-if="showLicenseModal"
+\n--- resources/js/components/FifaTestPage.vue ---
+\n--- resources/js/components/FifaCard.vue ---
+     1	        class="fifa-card"
+     2	            `fifa-card--${variant}`,
+     3	            { 'fifa-card--hoverable': hoverable },
+     4	            { 'fifa-card--loading': loading },
+\n--- resources/js/components/players/PlayersList.vue ---
+     1	                        Manage player registrations and profiles
+     2	                        variant="primary"
+     3	                        size="lg"
+     4	                                viewBox="0 0 20 20"
+     5	                                fill="currentColor"
+     6	                                class="fifa-btn__icon"
+     7	                                    fill-rule="evenodd"
+     8	                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+     9	                                    clip-rule="evenodd"
+    10	                            Add New Player
+\n--- resources/js/components/PlayerDashboard.vue ---
+     1	              v-for="tab in tabs"
+     2	                activeTab === tab.id
+     3	                  ? 'border-blue-500 text-blue-600'
+     4	                'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+     5	              {{ tab.name }}
+     6	                       class="w-24 h-24 rounded-full object-cover border-4 border-blue-100">
+     7	                      {{ (player.first_name?.charAt(0) || '') + (player.last_name?.charAt(0) || '') }}
+     8	                      Active
+\n--- resources/js/components/MatchSheet.vue ---
+     1	          Retour au dashboard
+     2	        v-if="showEventModal"
+\n--- resources/js/components/LicensingModule.vue ---
+     1	        ← Back to Dashboard
+\n--- resources/js/components/LicenseQueueModal.vue ---
+     1	              Pending
+     2	              Approved
+     3	              Rejected
+     4	          No licenses found
+     5	                    {{ license.status }}
+     6	                    Approve
+     7	                    Reject
+\n--- resources/js/components/LandingPage.vue ---
+     1	                    >FR</button>
+     2	                    >EN</button>
+\n--- resources/js/components/transfers/DailyPassport.vue ---
+     1	            Actualiser
+     2	          v-for="tab in tabs"
+     3	            activeTab === tab.id
+     4	              ? 'border-blue-500 text-blue-600'
+     5	            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+     6	          {{ tab.name }}
+     7	            v-model="selectedClubId"
+     8	                    {{ getLicenseStatusLabel(player.fifa_license_status) }}
+     9	                    {{ player.itc_status || 'Non requis' }}
+    10	                  {{ player.suspensions_count || 0 }}
+    11	                    {{ player.is_eligible ? 'Oui' : 'Non' }}
+    12	            v-model="selectedFederationId"
+    13	                    {{ getStatusLabel(transfer.transfer_status) }}
+    14	                  {{ transfer.club_origin.name }} → {{ transfer.club_destination.name }}
+    15	            v-model="selectedPlayerId"
+    16	                  {{ getLicenseStatusLabel(selectedPlayer.fifa_license_status) }}
+    17	                    {{ getStatusLabel(transfer.transfer_status) }}
+    18	                  Type: {{ getTransferTypeLabel(transfer.transfer_type) }} | 
+    19	                  Montant: {{ transfer.transfer_fee ? formatCurrency(transfer.transfer_fee, transfer.currency) : 'Gratuit' }}
+\n--- resources/js/components/transfers/TransferList.vue ---
+     1	            Nouveau Transfert
+     2	                {{ getTransferTypeLabel(transfer.transfer_type) }}
+     3	                {{ getStatusLabel(transfer.transfer_status) }}
+     4	                {{ getItcStatusLabel(transfer.itc_status) }}
+     5	              {{ transfer.transfer_fee ? formatCurrency(transfer.transfer_fee, transfer.currency) : 'Gratuit' }}
+     6	                  Voir
+     7	                  v-if="transfer.transfer_status === 'draft'"
+     8	                  Modifier
+     9	                  v-if="transfer.can_be_submitted"
+    10	                  Soumettre
+    11	                  v-if="transfer.is_itc_overdue"
+    12	                  Vérifier ITC
+    13	          Affichage de {{ pagination.from }} à {{ pagination.to }} sur {{ pagination.total }} résultats
+    14	            v-if="pagination.prev_page_url"
+    15	            Précédent
+    16	            v-if="pagination.next_page_url"
+    17	            Suivant
+    18	      v-if="showCreateModal"
+\n--- resources/js/components/transfers/TransferCreateModal.vue ---
+     1	                v-model="form.player_id"
+     2	                required
+     3	                  {{ player.name }} ({{ player.position }}) - {{ player.current_club?.name }}
+     4	                v-model="form.transfer_type"
+     5	                required
+     6	                v-model="form.club_origin_id"
+     7	                required
+     8	                  {{ club.name }} ({{ club.country }})
+     9	                v-model="form.club_destination_id"
+    10	                required
+    11	                  {{ club.name }} ({{ club.country }})
+    12	                v-model="form.transfer_date"
+    13	                type="date"
+    14	                required
+    15	                v-model="form.contract_start_date"
+    16	                type="date"
+    17	                required
+    18	                v-model="form.contract_end_date"
+    19	                type="date"
+    20	                v-model="form.currency"
+    21	                required
+    22	                v-model="form.transfer_fee"
+    23	                type="number"
+    24	                min="0"
+    25	                step="0.01"
+    26	                placeholder="0.00"
+    27	                v-model="form.is_minor_transfer"
+    28	                type="checkbox"
+    29	                id="is_minor_transfer"
+    30	                Transfert de mineur
+    31	              v-model="form.special_conditions"
+    32	              rows="3"
+    33	              placeholder="Conditions spéciales du transfert..."
+    34	            ></textarea>
+    35	              v-model="form.notes"
+    36	              rows="3"
+    37	              placeholder="Notes internes..."
+    38	            ></textarea>
+    39	              type="button"
+    40	              Annuler
+    41	              type="submit"
+\n--- resources/js/components/SimpleTest.vue ---
+     1	            style="
+     2	                color: var(--fifa-blue-primary);
+     3	                font-size: 2rem;
+     4	                margin: 2rem 0;
+     5	            🎉 Application FIFA Vue.js Fonctionnelle !
+     6	            class="test-content"
+     7	            style="
+     8	                background: white;
+     9	                padding: 2rem;
+    10	                border-radius: 8px;
+    11	                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    12	                Test de l'Application
+    13	                Si vous voyez ce message, l'application Vue.js fonctionne
+    14	                correctement !
+    15	                    style="
+    16	                        background: var(--fifa-blue-primary);
+    17	                        color: white;
+    18	                        padding: 0.5rem 1rem;
+    19	                        border: none;
+    20	                        border-radius: 4px;
+    21	                        cursor: pointer;
+    22	                    Test Click ({{ clickCount }})
+    23	                    style="
+    24	                        background: var(--fifa-success);
+    25	                        color: white;
+    26	                        padding: 0.5rem 1rem;
+    27	                        border: none;
+    28	                        border-radius: 4px;
+    29	                        cursor: pointer;
+    30	                    Test Navigation
+    31	                v-if="message"
+    32	                style="
+    33	                    margin-top: 1rem;
+    34	                    padding: 1rem;
+    35	                    background: var(--fifa-success-light);
+    36	                    color: var(--fifa-success);
+    37	                    border-radius: 4px;
+    38	                {{ message }}
+\n--- resources/js/components/FootballTypeSelector.vue ---
+     1	              Contact Sales
+     2	              Trusted by 500+ Football Associations Worldwide
+     3	              Choose Your
+     4	                Football Format
+     5	              Select your preferred football format to access tailored management tools, analytics, and compliance features designed specifically for your sport.
+     6	                Traditional football format with comprehensive player management, match tracking, and performance analytics.
+     7	                Dedicated platform for women's football with specialized health monitoring and performance tracking.
+     8	                Indoor football format with fast-paced action tracking, skill development, and tactical analysis.
+     9	                Beach football with specialized tracking for sand conditions, fitness monitoring, and tournament management.
+    10	              Comprehensive football management solution with advanced analytics, health monitoring, and compliance tools.
+    11	              Enterprise sports management platform for modern football organizations.
+    12	            © 2024 FIT Platform. All rights reserved.
+\n--- resources/js/components/FifaNavigation.vue ---
+     1	                        viewBox="0 0 24 24"
+     2	                        fill="currentColor"
+     3	                        class="fifa-nav__logo-svg"
+     4	                            d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+     5	                        >Football Intelligence</span
+     6	                    v-for="item in menuItems"
+     7	                    class="fifa-nav__item"
+     8	                        class="fifa-nav__link"
+     9	                            'fifa-nav__link--active':
+    10	                                currentRoute === item.path,
+    11	                            class="fifa-nav__link-text"
+    12	                            v-show="!isCollapsed"
+    13	                            >{{ item.label }}</span
+    14	                            class="fifa-nav__link-badge"
+    15	                            v-if="item.badge && !isCollapsed"
+    16	                                item.badge
+    17	                            fill-rule="evenodd"
+    18	                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+    19	                            clip-rule="evenodd"
+    20	                            fill-rule="evenodd"
+    21	                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+    22	                            clip-rule="evenodd"
+    23	                            fill-rule="evenodd"
+    24	                            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+    25	                            clip-rule="evenodd"
+    26	                    class="fifa-nav__user-menu-item fifa-nav__user-menu-item--danger"
+    27	                            fill-rule="evenodd"
+    28	                            d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+    29	                            clip-rule="evenodd"
+    30	                viewBox="0 0 20 20"
+    31	                fill="currentColor"
+    32	                    fill-rule="evenodd"
+    33	                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+    34	                    clip-rule="evenodd"
+\n--- resources/js/components/ProfileSelector.vue ---
+     1	            v-for="profile in profiles"
+     2	                        profile.bg +
+     3	                        ' w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4'
+     4	                    {{ profile.label }}
+\n--- resources/js/components/CompetitionsModule.vue ---
+     1	        ← Back to Dashboard
+\n--- resources/js/components/BasicTest.vue ---
+     1	        style="
+     2	            position: fixed;
+     3	            top: 0;
+     4	            left: 0;
+     5	            width: 100vw;
+     6	            height: 100vh;
+     7	            background: green;
+     8	            color: white;
+     9	            z-index: 99999;
+    10	            display: flex;
+    11	            flex-direction: column;
+    12	            justify-content: center;
+    13	            align-items: center;
+    14	            font-size: 48px;
+    15	            font-weight: bold;
+    16	            text-align: center;
+    17	            style="
+    18	                background: white;
+    19	                color: green;
+    20	                padding: 30px;
+    21	                border: none;
+    22	                font-size: 32px;
+    23	                cursor: pointer;
+    24	                margin: 30px;
+    25	                border-radius: 10px;
+    26	            CLICK ME
+    27	            Timestamp: {{ timestamp }}
+\n--- resources/js/components/FifaDashboard.vue ---
+     1	            class="fifa-dashboard__main"
+     2	                            {{ pageSubtitle }}
+     3	                                class="fifa-btn fifa-btn-secondary"
+     4	                                    viewBox="0 0 20 20"
+     5	                                    fill="currentColor"
+     6	                                    class="fifa-btn__icon"
+     7	                                        fill-rule="evenodd"
+     8	                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+     9	                                        clip-rule="evenodd"
+    10	                                Refresh
+    11	                                class="fifa-btn fifa-btn-primary"
+    12	                                    viewBox="0 0 20 20"
+    13	                                    fill="currentColor"
+    14	                                    class="fifa-btn__icon"
+    15	                                        fill-rule="evenodd"
+    16	                                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+    17	                                        clip-rule="evenodd"
+    18	                                New Player
+    19	                                class="fifa-dashboard__notification-btn"
+    20	                                        d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+    21	                                    class="fifa-dashboard__notification-badge"
+    22	                                    v-if="notificationCount > 0"
+    23	                                    {{ notificationCount }}
+    24	                            v-for="stat in stats"
+    25	                            class="fifa-card fifa-dashboard__stat-card"
+    26	                                    class="fifa-dashboard__stat-icon"
+    27	                                        {{ stat.value }}
+    28	                                        {{ stat.label }}
+    29	                                        class="fifa-dashboard__stat-change"
+    30	                                        v-if="stat.change"
+    31	                                            {{ stat.change.value }}
+    32	                                            class="fifa-dashboard__stat-change-period"
+    33	                                            >vs last month</span
+    34	                                    class="fifa-btn fifa-btn-secondary fifa-btn--sm"
+    35	                                    View All
+    36	                                        v-for="activity in recentActivities"
+    37	                                        class="fifa-dashboard__activity-item"
+    38	                                            class="fifa-dashboard__activity-icon"
+    39	                                            class="fifa-dashboard__activity-content"
+    40	                                                class="fifa-dashboard__activity-text"
+    41	                                                {{ activity.text }}
+    42	                                                class="fifa-dashboard__activity-time"
+    43	                                                >{{ activity.time }}</span
+    44	                                    Performance Overview
+    45	                                        v-for="period in chartPeriods"
+    46	                                        class="fifa-btn fifa-btn--sm"
+    47	                                            selectedPeriod === period.value
+    48	                                                ? 'fifa-btn-primary'
+    49	                                                : 'fifa-btn-secondary'
+    50	                                        {{ period.label }}
+    51	                                        viewBox="0 0 400 200"
+    52	                                        class="fifa-dashboard__chart-svg"
+    53	                                            d="M0,200 L50,150 L100,180 L150,120 L200,140 L250,80 L300,100 L350,60 L400,40"
+    54	                                            fill="none"
+    55	                                            stroke="var(--fifa-blue-secondary)"
+    56	                                            stroke-width="3"
+    57	                                            cx="50"
+    58	                                            cy="150"
+    59	                                            r="4"
+    60	                                            fill="var(--fifa-blue-secondary)"
+    61	                                            cx="100"
+    62	                                            cy="180"
+    63	                                            r="4"
+    64	                                            fill="var(--fifa-blue-secondary)"
+    65	                                            cx="150"
+    66	                                            cy="120"
+    67	                                            r="4"
+    68	                                            fill="var(--fifa-blue-secondary)"
+    69	                                            cx="200"
+    70	                                            cy="140"
+    71	                                            r="4"
+    72	                                            fill="var(--fifa-blue-secondary)"
+    73	                                            cx="250"
+    74	                                            cy="80"
+    75	                                            r="4"
+    76	                                            fill="var(--fifa-blue-secondary)"
+    77	                                            cx="300"
+    78	                                            cy="100"
+    79	                                            r="4"
+    80	                                            fill="var(--fifa-blue-secondary)"
+    81	                                            cx="350"
+    82	                                            cy="60"
+    83	                                            r="4"
+    84	                                            fill="var(--fifa-blue-secondary)"
+    85	                                            cx="400"
+    86	                                            cy="40"
+    87	                                            r="4"
+    88	                                            fill="var(--fifa-blue-secondary)"
+\n--- resources/js/components/UltraDebug.vue ---
+     1	        style="
+     2	            position: fixed;
+     3	            top: 0;
+     4	            left: 0;
+     5	            width: 100%;
+     6	            height: 100%;
+     7	            background: red;
+     8	            color: white;
+     9	            z-index: 9999;
+    10	            display: flex;
+    11	            flex-direction: column;
+    12	            justify-content: center;
+    13	            align-items: center;
+    14	            font-size: 32px;
+    15	            font-weight: bold;
+    16	            style="
+    17	                background: white;
+    18	                color: red;
+    19	                padding: 20px;
+    20	                border: none;
+    21	                font-size: 24px;
+    22	                cursor: pointer;
+    23	                margin: 20px;
+    24	            CLICK ME
+    25	            Timestamp: {{ timestamp }}
+\n--- resources/js/components/RealTimeUpdates.vue ---
+\n--- resources/js/components/performance/AIRecommendationCard.vue ---
+     1	            v-if="recommendation.status === 'pending'"
+     2	            class="action-btn implement-btn"
+     3	            {{ implementing ? 'Implémentation...' : 'Implémenter' }}
+     4	              {{ action }}
+     5	              {{ outcome }}
+     6	            class="progress-fill" 
+     7	          ></div>
+     8	              id="startDate" 
+     9	              v-model="implementationData.start_date" 
+    10	              type="date" 
+    11	              required
+    12	              class="form-input"
+    13	              id="endDate" 
+    14	              v-model="implementationData.expected_completion_date" 
+    15	              type="date" 
+    16	              required
+    17	              class="form-input"
+    18	                {{ user.name }}
+    19	              id="notes" 
+    20	              v-model="implementationData.implementation_notes" 
+    21	              rows="3"
+    22	              class="form-input"
+    23	              placeholder="Notes sur l'implémentation..."
+    24	            ></textarea>
+    25	              Annuler
+    26	              {{ implementing ? 'Implémentation...' : 'Implémenter' }}
+\n--- resources/js/components/performance/PerformanceChart.vue ---
+\n--- resources/js/components/performance/PerformanceMetrics.vue ---
+     1	        v-for="metric in metrics" 
+     2	        class="metric-card"
+     3	                class="progress-fill" 
+     4	              ></div>
+     5	            {{ metric.subtitle }}
+     6	          {{ metric.badge }}
+\n--- resources/js/components/Navigation.vue ---
+     1	                I
+     2	            to="/dashboard" 
+     3	            Dashboard
+     4	              Players
+     5	                to="/player-dashboard" 
+     6	                Player Dashboard
+     7	                to="/player-registration" 
+     8	                v-if="hasPermission('player_registration')"
+     9	                Player Registration
+    10	              Competitions
+    11	                to="/league-championship" 
+    12	                League Championship
+    13	                to="/competitions" 
+    14	                Competition Management
+    15	                to="/rankings" 
+    16	                Rankings
+    17	            to="/performances" 
+    18	            v-if="hasPermission('performance_access')"
+    19	            Performance
+    20	            to="/medical" 
+    21	            v-if="hasPermission('medical_access')"
+    22	            Medical
+    23	            to="/transfers" 
+    24	            v-if="hasPermission('transfer_access')"
+    25	            Transfers
+    26	              FIFA
+    27	                to="/fifa/sync-dashboard" 
+    28	                FIFA Sync Dashboard
+    29	                to="/fifa-dashboard" 
+    30	                FIFA Dashboard
+    31	              Admin
+    32	                to="/back-office/dashboard" 
+    33	                Back Office
+    34	                to="/user-management/dashboard" 
+    35	                User Management
+    36	                to="/role-management" 
+    37	                Role Management
+    38	                to="/profile" 
+    39	                Profile
+    40	                to="/settings" 
+    41	                Settings
+    42	                Logout
+    43	          to="/dashboard" 
+    44	          Dashboard
+\n--- resources/js/components/MedicalModule.vue ---
+     1	        ← Back to Dashboard
+\n--- resources/js/components/FifaSyncDashboard.vue ---
+     1	                FIFA Integration Dashboard
+     2	                Manage data synchronization with FIFA API
+     3	                    class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+     4	                ></div>
+     5	                    >Loading dashboard data...</span
+     6	                        Dashboard Status
+     7	                                Connection Status
+     8	                                {{ connectionStatus }}
+     9	                                Last Sync
+    10	                                {{ lastSyncTime }}
+    11	                                Pending Conflicts
+    12	                                {{ pendingConflicts }}
+    13	                                Recent Errors
+    14	                                {{ recentErrors }}
+    15	                        Synchronization Controls
+    16	                                class="block text-sm font-medium text-gray-700 mb-2"
+    17	                                >Sync Type</label
+    18	                                v-model="syncType"
+    19	                                    Associations Only
+    20	                                class="block text-sm font-medium text-gray-700 mb-2"
+    21	                                >Batch Size</label
+    22	                                v-model="batchSize"
+    23	                                type="number"
+    24	                                min="10"
+    25	                                max="100"
+    26	                                class="block text-sm font-medium text-gray-700 mb-2"
+    27	                                >Filters (JSON)</label
+    28	                                v-model="filters"
+    29	                                type="text"
+    30	                                placeholder='{"country": "France"}'
+    31	                                {{ syncing ? "Syncing..." : "Start Sync" }}
+    32	                            {{ testing ? "Testing..." : "Test Connection" }}
+    33	                            {{ dryRunning ? "Running..." : "Dry Run" }}
+    34	                            {{ clearing ? "Clearing..." : "Clear Cache" }}
+    35	                            Players
+    36	                                    stats.players.total
+    37	                                    stats.players.synced
+    38	                                    >{{ stats.players.syncRate }}%</span
+    39	                            Clubs
+    40	                                    stats.clubs.total
+    41	                                    stats.clubs.synced
+    42	                                    >{{ stats.clubs.syncRate }}%</span
+    43	                            Associations
+    44	                                    >Total Associations</span
+    45	                                    stats.associations.total
+    46	                                    stats.associations.synced
+    47	                                    >{{ stats.associations.syncRate }}%</span
+    48	                        Recent Activity
+    49	                            v-for="activity in recentActivity"
+    50	                            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+    51	                                    class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+    52	                                        getActivityIconText(activity.type)
+    53	                                        {{ activity.description }}
+    54	                                        {{ activity.timestamp }}
+    55	                                class="px-2 py-1 rounded-full text-xs font-medium"
+    56	                                {{ activity.status }}
+\n--- resources/js/components/DynamicDashboard.vue ---
+     1	                    {{ currentType?.displayName || 'Football Intelligence & Tracking' }}
+     2	                    {{ currentType?.description || 'Select a football format to get started' }}
+     3	              Change Format
+     4	                    {{ club.status }}
+\n--- resources/js/components/DebugTest.vue ---
+     1	        style="
+     2	            background: red;
+     3	            color: white;
+     4	            padding: 20px;
+     5	            font-size: 24px;
+     6	            text-align: center;
+     7	            style="
+     8	                background: white;
+     9	                color: red;
+    10	                padding: 10px;
+    11	                border: none;
+    12	                font-size: 18px;
+    13	                cursor: pointer;
+    14	            CLICK ME
+\n--- resources/js/modules/DTNManager/DTNManager/components/NationalTeams.vue ---
+\n--- resources/js/modules/DTNManager/DTNManager/components/InternationalSelections.vue ---
+\n--- resources/js/modules/DTNManager/DTNManager/components/TechnicalPlanning.vue ---
+\n--- resources/js/modules/DTNManager/DTNManager/components/ExpatsClubSync.vue ---
+\n--- resources/js/modules/DTNManager/DTNManager/components/MedicalClubInterface.vue ---
+\n--- resources/js/modules/DTNManager/DTNManager/views/DTNDashboard.vue ---
+\n--- resources/js/modules/DTNManager/components/DTNSettings.vue ---
+\n--- resources/js/modules/DTNManager/components/DTNReports.vue ---
+\n--- resources/js/modules/DTNManager/components/NationalTeams.vue ---
+     1	                v-model="search"
+     2	                type="text"
+     3	                        v-for="team in filteredTeams"
+     4	            v-if="selectedTeam"
+     5	            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+     6	                class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative"
+     7	                    &times;
+     8	                    {{ selectedTeam.category }} - {{ selectedTeam.gender }}
+     9	                    {{ selectedTeam.ageGroup }}
+    10	                    {{ selectedTeam.coach }}
+    11	                        {{ player.name }} ({{ player.position }})
+\n--- resources/js/modules/DTNManager/components/InternationalSelections.vue ---
+     1	                    Sélections Internationales
+     2	                            class="w-5 h-5"
+     3	                            fill="none"
+     4	                            stroke="currentColor"
+     5	                            viewBox="0 0 24 24"
+     6	                                stroke-linecap="round"
+     7	                                stroke-linejoin="round"
+     8	                                stroke-width="2"
+     9	                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+    10	                            ></path>
+    11	                            class="w-5 h-5"
+    12	                            fill="none"
+    13	                            stroke="currentColor"
+    14	                            viewBox="0 0 24 24"
+    15	                                stroke-linecap="round"
+    16	                                stroke-linejoin="round"
+    17	                                stroke-width="2"
+    18	                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+    19	                            ></path>
+    20	                        >Équipe</label
+    21	                        v-model="filters.team"
+    22	                            v-for="team in teams"
+    23	                            {{ team.name }}
+    24	                        >Compétition</label
+    25	                        v-model="filters.competition"
+    26	                            Coupe du Monde FIFA
+    27	                        >Statut</label
+    28	                        v-model="filters.status"
+    29	                        >Date</label
+    30	                        type="date"
+    31	                        v-model="filters.date"
+    32	                        Filtrer
+    33	                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    34	                            Équipe
+    35	                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    36	                            Compétition
+    37	                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    38	                            Date
+    39	                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    40	                            Joueurs
+    41	                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    42	                            Statut
+    43	                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    44	                            Actions
+    45	                        v-for="selection in filteredSelections"
+    46	                                        class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+    47	                                            class="text-sm font-medium text-gray-700"
+    48	                                                selection.team.charAt(0)
+    49	                                        class="text-sm font-medium text-gray-900"
+    50	                                        {{ selection.team }}
+    51	                                        {{ selection.opponent }}
+    52	                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+    53	                                    getCompetitionClass(selection.competition)
+    54	                                {{ getCompetitionLabel(selection.competition) }}
+    55	                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+    56	                            {{ formatDate(selection.date) }}
+    57	                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+    58	                            {{ selection.playerCount }} /
+    59	                            {{ selection.maxPlayers }}
+    60	                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+    61	                                {{ getStatusLabel(selection.status) }}
+    62	                            class="px-6 py-4 whitespace-nowrap text-sm font-medium"
+    63	                                    Voir
+    64	                                    Modifier
+    65	                                    Joueurs
+    66	                                    Notifier
+    67	                                    Exporter
+    68	                    Affichage de {{ pagination.from }} à {{ pagination.to }} sur
+    69	                    {{ pagination.total }} sélections
+    70	                        Précédent
+    71	                            pagination.currentPage === pagination.lastPage
+    72	                        Suivant
+\n--- resources/js/modules/DTNManager/components/ExpatDetail.vue ---
+\n--- resources/js/modules/DTNManager/components/TeamDetail.vue ---
+\n--- resources/js/modules/DTNManager/components/SelectionPlayers.vue ---
+\n--- resources/js/modules/DTNManager/components/TeamForm.vue ---
+\n--- resources/js/modules/DTNManager/components/SelectionDetail.vue ---
+\n--- resources/js/modules/DTNManager/components/TechnicalPlanning.vue ---
+     1	                Planification Technique
+     2	                Composant TechnicalPlanning - En cours de développement
+\n--- resources/js/modules/DTNManager/components/ExpatsClubSync.vue ---
+     1	                Synchronisation Clubs Expatriés
+     2	                Composant ExpatsClubSync - En cours de développement
+\n--- resources/js/modules/DTNManager/components/PlayerMedicalData.vue ---
+\n--- resources/js/modules/DTNManager/components/SelectionForm.vue ---
+\n--- resources/js/modules/DTNManager/components/MedicalClubInterface.vue ---
+     1	                Interface Médicale Clubs
+     2	                Composant MedicalClubInterface - En cours de développement
+\n--- resources/js/modules/DTNManager/views/DTNDashboard.vue ---
+     1	            DTN Manager Dashboard
+     2	                v-for="tab in tabs"
+     3	                    'px-4 py-2 rounded-lg font-semibold transition',
+     4	                    activeTab === tab.key
+     5	                        ? 'bg-blue-700 text-white'
+     6	                {{ tab.label }}
+\n--- resources/js/modules/RPM/components/MatchesList.vue ---
+\n--- resources/js/modules/RPM/components/AttendanceTracker.vue ---
+     1	                Suivi des Présences
+     2	                Composant AttendanceTracker - En cours de développement
+\n--- resources/js/modules/RPM/components/SessionDetail.vue ---
+\n--- resources/js/modules/RPM/components/RPMSync.vue ---
+\n--- resources/js/modules/RPM/components/TrainingCalendar.vue ---
+     1	                Calendrier d'Entraînement
+     2	                Composant TrainingCalendar - En cours de développement
+\n--- resources/js/modules/RPM/components/PlayerLoadDetail.vue ---
+\n--- resources/js/modules/RPM/components/RPMSettings.vue ---
+\n--- resources/js/modules/RPM/components/SessionsList.vue ---
+\n--- resources/js/modules/RPM/components/MatchDetail.vue ---
+\n--- resources/js/modules/RPM/components/SessionEditor.vue ---
+     1	                Éditeur de Session
+     2	                Composant SessionEditor - En cours de développement
+\n--- resources/js/modules/RPM/components/RPMReports.vue ---
+\n--- resources/js/modules/RPM/components/PlayerLoadMonitor.vue ---
+     1	                Monitoring Charge Joueurs
+     2	                Composant PlayerLoadMonitor - En cours de développement
+\n--- resources/js/modules/RPM/components/MatchPreparation.vue ---
+     1	                Préparation de Match
+     2	                Composant MatchPreparation - En cours de développement
+\n--- resources/js/modules/RPM/components/SessionAttendance.vue ---
+\n--- resources/js/modules/RPM/RPM/components/AttendanceTracker.vue ---
+\n--- resources/js/modules/RPM/RPM/components/TrainingCalendar.vue ---
+\n--- resources/js/modules/RPM/RPM/components/SessionEditor.vue ---
+\n--- resources/js/modules/RPM/RPM/components/PlayerLoadMonitor.vue ---
+\n--- resources/js/modules/RPM/RPM/components/MatchPreparation.vue ---
+\n--- resources/js/modules/RPM/RPM/views/RPMPortal.vue ---
+\n--- resources/js/modules/RPM/views/RPMPortal.vue ---
+     1	                            ⚽ RPM - Régulation & Préparation Matchs
+     2	                            Planification des entraînements et gestion de la
+     3	                            charge de travail
+     4	                                class="w-5 h-5"
+     5	                                fill="none"
+     6	                                stroke="currentColor"
+     7	                                viewBox="0 0 24 24"
+     8	                                    stroke-linecap="round"
+     9	                                    stroke-linejoin="round"
+    10	                                    stroke-width="2"
+    11	                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+    12	                                ></path>
+    13	                                class="w-5 h-5"
+    14	                                fill="none"
+    15	                                stroke="currentColor"
+    16	                                viewBox="0 0 24 24"
+    17	                                    stroke-linecap="round"
+    18	                                    stroke-linejoin="round"
+    19	                                    stroke-width="2"
+    20	                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+    21	                                ></path>
+    22	                                class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center"
+    23	                                    class="w-5 h-5 text-white"
+    24	                                    fill="none"
+    25	                                    stroke="currentColor"
+    26	                                    viewBox="0 0 24 24"
+    27	                                        stroke-linecap="round"
+    28	                                        stroke-linejoin="round"
+    29	                                        stroke-width="2"
+    30	                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+    31	                                    ></path>
+    32	                                Sessions Cette Semaine
+    33	                                {{ stats.weeklySessions }}
+    34	                                class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center"
+    35	                                    class="w-5 h-5 text-white"
+    36	                                    fill="none"
+    37	                                    stroke="currentColor"
+    38	                                    viewBox="0 0 24 24"
+    39	                                        stroke-linecap="round"
+    40	                                        stroke-linejoin="round"
+    41	                                        stroke-width="2"
+    42	                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+    43	                                    ></path>
+    44	                                Charge Moyenne
+    45	                                {{ stats.averageLoad }} RPE
+    46	                                class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center"
+    47	                                    class="w-5 h-5 text-white"
+    48	                                    fill="none"
+    49	                                    stroke="currentColor"
+    50	                                    viewBox="0 0 24 24"
+    51	                                        stroke-linecap="round"
+    52	                                        stroke-linejoin="round"
+    53	                                        stroke-width="2"
+    54	                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+    55	                                    ></path>
+    56	                                Temps Total
+    57	                                {{ stats.totalTime }}h
+    58	                                class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center"
+    59	                                    class="w-5 h-5 text-white"
+    60	                                    fill="none"
+    61	                                    stroke="currentColor"
+    62	                                    viewBox="0 0 24 24"
+    63	                                        stroke-linecap="round"
+    64	                                        stroke-linejoin="round"
+    65	                                        stroke-width="2"
+    66	                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+    67	                                    ></path>
+    68	                                Joueurs à Risque
+    69	                                {{ stats.riskPlayers }}
+    70	                                    Calendrier d'Entraînement
+    71	                                            class="w-5 h-5"
+    72	                                            fill="none"
+    73	                                            stroke="currentColor"
+    74	                                            viewBox="0 0 24 24"
+    75	                                                stroke-linecap="round"
+    76	                                                stroke-linejoin="round"
+    77	                                                stroke-width="2"
+    78	                                                d="M15 19l-7-7 7-7"
+    79	                                            ></path>
+    80	                                        class="text-sm font-medium text-gray-700"
+    81	                                        >{{ currentWeekLabel }}</span
+    82	                                            class="w-5 h-5"
+    83	                                            fill="none"
+    84	                                            stroke="currentColor"
+    85	                                            viewBox="0 0 24 24"
+    86	                                                stroke-linecap="round"
+    87	                                                stroke-linejoin="round"
+    88	                                                stroke-width="2"
+    89	                                                d="M9 5l7 7-7 7"
+    90	                                            ></path>
+    91	                                    v-for="day in weekDays"
+    92	                                    class="min-h-32 border border-gray-200 rounded-lg p-3"
+    93	                                            class="text-sm font-medium text-gray-900"
+    94	                                            {{ day.name }}
+    95	                                            {{ formatDate(day.date) }}
+    96	                                            v-for="session in day.sessions"
+    97	                                                class="font-medium text-blue-900"
+    98	                                                {{ session.title }}
+    99	                                                {{ session.time }}
+   100	                                                {{ session.type }}
+   101	                                Charge des Joueurs
+   102	                                v-if="playerLoads.length === 0"
+   103	                                class="text-center text-gray-500 py-4"
+   104	                                Aucune donnée de charge
+   105	                                    v-for="player in playerLoads"
+   106	                                    class="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+   107	                                            {{ player.name }}
+   108	                                            {{ player.position }}
+   109	                                            class="text-lg font-semibold"
+   110	                                            {{ player.load }} RPE
+   111	                                            {{ player.sessions }} sessions
+   112	                                Sessions Récentes
+   113	                                v-if="recentSessions.length === 0"
+   114	                                class="text-center text-gray-500 py-4"
+   115	                                Aucune session récente
+   116	                                    v-for="session in recentSessions"
+   117	                                        {{ session.title }}
+   118	                                        {{ formatDate(session.date) }} -
+   119	                                        {{ session.time }}
+   120	                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+   121	                                                getSessionTypeClass(
+   122	                                                    session.type
+   123	                                            {{ session.type }}
+   124	                                                session.playerCount
+   125	                                            joueurs</span
+   126	                                Actions Rapides
+   127	                                Nouvelle Session
+   128	                                Préparer Match
+   129	                                Présences
+   130	                                Exporter Données
+\n--- resources/js/modules/RPM/views/RPMDashboard.vue ---

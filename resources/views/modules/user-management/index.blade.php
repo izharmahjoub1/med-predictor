@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'User Management')
+@section('title', __('user_management.title'))
 
 @section('content')
 <div class="py-12">
@@ -9,23 +9,30 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
-                    <p class="mt-2 text-gray-600">Manage system users and FIFA Connect compliance</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ __('user_management.title') }}</h1>
+                    <p class="mt-2 text-gray-600">{{ __('user_management.subtitle') }}</p>
                 </div>
                 <div class="flex space-x-3">
-                    <a href="{{ route('user-management.users.create') }}" 
+                    <a href="{{ route('dashboard') }}" 
+                       class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        {{ __('user_management.back_to_dashboard') }}
+                    </a>
+                    <a href="{{ route('user-management.create') }}" 
                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        Create User
+                        {{ __('user_management.create_user') }}
                     </a>
                     <a href="{{ route('user-management.export') }}" 
                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export
+                        {{ __('user_management.export') }}
                     </a>
                 </div>
             </div>
@@ -34,51 +41,45 @@
         <!-- Search and Filters -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
             <div class="p-6">
-                <form method="GET" action="{{ route('user-management.users.index') }}" class="space-y-4">
+                <form method="GET" action="{{ route('user-management.index') }}" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Search -->
                         <div>
-                            <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                            <label for="search" class="block text-sm font-medium text-gray-700 mb-1">{{ __('user_management.search') }}</label>
                             <input type="text" name="search" id="search" value="{{ request('search') }}" 
                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                   placeholder="Name, email, or FIFA ID">
+                                   placeholder="{{ __('user_management.search_placeholder') }}">
                         </div>
 
                         <!-- Role Filter -->
                         <div>
-                            <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                            <label for="role" class="block text-sm font-medium text-gray-700 mb-1">{{ __('user_management.role') }}</label>
                             <select name="role" id="role" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                <option value="">All Roles</option>
+                                <option value="">{{ __('user_management.all_roles') }}</option>
                                 @foreach($roles as $role => $display)
-                                <option value="{{ $role }}" {{ request('role') == $role ? 'selected' : '' }}>
-                                    {{ $display }}
-                                </option>
+                                <option value="{{ $role }}" {{ request('role') == $role ? 'selected' : '' }}>{{ $display }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <!-- Status Filter -->
                         <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">{{ __('user_management.status') }}</label>
                             <select name="status" id="status" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                <option value="">All Statuses</option>
+                                <option value="">{{ __('user_management.all_statuses') }}</option>
                                 @foreach($statuses as $status)
-                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                                    {{ ucfirst($status) }}
-                                </option>
+                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <!-- Entity Type Filter -->
                         <div>
-                            <label for="entity_type" class="block text-sm font-medium text-gray-700 mb-1">Entity Type</label>
+                            <label for="entity_type" class="block text-sm font-medium text-gray-700 mb-1">{{ __('user_management.entity_type') }}</label>
                             <select name="entity_type" id="entity_type" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                <option value="">All Types</option>
+                                <option value="">{{ __('user_management.all_types') }}</option>
                                 @foreach($entityTypes as $type)
-                                <option value="{{ $type }}" {{ request('entity_type') == $type ? 'selected' : '' }}>
-                                    {{ ucfirst($type) }}
-                                </option>
+                                <option value="{{ $type }}" {{ request('entity_type') == $type ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -89,9 +90,9 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
-                            Filter
+                            {{ __('user_management.filter') }}
                         </button>
-                        <a href="{{ route('user-management.users.index') }}" class="text-gray-600 hover:text-gray-800 text-sm">Clear Filters</a>
+                        <a href="{{ route('user-management.index') }}" class="text-gray-600 hover:text-gray-800 text-sm">{{ __('user_management.clear_filters') }}</a>
                     </div>
                 </form>
             </div>
@@ -105,19 +106,17 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
                             <select name="action" id="bulk-action" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                <option value="">Bulk Actions</option>
-                                <option value="activate">Activate</option>
-                                <option value="deactivate">Deactivate</option>
-                                <option value="suspend">Suspend</option>
-                                <option value="delete">Delete</option>
+                                <option value="">{{ __('user_management.bulk_actions') }}</option>
+                                <option value="activate">{{ __('user_management.activate') }}</option>
+                                <option value="deactivate">{{ __('user_management.deactivate') }}</option>
+                                <option value="suspend">{{ __('user_management.suspend') }}</option>
+                                <option value="delete">{{ __('user_management.delete') }}</option>
                             </select>
                             <button type="submit" id="bulk-action-btn" disabled
-                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Apply
-                            </button>
+                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">{{ __('user_management.apply') }}</button>
                         </div>
                         <div class="text-sm text-gray-600">
-                            <span id="selected-count">0</span> users selected
+                            <span id="selected-count">0</span> {{ __('user_management.users_selected') }}
                         </div>
                     </div>
                 </form>
@@ -133,14 +132,14 @@
                             <th class="px-6 py-3 text-left">
                                 <input type="checkbox" id="select-all" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entity</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FIFA ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.user') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.role') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.entity') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.fifa_id') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.last_login') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.created') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -201,25 +200,25 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('user-management.users.show', $user) }}" 
-                                       class="text-blue-600 hover:text-blue-900" title="View">
+                                    <a href="{{ route('user-management.show', $user) }}" 
+                                       class="text-blue-600 hover:text-blue-900" title="{{ __('user_management.view') }}">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
                                     </a>
-                                    <a href="{{ route('user-management.users.edit', $user) }}" 
-                                       class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                    <a href="{{ route('user-management.edit', $user) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900" title="{{ __('user_management.edit') }}">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                     </a>
                                     @if(!$user->isSystemAdmin() && $user->id !== auth()->id())
-                                    <form method="POST" action="{{ route('user-management.users.destroy', $user) }}" class="inline" 
-                                          onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                    <form method="POST" action="{{ route('user-management.destroy', $user) }}" class="inline" 
+                                          onsubmit="return confirm('{{ __('user_management.confirm_delete') }}')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
+                                        <button type="submit" class="text-red-600 hover:text-red-900" title="{{ __('user_management.delete') }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
@@ -236,8 +235,8 @@
                                     <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
                                     </svg>
-                                    <p class="text-lg font-medium text-gray-900 mb-2">No users found</p>
-                                    <p class="text-gray-500">Try adjusting your search or filter criteria</p>
+                                    <p class="text-lg font-medium text-gray-900 mb-2">{{ __('user_management.no_users_found') }}</p>
+                                    <p class="text-gray-500">{{ __('user_management.try_adjusting_search') }}</p>
                                 </div>
                             </td>
                         </tr>
@@ -303,18 +302,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (checkedBoxes.length === 0) {
             e.preventDefault();
-            alert('Please select at least one user.');
+            alert('{{ __('user_management.please_select_at_least_one_user') }}');
             return;
         }
         
         if (!bulkAction) {
             e.preventDefault();
-            alert('Please select an action.');
+            alert('{{ __('user_management.please_select_an_action') }}');
             return;
         }
         
         if (bulkAction === 'delete') {
-            if (!confirm(`Are you sure you want to delete ${checkedBoxes.length} user(s)? This action cannot be undone.`)) {
+            if (!confirm(`{{ __('user_management.confirm_delete_bulk') }}`)) {
                 e.preventDefault();
                 return;
             }

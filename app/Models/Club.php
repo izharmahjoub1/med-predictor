@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Club extends Model
 {
@@ -38,6 +39,9 @@ class Club extends Model
         'medical_team',
         'coaching_staff',
         'last_updated',
+        'fifa_sync_status',
+        'fifa_sync_date',
+        'fifa_last_error',
     ];
 
     protected $casts = [
@@ -52,6 +56,7 @@ class Club extends Model
         'medical_team' => 'integer',
         'coaching_staff' => 'integer',
         'last_updated' => 'datetime',
+        'fifa_sync_date' => 'datetime',
     ];
 
     // Relationships
@@ -75,9 +80,9 @@ class Club extends Model
         return $this->hasMany(Lineup::class);
     }
 
-    public function competitions(): HasMany
+    public function competitions(): BelongsToMany
     {
-        return $this->hasMany(Competition::class);
+        return $this->belongsToMany(Competition::class, 'competition_club');
     }
 
     public function playerLicenses(): HasMany
@@ -109,19 +114,28 @@ class Club extends Model
     // Methods
     public function getTotalSquadValue(): float
     {
-        $sum = $this->players()->sum('value_eur');
-        return $sum ?? 0.0;
+        $cacheKey = "club_{$this->id}_total_squad_value";
+        return \Cache::remember($cacheKey, 300, function () {
+            $sum = $this->players()->sum('value_eur');
+            return $sum ?? 0.0;
+        });
     }
 
     public function getAverageSquadRating(): float
     {
-        $average = $this->players()->avg('overall_rating');
-        return $average ?? 0.0;
+        $cacheKey = "club_{$this->id}_avg_squad_rating";
+        return \Cache::remember($cacheKey, 300, function () {
+            $average = $this->players()->avg('overall_rating');
+            return $average ?? 0.0;
+        });
     }
 
     public function getSquadSize(): int
     {
-        return $this->players()->count();
+        $cacheKey = "club_{$this->id}_squad_size";
+        return \Cache::remember($cacheKey, 300, function () {
+            return $this->players()->count();
+        });
     }
 
     public function getAvailableBudget(): float
@@ -131,8 +145,11 @@ class Club extends Model
 
     public function getWageSpending(): float
     {
-        $sum = $this->players()->sum('wage_eur');
-        return $sum ?? 0.0;
+        $cacheKey = "club_{$this->id}_wage_spending";
+        return \Cache::remember($cacheKey, 300, function () {
+            $sum = $this->players()->sum('wage_eur');
+            return $sum ?? 0.0;
+        });
     }
 
     public function getRemainingWageBudget(): float
@@ -153,7 +170,29 @@ class Club extends Model
 
     public function getBestPlayers(int $limit = 11): \Illuminate\Database\Eloquent\Collection
     {
-        return $this->players()->orderBy('overall_rating', 'desc')->limit($limit)->get();
+        $cacheKey = "club_{$this->id}_best_players_{$limit}";
+        return \Cache::remember($cacheKey, 300, function () use ($limit) {
+            return $this->players()->orderBy('overall_rating', 'desc')->limit($limit)->get();
+        });
+    }
+
+    public function clearCache(): void
+    {
+        $cacheKeys = [
+            "club_{$this->id}_total_squad_value",
+            "club_{$this->id}_avg_squad_rating",
+            "club_{$this->id}_squad_size",
+            "club_{$this->id}_wage_spending",
+        ];
+        
+        foreach ($cacheKeys as $key) {
+            \Cache::forget($key);
+        }
+        
+        // Clear best players cache for different limits
+        for ($i = 5; $i <= 25; $i += 5) {
+            \Cache::forget("club_{$this->id}_best_players_{$i}");
+        }
     }
 
     public function getYouthPlayers(): \Illuminate\Database\Eloquent\Collection
@@ -178,6 +217,14 @@ class Club extends Model
         return $this->players()->whereDoesntHave('healthRecords', function ($query) {
             $query->where('status', 'injured');
         })->get();
+    }
+
+    /**
+     * Retourne l'utilisateur principal du club (club_admin ou club_manager)
+     */
+    public function userPrincipal()
+    {
+        return $this->users()->whereIn('role', ['club_admin', 'club_manager'])->orderBy('id')->first();
     }
 
     // Logo and Image Methods

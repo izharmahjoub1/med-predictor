@@ -10,7 +10,7 @@
             <p class="text-gray-600 mt-2">Importez plusieurs joueurs simultanément via JSON ou CSV</p>
         </div>
         <div class="flex flex-col sm:flex-row gap-3">
-            <a href="{{ route('player-registration.players.index') }}" 
+            <a href="{{ route('player-registration.index') }}" 
                class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
                 <span class="mr-2">←</span>
                 <span class="hidden sm:inline">Retour aux joueurs</span>
@@ -499,7 +499,7 @@ function exportPlayers() {
     if (position) params.append('position', position);
     if (nationality) params.append('nationality', nationality);
     
-    fetch(`{{ route('player-registration.players.export') }}?${params.toString()}`)
+            fetch(`{{ route('player-registration.export') }}?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {

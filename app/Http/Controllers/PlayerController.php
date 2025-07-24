@@ -11,12 +11,21 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PlayerController extends Controller
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
-        $players = Player::with(['club', 'association'])
+        $user = auth()->user();
+        
+        // If user is a club user, redirect to club management players
+        if ($user->role && in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
+            return redirect()->route('club-management.players.index');
+        }
+        
+        $players = Player::with(['club', 'association', 'healthRecords', 'medicalPredictions'])
             ->orderBy('name')
             ->paginate(20);
 
@@ -167,9 +176,44 @@ class PlayerController extends Controller
 
     public function dashboard(): View
     {
-        $totalPlayers = Player::count();
-        $playersWithHealthRecords = Player::has('healthRecords')->count();
-        $playersWithPredictions = Player::has('medicalPredictions')->count();
+        // Use cache for expensive operations
+        $cacheKey = 'player_dashboard_stats_' . auth()->id();
+        $stats = Cache::remember($cacheKey, 300, function () {
+            $totalPlayers = Player::count();
+            $playersWithHealthRecords = Player::has('healthRecords')->count();
+            $playersWithPredictions = Player::has('medicalPredictions')->count();
+            
+            // Optimize age distribution queries with single query
+            $ageDistribution = DB::select("
+                SELECT 
+                    CASE 
+                        WHEN date_of_birth <= ? AND date_of_birth > ? THEN '18-25'
+                        WHEN date_of_birth <= ? AND date_of_birth > ? THEN '26-30'
+                        WHEN date_of_birth <= ? AND date_of_birth > ? THEN '31-35'
+                        ELSE '36+'
+                    END as age_group,
+                    COUNT(*) as count
+                FROM players 
+                GROUP BY age_group
+            ", [
+                now()->subYears(18), now()->subYears(25),
+                now()->subYears(26), now()->subYears(30),
+                now()->subYears(31), now()->subYears(35)
+            ]);
+            
+            $ageDistributionMap = [];
+            foreach ($ageDistribution as $age) {
+                $ageDistributionMap[$age->age_group] = $age->count;
+            }
+            
+            return [
+                'totalPlayers' => $totalPlayers,
+                'playersWithHealthRecords' => $playersWithHealthRecords,
+                'playersWithPredictions' => $playersWithPredictions,
+                'ageDistribution' => $ageDistributionMap
+            ];
+        });
+        
         $recentPlayers = Player::with(['club', 'association'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
@@ -186,12 +230,10 @@ class PlayerController extends Controller
             ->limit(10)
             ->get();
 
-        $ageDistribution = [
-            '18-25' => Player::where('date_of_birth', '<=', now()->subYears(18))->where('date_of_birth', '>', now()->subYears(25))->count(),
-            '26-30' => Player::where('date_of_birth', '<=', now()->subYears(26))->where('date_of_birth', '>', now()->subYears(30))->count(),
-            '31-35' => Player::where('date_of_birth', '<=', now()->subYears(31))->where('date_of_birth', '>', now()->subYears(35))->count(),
-            '36+' => Player::where('date_of_birth', '<=', now()->subYears(36))->count(),
-        ];
+        $totalPlayers = $stats['totalPlayers'];
+        $playersWithHealthRecords = $stats['playersWithHealthRecords'];
+        $playersWithPredictions = $stats['playersWithPredictions'];
+        $ageDistribution = $stats['ageDistribution'];
 
         return view('players.dashboard', compact(
             'totalPlayers',
