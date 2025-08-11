@@ -1066,6 +1066,106 @@
                     </div>
                 </div>
 
+                <!-- Facteurs SDOH (Social Determinants of Health) -->
+                <div class="performance-card p-6 bg-white rounded-2xl shadow-lg">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-users text-teal-600 mr-3"></i>
+                        Santé & Bien-être – Facteurs SDOH
+                    </h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Radar Chart SDOH -->
+                        <div class="w-full">
+                            <div class="chart-container mb-4">
+                                <canvas id="sdohRadarChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- SDOH Details -->
+                        <div class="w-full space-y-4">
+                            <p class="text-gray-700 mb-4">
+                                Cet indicateur <strong>SDOH</strong> (Social Determinants of Health) donne une vision
+                                à 360° de l'état de bien-être global du joueur, en intégrant les
+                                facteurs sociaux, environnementaux et comportementaux.
+                            </p>
+                            
+                            <!-- SDOH Factors breakdown -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-teal-50 rounded-lg border-l-4 border-teal-500">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-home text-teal-600"></i>
+                                        <span class="font-medium text-gray-800">Environnement de vie</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-teal-600">85/100</div>
+                                        <div class="text-xs text-gray-600">Qualité logement, stabilité</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-heart text-green-600"></i>
+                                        <span class="font-medium text-gray-800">Soutien social</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-green-600">90/100</div>
+                                        <div class="text-xs text-gray-600">Famille, amis, entourage</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-user-md text-blue-600"></i>
+                                        <span class="font-medium text-gray-800">Accès aux soins</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-blue-600">75/100</div>
+                                        <div class="text-xs text-gray-600">Rapidité, disponibilité</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-dollar-sign text-yellow-600"></i>
+                                        <span class="font-medium text-gray-800">Situation financière</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-yellow-600">80/100</div>
+                                        <div class="text-xs text-gray-600">Sécurité économique</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-brain text-purple-600"></i>
+                                        <span class="font-medium text-gray-800">Bien-être mental</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-purple-600">88/100</div>
+                                        <div class="text-xs text-gray-600">Stress, motivation</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Overall SDOH Score -->
+                            <div class="mt-6 p-4 bg-gradient-to-r from-teal-50 to-green-50 rounded-lg border border-teal-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-bold text-gray-800">Score SDOH Global</div>
+                                        <div class="text-sm text-gray-600">Déterminants sociaux de santé</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-3xl font-bold text-teal-600">83.6/100</div>
+                                        <div class="text-xs text-teal-700">↗️ +2.4 ce mois</div>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-teal-200 rounded-full h-3 mt-3">
+                                    <div class="bg-gradient-to-r from-teal-500 to-green-500 h-3 rounded-full" style="width: 83.6%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recommandations Personnalisées IA -->
                 <div class="performance-card p-6">
                     <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -2070,6 +2170,7 @@
                         this.createPerformanceChart();
                         this.createComparisonChart();
                         this.createHealthTrendsChart();
+                        this.createSDOHRadarChart();
                     });
                 },
                 createPerformanceChart() {
@@ -2220,6 +2321,114 @@
                             },
                             interaction: {
                                 intersect: false,
+                            }
+                        }
+                    });
+                },
+                createSDOHRadarChart() {
+                    const ctx = document.getElementById('sdohRadarChart');
+                    if (!ctx) return;
+
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: [
+                                'Environnement de vie',
+                                'Soutien social',
+                                'Accès aux soins',
+                                'Situation financière',
+                                'Bien-être mental'
+                            ],
+                            datasets: [
+                                {
+                                    label: 'Score SDOH du joueur',
+                                    data: [85, 90, 75, 80, 88],
+                                    backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                                    borderColor: 'rgba(20, 184, 166, 1)',
+                                    borderWidth: 2,
+                                    pointBackgroundColor: 'rgba(20, 184, 166, 1)',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 2,
+                                    pointHoverBackgroundColor: '#fff',
+                                    pointHoverBorderColor: 'rgba(20, 184, 166, 1)',
+                                    pointHoverBorderWidth: 3,
+                                    pointRadius: 5,
+                                    pointHoverRadius: 8
+                                },
+                                {
+                                    label: 'Moyenne FIFA Athletes',
+                                    data: [78, 82, 70, 75, 80],
+                                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                    borderColor: 'rgba(99, 102, 241, 0.8)',
+                                    borderWidth: 1,
+                                    pointBackgroundColor: 'rgba(99, 102, 241, 0.8)',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 1,
+                                    pointRadius: 3,
+                                    borderDash: [5, 5]
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { 
+                                    position: 'top',
+                                    labels: {
+                                        usePointStyle: true,
+                                        padding: 20
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Facteurs sociaux déterminants de la santé (SDOH)',
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    },
+                                    color: '#374151'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.r + '/100';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                r: {
+                                    angleLines: { 
+                                        display: true,
+                                        color: 'rgba(156, 163, 175, 0.3)'
+                                    },
+                                    grid: {
+                                        color: 'rgba(156, 163, 175, 0.2)'
+                                    },
+                                    pointLabels: {
+                                        font: {
+                                            size: 12,
+                                            weight: '500'
+                                        },
+                                        color: '#374151'
+                                    },
+                                    suggestedMin: 0,
+                                    suggestedMax: 100,
+                                    ticks: { 
+                                        stepSize: 20,
+                                        display: true,
+                                        backdropColor: 'rgba(255, 255, 255, 0.8)',
+                                        color: '#6B7280',
+                                        font: {
+                                            size: 10
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeInOutQuart'
                             }
                         }
                     });
