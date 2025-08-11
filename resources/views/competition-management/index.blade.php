@@ -151,21 +151,21 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('competition-management.competitions.show', $competition) }}" 
+                                                    <a href="{{ route('competitions.show', $competition) }}" 
                                                        class="text-indigo-600 hover:text-indigo-900">{{ __('View') }}</a>
-                                                    <a href="{{ route('competition-management.competitions.edit', $competition) }}" 
+                                                    <a href="{{ route('competitions.edit', $competition) }}" 
                                                        class="text-blue-600 hover:text-blue-900">{{ __('Edit') }}</a>
-                                                    <a href="{{ route('competition-management.competitions.standings', $competition) }}" 
+                                                    <a href="{{ route('competitions.standings', $competition) }}" 
                                                        class="text-green-600 hover:text-green-900">{{ __('Standings') }}</a>
-                                                    <a href="{{ route('competition-management.competitions.register-team-form', $competition) }}" 
+                                                    <a href="{{ route('competitions.register-team-form', $competition) }}" 
                                                        class="text-orange-600 hover:text-orange-900">{{ __('Inscrire une équipe') }}</a>
-                                                    <form action="{{ route('competition-management.competitions.sync', $competition) }}" method="POST" class="inline">
+                                                    <form action="{{ route('competitions.sync', $competition) }}" method="POST" class="inline">
                                                         @csrf
                                                         <button type="submit" class="text-purple-600 hover:text-purple-900">
                                                             {{ __('Sync') }}
                                                         </button>
                                                     </form>
-                                                    <form action="{{ route('competition-management.competitions.destroy', $competition) }}" method="POST" class="inline">
+                                                    <form action="{{ route('competitions.destroy', $competition) }}" method="POST" class="inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="text-red-600 hover:text-red-900" 

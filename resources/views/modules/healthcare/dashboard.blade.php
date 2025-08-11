@@ -88,13 +88,13 @@
 
         <!-- Action Buttons -->
         <div class="mb-8 flex flex-wrap gap-4">
-            <a href="{{ route('healthcare.health-records.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <a href="{{ route('healthcare.records.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
                 Create Health Record
             </a>
-            <a href="{{ route('healthcare.health-records.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <a href="{{ route('healthcare.records.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
@@ -133,7 +133,7 @@
                                     {{ $record->risk_score > 0.7 ? 'High Risk' : 
                                        ($record->risk_score > 0.3 ? 'Moderate Risk' : 'Low Risk') }}
                                 </span>
-                                <a href="{{ route('healthcare.health-records.show', $record) }}" class="ml-2 text-indigo-600 hover:text-indigo-900 text-sm font-medium">View</a>
+                                <a href="{{ route('healthcare.records.show', ['record' => $record]) }}" class="ml-2 text-indigo-600 hover:text-indigo-900 text-sm font-medium">View</a>
                             </div>
                         </div>
                     </div>
@@ -166,7 +166,7 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     High Risk
                                 </span>
-                                <a href="{{ route('healthcare.health-records.show', $record) }}" class="ml-2 text-indigo-600 hover:text-indigo-900 text-sm font-medium">View</a>
+                                <a href="{{ route('healthcare.records.show', ['record' => $record]) }}" class="ml-2 text-indigo-600 hover:text-indigo-900 text-sm font-medium">View</a>
                             </div>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="{{ route('healthcare.health-records.show', $record) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                <a href="{{ route('healthcare.records.show', ['record' => $record]) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
                             </td>
                         </tr>
                         @endforeach

@@ -77,5 +77,12 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('cleanup:epl-first-teams')
                  ->hourly();
+        
+        // Calculate daily health scores at 6 AM every day
+        $schedule->command('health:calculate-scores')
+                ->daily()
+                ->at('06:00')
+                ->withoutOverlapping()
+                ->runInBackground();
     }
 } 

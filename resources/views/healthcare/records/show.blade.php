@@ -1,29 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Healthcare Record</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <div class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-semibold">View Healthcare Record</h1>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <a href="{{ route('healthcare.records.edit', $healthRecord) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Edit Record
-                        </a>
-                        <a href="{{ route('healthcare.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Back to Healthcare
-                        </a>
-                    </div>
+@extends('layouts.app')
+
+@section('title', 'Healthcare Record Details')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">📋 Détails du Dossier Médical</h1>
+                    <p class="text-gray-600 mt-2">Informations complètes sur le dossier médical</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="{{ route('healthcare.index') }}" 
+                       class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                        ← Retour
+                    </a>
+                    <a href="{{ route('healthcare.records.edit', ['record' => $healthRecord->id]) }}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                        ✏️ Modifier
+                    </a>
                 </div>
             </div>
         </div>
@@ -211,7 +208,7 @@
                             </div>
                         @else
                             <div class="text-center py-8">
-                                <p class="text-gray-500 text-lg">Health record not found</p>
+                                <p class="text-gray-500 text-lg">Dossier médical non trouvé</p>
                             </div>
                         @endif
                     </div>
@@ -219,5 +216,4 @@
             </div>
         </div>
     </div>
-</body>
-</html> 
+@endsection 

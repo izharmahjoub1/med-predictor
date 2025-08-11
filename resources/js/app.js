@@ -1,6 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
-import { createApp } from 'vue'
+import Alpine from 'alpinejs';
+import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router'
 import { createPinia } from 'pinia'
 import i18n from './i18n/index.js';
@@ -9,6 +10,23 @@ import BasicTest from './components/BasicTest.vue'
 import LandingPage from './components/LandingPage.vue'
 import RootComponent from './components/RootComponent.vue'
 import ProfileSelector from './components/ProfileSelector.vue'
+import InteractivePosturalChart from './components/InteractivePosturalChart.vue';
+
+// Alpine.js
+window.Alpine = Alpine;
+Alpine.start();
+
+// Vue.js components registration
+const app = createApp({});
+
+// Register the InteractivePosturalChart component globally
+app.component('interactive-postural-chart', InteractivePosturalChart);
+
+// Only mount if the element exists
+const posturalChartApp = document.getElementById('postural-chart-app');
+if (posturalChartApp) {
+    app.mount('#postural-chart-app');
+}
 
 console.log('🚀 Starting simple Vue app...');
 

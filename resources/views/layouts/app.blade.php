@@ -27,6 +27,61 @@
     <!-- Alpine.js via CDN for Blade dropdowns -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
+    <!-- Custom CSS for navigation spacing -->
+    <style>
+        /* Force navigation bar height */
+        .nav-bar {
+            height: 5rem !important; /* 80px */
+            min-height: 5rem !important;
+            max-height: 5rem !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 1000 !important;
+        }
+        
+        /* Force content spacing */
+        .nav-fixed-spacing {
+            padding-top: 8rem !important; /* 128px - significantly increased */
+            margin-top: 0 !important;
+        }
+        
+        @media (min-width: 640px) {
+            .nav-fixed-spacing {
+                padding-top: 9rem !important; /* 144px - significantly increased */
+            }
+        }
+        
+        /* Additional safety margin */
+        body {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        
+        /* Ensure main content starts below navigation */
+        .main-content-wrapper {
+            margin-top: 6rem !important; /* 96px minimum */
+            padding-top: 2rem !important; /* Additional padding */
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        /* Ensure all content is below navigation */
+        main {
+            position: relative !important;
+            z-index: 1 !important;
+        }
+    </style>
+    
+    <!-- DICOM Viewer Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/cornerstone-core@2.3.0/dist/cornerstone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cornerstone-wado-image-loader@4.19.0/dist/cornerstoneWADOImageLoader.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dicom-parser@1.8.28/dist/dicomParser.min.js"></script>
+    
+    <!-- Additional styles -->
+    @stack('styles')
+    
     <!-- Alpine.js Fallback Script (DISABLED, now using CDN) -->
     <!--
     <script>
@@ -275,7 +330,7 @@
 <body class="font-sans antialiased">
 
     <div id="app"></div>
-    <div class="min-h-screen bg-gray-100 pt-20">
+    <div class="min-h-screen bg-gray-100 nav-fixed-spacing main-content-wrapper" style="padding-top: 8rem;">
         @php
             $isBackOfficeRoute = request()->routeIs('back-office.*');
         @endphp
@@ -337,7 +392,7 @@
                         'club_admin' => 'dashboard',
                         'club_manager' => 'dashboard',
                         'club_medical' => 'dashboard',
-                        'player' => 'player-dashboard.index',
+                        'player' => 'player-dashboard',
                         'referee' => 'referee.dashboard',
                         'admin' => 'dashboard',
                         default => 'dashboard'
@@ -347,7 +402,7 @@
                         'dashboard',
                         'back-office.dashboard',
                         'club-management.dashboard',
-                        'player-dashboard.index',
+                        'player-dashboard',
                         'referee.dashboard',
                         'healthcare.dashboard',
                         'medical-predictions.dashboard',
@@ -440,5 +495,8 @@
             </div>
         </footer>
     </div>
+    
+    <!-- Scripts Stack -->
+    @stack('scripts')
 </body>
 </html>

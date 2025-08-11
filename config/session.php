@@ -32,7 +32,30 @@ return [
     |
     */
 
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
+    'lifetime' => (int) env('SESSION_LIFETIME', 480),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Session Garbage Collection
+    |--------------------------------------------------------------------------
+    |
+    | Set PHP's session garbage collection maxlifetime to match Laravel's
+    | session lifetime to prevent premature session expiration.
+    |
+    */
+    
+    'gc_maxlifetime' => (int) env('SESSION_LIFETIME', 480) * 60,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Force PHP session.gc_maxlifetime
+    |--------------------------------------------------------------------------
+    |
+    | This ensures PHP's garbage collection respects Laravel's session lifetime
+    |
+    */
+    
+    'force_php_gc_maxlifetime' => true,
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 

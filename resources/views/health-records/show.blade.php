@@ -2,9 +2,67 @@
 
 @section('title', 'Dossier Médical - Med Predictor')
 
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    function showTab(tabName) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => {
+            content.classList.add('hidden');
+        });
+        
+        // Remove active class from all tab buttons
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Show selected tab content
+        const selectedTab = document.getElementById(tabName + '-tab');
+        if (selectedTab) {
+            selectedTab.classList.remove('hidden');
+        }
+        
+        // Add active class to selected tab button
+        const selectedButton = document.querySelector('[onclick="showTab(\'' + tabName + '\')"]');
+        if (selectedButton) {
+            selectedButton.classList.add('active');
+        }
+    }
+    
+    // Make showTab function globally available
+    window.showTab = showTab;
+    
+    // Show first tab by default
+    showTab('general');
+});
+</script>
+@endpush
+
+<style>
+.tab-button {
+    @apply px-4 py-2 text-sm font-medium border-b-2 border-transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.tab-button:hover {
+    @apply text-gray-700 border-gray-300;
+}
+
+.tab-button.active {
+    @apply text-blue-600 border-blue-600;
+}
+
+.tab-content {
+    @apply space-y-6;
+}
+</style>
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
@@ -15,13 +73,13 @@
                 </p>
             </div>
             <div class="flex space-x-4">
-                <a href="{{ route('legacy.health-records.edit', $healthRecord) }}" 
+                <a href="{{ route('health-records.edit', $healthRecord) }}" 
                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    Modifier
+                    ✏️ Modifier
                 </a>
-                <a href="{{ route('legacy.health-records.index') }}" 
+                <a href="{{ route('health-records.index') }}" 
                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    Retour
+                    ← Retour
                 </a>
             </div>
         </div>
@@ -32,13 +90,42 @@
             </div>
         @endif
 
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6">
+                    <button onclick="showTab('general')" class="tab-button active">
+                        📋 Général
+                    </button>
+                    <button onclick="showTab('vitals')" class="tab-button">
+                        💓 Signes Vitaux
+                    </button>
+                    <button onclick="showTab('medical')" class="tab-button">
+                        🏥 Médical
+                    </button>
+                    <button onclick="showTab('pcma')" class="tab-button">
+                        📊 PCMA
+                    </button>
+                    <button onclick="showTab('dental')" class="tab-button">
+                        🦷 Dentaire
+                    </button>
+                    <button onclick="showTab('codes')" class="tab-button">
+                        🏷️ Codes
+                    </button>
+                </nav>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Informations principales -->
-            <div class="lg:col-span-2 space-y-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- General Tab -->
+                <div id="general-tab" class="tab-content">
+                    <div class="space-y-6">
                 <!-- Informations du patient -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Informations du Patient</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">👤 Informations du Patient</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -68,10 +155,70 @@
                     </div>
                 </div>
 
-                <!-- Signes vitaux -->
+                <!-- Informations de la Visite -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Signes Vitaux</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">📋 Informations de la Visite</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date de Visite</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    {{ $healthRecord->visit_date ? $healthRecord->visit_date->format('d/m/Y') : 'Non spécifiée' }}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Médecin</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    {{ $healthRecord->doctor_name ?: 'Non spécifié' }}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Type de Visite</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    @switch($healthRecord->visit_type)
+                                        @case('consultation')
+                                            Consultation
+                                            @break
+                                        @case('emergency')
+                                            Urgence
+                                            @break
+                                        @case('follow_up')
+                                            Suivi
+                                            @break
+                                        @case('pre_season')
+                                            Pré-saison
+                                            @break
+                                        @case('post_match')
+                                            Post-match
+                                            @break
+                                        @case('rehabilitation')
+                                            Rééducation
+                                            @break
+                                        @default
+                                            Non spécifié
+                                    @endswitch
+                                </p>
+                            </div>
+                        </div>
+                        
+                        @if($healthRecord->chief_complaint)
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium text-gray-700">Motif de Consultation</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->chief_complaint }}</p>
+                        </div>
+                        @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vitals Tab -->
+                <div id="vitals-tab" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-800">💓 Signes Vitaux</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -123,13 +270,15 @@
                                 </div>
                             </div>
                         @endif
+                        </div>
                     </div>
                 </div>
 
-                <!-- Informations médicales -->
+                <!-- Medical Tab -->
+                <div id="medical-tab" class="tab-content hidden">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Informations Médicales</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">🏥 Informations Médicales</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -173,19 +322,6 @@
                             </div>
                         @endif
 
-                        @if($healthRecord->symptoms)
-                            <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700">Symptômes</label>
-                                <div class="mt-1 flex flex-wrap gap-2">
-                                    @foreach($healthRecord->symptoms as $symptom)
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            {{ $symptom }}
-                                        </span>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
                         @if($healthRecord->diagnosis)
                             <div class="mt-6">
                                 <label class="block text-sm font-medium text-gray-700">Diagnostic</label>
@@ -201,6 +337,144 @@
                         @endif
                     </div>
                 </div>
+                    </div>
+
+                <!-- PCMA Tab -->
+                <div id="pcma-tab" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-xl font-semibold text-gray-800">📊 PCMA - Évaluations Médicales Pré-Compétition</h2>
+                                <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}" 
+                                   class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                                    ➕ Nouvelle PCMA
+                                </a>
+                            </div>
+                    </div>
+                    <div class="p-6">
+                            @php
+                                $pcmas = \App\Models\PCMA::where('player_id', $healthRecord->player_id)
+                                    ->orderBy('assessment_date', 'desc')
+                                    ->get();
+                            @endphp
+                            
+                            @if($pcmas->count() > 0)
+                        <div class="space-y-4">
+                                    @foreach($pcmas as $pcma)
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-4">
+                                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                                        <span class="text-green-600">📋</span>
+                                                    </div>
+                                    <div>
+                                                        <h5 class="font-medium text-gray-900">PCMA #{{ $pcma->id }}</h5>
+                                        <p class="text-sm text-gray-600">
+                                                            Date: {{ $pcma->assessment_date ? $pcma->assessment_date->format('d/m/Y') : 'N/A' }} • 
+                                                            Statut: {{ ucfirst($pcma->status) }}
+                                        </p>
+                                                        <div class="flex items-center space-x-4 mt-1">
+                                                            <span class="px-2 py-1 text-xs rounded-full 
+                                            {{ $pcma->status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                                                   ($pcma->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                            {{ ucfirst($pcma->status) }}
+                                        </span>
+                                        @if($pcma->fifa_compliant)
+                                                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">FIFA Compliant</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                </div>
+                                                <div class="flex space-x-2">
+                                                    <a href="{{ route('pcma.show', $pcma) }}" class="text-blue-600 hover:text-blue-800 text-sm">Voir Détails</a>
+                                                    <a href="{{ route('pcma.edit', $pcma) }}" class="text-green-600 hover:text-green-800 text-sm">Modifier</a>
+                                                    <a href="{{ route('pcma.pdf', $pcma) }}" class="text-purple-600 hover:text-purple-800 text-sm">PDF</a>
+                                </div>
+                                </div>
+                                        </div>
+                                    @endforeach
+                                        </div>
+                            @else
+                                <div class="text-center py-8">
+                                    <div class="text-gray-400 text-6xl mb-4">📋</div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune PCMA trouvée</h3>
+                                    <p class="text-gray-600 mb-4">Aucune évaluation médicale pré-compétition n'a été effectuée pour ce joueur.</p>
+                                    <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}" 
+                                       class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                                        ➕ Créer la première PCMA
+                                    </a>
+                </div>
+                @endif
+                    </div>
+                        </div>
+                        </div>
+
+                <!-- Dental Tab -->
+                <div id="dental-tab" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-xl font-semibold text-gray-800">🦷 Évaluation Dentaire</h2>
+                    </div>
+                        <div class="p-6">
+                            <p class="text-gray-600">Les données dentaires seront affichées ici.</p>
+                        </div>
+                        </div>
+                        </div>
+
+                <!-- Codes Tab -->
+                <div id="codes-tab" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-800">🏷️ Codes Médicaux</h2>
+                    </div>
+                        <div class="p-6">
+                            @if($healthRecord->icd_10_codes || $healthRecord->snomed_ct_codes || $healthRecord->loinc_codes)
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        @if($healthRecord->icd_10_codes)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Codes ICD-10</label>
+                            <div class="mt-1 flex flex-wrap gap-2">
+                                @foreach($healthRecord->icd_10_codes as $code)
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        {{ $code }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($healthRecord->snomed_ct_codes)
+                        <div>
+                                        <label class="block text-sm font-medium text-gray-700">Codes SNOMED-CT</label>
+                            <div class="mt-1 flex flex-wrap gap-2">
+                                @foreach($healthRecord->snomed_ct_codes as $code)
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                        {{ $code }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($healthRecord->loinc_codes)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Codes LOINC</label>
+                            <div class="mt-1 flex flex-wrap gap-2">
+                                @foreach($healthRecord->loinc_codes as $code)
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        {{ $code }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                            @else
+                                <p class="text-gray-600">Aucun code médical enregistré.</p>
+                @endif
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Sidebar -->
@@ -208,7 +482,7 @@
                 <!-- Score de risque -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Score de Risque</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">⚠️ Score de Risque</h3>
                     </div>
                     <div class="p-6">
                         @if($healthRecord->risk_score)
@@ -235,7 +509,7 @@
                 <!-- Prédictions -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Prédictions</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">🔮 Prédictions</h3>
                     </div>
                     <div class="p-6">
                         @if($healthRecord->predictions->count() > 0)
@@ -268,7 +542,7 @@
                         <div class="mt-4">
                             <button onclick="generatePrediction()" 
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                Générer une prédiction
+                                🔮 Générer une prédiction
                             </button>
                         </div>
                     </div>
@@ -277,24 +551,25 @@
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Actions</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">⚡ Actions</h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        <a href="{{ route('legacy.health-records.edit', $healthRecord) }}" 
+                        <a href="{{ route('health-records.edit', $healthRecord) }}" 
                            class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            Modifier le dossier
+                            ✏️ Modifier le dossier
                         </a>
+
                         <a href="{{ route('medical-predictions.create') }}" 
-                           class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            Nouvelle prédiction
+                           class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                            🔮 Nouvelle prédiction
                         </a>
-                        <form action="{{ route('legacy.health-records.destroy', $healthRecord) }}" method="POST" class="inline w-full">
+                        <form action="{{ route('health-records.destroy', $healthRecord) }}" method="POST" class="inline w-full">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 
                                     class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
-                                Supprimer
+                                🗑️ Supprimer
                             </button>
                         </form>
                     </div>
@@ -306,7 +581,7 @@
 
 <script>
 function generatePrediction() {
-    fetch('{{ route("legacy.health-records.generate-prediction", $healthRecord) }}', {
+    fetch('{{ route("health-records.generate-prediction", $healthRecord) }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

@@ -95,10 +95,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('healthcare.health-records.show', $record) }}" 
-                                           class="text-blue-600 hover:text-blue-900">{{ __('healthcare.view') }}</a>
-                                        <a href="{{ route('healthcare.health-records.edit', $record) }}" 
-                                           class="text-indigo-600 hover:text-indigo-900">{{ __('healthcare.edit') }}</a>
+                                        <a href="{{ route('healthcare.records.show', ['record' => $record->id ?? 1]) }}" 
+                                           class="text-blue-600 hover:text-blue-900">Voir</a>
+                                        <a href="{{ route('healthcare.records.edit', ['record' => $record->id ?? 1]) }}" 
+                                           class="text-indigo-600 hover:text-indigo-900">Modifier</a>
                                     </div>
                                 </td>
                             </tr>
@@ -108,7 +108,7 @@
             </div>
             
             <div class="px-6 py-4 border-t border-gray-200">
-                {{ $healthRecords->links() }}
+                <!-- Pagination removed - using Collection instead of paginated results -->
             </div>
         @else
             <div class="px-6 py-8 text-center">

@@ -92,6 +92,39 @@ class PlayerLicense extends Model
         return $this->hasOne(\App\Models\PlayerFraudAnalysis::class, 'player_license_id');
     }
 
+    /**
+     * Check if player has valid PCMA for license approval
+     */
+    public function hasValidPCMA(): bool
+    {
+        return $this->player->pcmas()
+            ->where('status', 'completed')
+            ->where('fifa_compliant', true)
+            ->where('completed_at', '>=', now()->subYear())
+            ->exists();
+    }
+
+    /**
+     * Get the most recent valid PCMA for this player
+     */
+    public function getValidPCMA()
+    {
+        return $this->player->pcmas()
+            ->where('status', 'completed')
+            ->where('fifa_compliant', true)
+            ->where('completed_at', '>=', now()->subYear())
+            ->orderBy('completed_at', 'desc')
+            ->first();
+    }
+
+    /**
+     * Check if PCMA is required for this license type
+     */
+    public function requiresPCMA(): bool
+    {
+        return in_array($this->license_type, ['professional', 'amateur', 'youth']);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

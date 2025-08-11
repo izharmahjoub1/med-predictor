@@ -39,6 +39,7 @@ class HealthRecordSeeder extends Seeder
                 'potential_rating' => 93,
                 'value_eur' => 50000000,
                 'wage_eur' => 500000,
+                'fifa_connect_id' => 'MESSI_001',
             ],
             [
                 'name' => 'Cristiano Ronaldo',
@@ -53,6 +54,7 @@ class HealthRecordSeeder extends Seeder
                 'potential_rating' => 88,
                 'value_eur' => 15000000,
                 'wage_eur' => 200000,
+                'fifa_connect_id' => 'RONALDO_001',
             ],
         ];
 
@@ -67,6 +69,16 @@ class HealthRecordSeeder extends Seeder
         $healthRecords = [
             [
                 'player_id' => Player::where('name', 'Lionel Messi')->first()->id,
+                'visit_date' => now()->subDays(5),
+                'doctor_name' => 'Dr. Maria Garcia',
+                'visit_type' => 'consultation',
+                'chief_complaint' => 'Annual physical examination',
+                'physical_examination' => 'Normal heart sounds, no edema, good range of motion',
+                'laboratory_results' => 'All blood work within normal limits',
+                'imaging_results' => 'No imaging required',
+                'prescriptions' => 'Vitamin D supplement',
+                'follow_up_instructions' => 'Continue regular training, follow up in 6 months',
+                'visit_notes' => 'Excellent condition, no restrictions',
                 'blood_pressure_systolic' => 120,
                 'blood_pressure_diastolic' => 80,
                 'heart_rate' => 65,
@@ -86,6 +98,16 @@ class HealthRecordSeeder extends Seeder
             ],
             [
                 'player_id' => Player::where('name', 'Cristiano Ronaldo')->first()->id,
+                'visit_date' => now()->subDays(3),
+                'doctor_name' => 'Dr. Carlos Silva',
+                'visit_type' => 'follow_up',
+                'chief_complaint' => 'Mild arrhythmia monitoring',
+                'physical_examination' => 'Irregular pulse detected, otherwise normal',
+                'laboratory_results' => 'Cardiac enzymes normal',
+                'imaging_results' => 'ECG shows mild arrhythmia',
+                'prescriptions' => 'Beta blocker for arrhythmia',
+                'follow_up_instructions' => 'Monitor heart rate, follow up in 3 months',
+                'visit_notes' => 'Mild arrhythmia under control',
                 'blood_pressure_systolic' => 118,
                 'blood_pressure_diastolic' => 78,
                 'heart_rate' => 62,

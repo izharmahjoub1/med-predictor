@@ -1650,30 +1650,9 @@
                         { id: 'medical', name: 'Médical', icon: 'fas fa-user-md', count: 2 },
                         { id: 'social', name: 'Réseaux Sociaux', icon: 'fas fa-share-alt', count: 3 }
                     ],
-                    offensiveStats: [
-                        { name: 'Buts', display: '12', percentage: 92, teamAvg: '8.2', leagueAvg: '6.4' },
-                        { name: 'Assists', display: '8', percentage: 85, teamAvg: '5.1', leagueAvg: '4.2' },
-                        { name: 'Tirs cadrés', display: '67%', percentage: 89, teamAvg: '58%', leagueAvg: '52%' },
-                        { name: 'Dribbles réussis', display: '23/match', percentage: 78, teamAvg: '18', leagueAvg: '15' },
-                        { name: 'Grandes occasions', display: '15', percentage: 88, teamAvg: '11', leagueAvg: '8.5' },
-                        { name: 'Tirs/match', display: '4.2', percentage: 85, teamAvg: '3.1', leagueAvg: '2.8' }
-                    ],
-                    physicalStats: [
-                        { name: 'Vitesse de pointe', display: '34.2 km/h', percentage: 91, teamAvg: '32.1', leagueAvg: '30.8' },
-                        { name: 'Distance/match', display: '10.1 km', percentage: 88, teamAvg: '9.4', leagueAvg: '9.1' },
-                        { name: 'Sprints', display: '28/match', percentage: 85, teamAvg: '22', leagueAvg: '19' },
-                        { name: 'Duels aériens', display: '68%', percentage: 76, teamAvg: '58%', leagueAvg: '52%' },
-                        { name: 'Intensité', display: '87%', percentage: 89, teamAvg: '79%', leagueAvg: '74%' },
-                        { name: 'Récupération', display: '6.2/match', percentage: 82, teamAvg: '5.1', leagueAvg: '4.8' }
-                    ],
-                    technicalStats: [
-                        { name: 'Précision passes', display: '89%', percentage: 92, teamAvg: '81%', leagueAvg: '78%' },
-                        { name: 'Passes longues', display: '78%', percentage: 87, teamAvg: '68%', leagueAvg: '65%' },
-                        { name: 'Centres réussis', display: '42%', percentage: 84, teamAvg: '34%', leagueAvg: '29%' },
-                        { name: 'Contrôles', display: '96%', percentage: 94, teamAvg: '88%', leagueAvg: '85%' },
-                        { name: 'Touches/match', display: '156', percentage: 88, teamAvg: '134', leagueAvg: '128' },
-                        { name: 'Passes clés', display: '3.2/match', percentage: 91, teamAvg: '2.1', leagueAvg: '1.8' }
-                    ],
+                    offensiveStats: @json($performanceData['offensiveStats'] ?? []),
+                    physicalStats: @json($performanceData['physicalStats'] ?? []),
+                    technicalStats: @json($performanceData['technicalStats'] ?? []),
                     notificationData: {
                         nationalTeam: [
                             {

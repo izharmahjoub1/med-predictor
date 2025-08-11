@@ -1086,7 +1086,7 @@ class CompetitionManagementController extends Controller
             'players.*' => 'required|exists:players,id',
         ]);
 
-        // Service d’éligibilité
+        // Service d'éligibilité
         $eligibilityService = app(\App\Services\PlayerEligibilityService::class);
         $season = $competition->season;
         foreach ($request->players as $playerId) {

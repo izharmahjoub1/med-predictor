@@ -79,16 +79,41 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">{{ __('dashboard.welcome') }}, {{ auth()->user() ? auth()->user()->name : __('dashboard.guest') }}!</h3>
-                            <p class="text-gray-600">{{ auth()->user() ? auth()->user()->getRoleDisplay() : __('dashboard.guest') }} at {{ auth()->user() ? auth()->user()->getEntityName() : __('dashboard.system') }}</p>
-                            <p class="text-sm text-gray-500">{{ __('common.fifa_connect_id') }}: {{ auth()->user() ? auth()->user()->fifa_connect_id : 'N/A' }}</p>
+                        <div class="flex items-center space-x-4">
+                            <!-- Photo de profil de l'utilisateur -->
+                            @if(auth()->user()->hasProfilePicture())
+                                <img src="{{ auth()->user()->getProfilePictureUrl() }}" 
+                                     alt="{{ auth()->user()->getProfilePictureAlt() }}" 
+                                     class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-lg">
+                            @else
+                                <div class="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold border-4 border-gray-200 shadow-lg">
+                                    {{ auth()->user()->getInitials() }}
+                                </div>
+                            @endif
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ __('dashboard.welcome') }}, {{ auth()->user() ? auth()->user()->name : __('dashboard.guest') }}!</h3>
+                                <p class="text-gray-600">{{ auth()->user() ? auth()->user()->getRoleDisplay() : __('dashboard.guest') }} at {{ auth()->user() ? auth()->user()->getEntityName() : __('dashboard.system') }}</p>
+                                <p class="text-sm text-gray-500">{{ __('common.fifa_connect_id') }}: {{ auth()->user() ? auth()->user()->fifa_connect_id : 'N/A' }}</p>
+                            </div>
                         </div>
                         <div class="text-right">
                             <div class="text-sm text-gray-500">{{ __('dashboard.last_login') }}</div>
                             <div class="text-sm font-medium">{{ auth()->user()->last_login_at ? auth()->user()->last_login_at->diffForHumans() : __('dashboard.first_time') }}</div>
                         </div>
                     </div>
+                    
+                    <!-- Bouton Commencez pour System Administrator -->
+                    @if(auth()->user() && auth()->user()->role === 'system_admin')
+                    <div class="mt-6 flex justify-center">
+                        <a href="{{ route('modules.index') }}" 
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                            Commencez
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -324,16 +349,20 @@
                             <div class="text-sm font-semibold mb-2">Event Types</div>
                             <div class="space-y-2">
                                 @php
-                                    $totalEvents = $auditLogsByEventType['user_action'] + $auditLogsByEventType['system_event'] + $auditLogsByEventType['security_event'] + $auditLogsByEventType['data_access'];
-                                    $userActionPercent = $totalEvents > 0 ? round(($auditLogsByEventType['user_action'] / $totalEvents) * 100) : 0;
-                                    $systemEventPercent = $totalEvents > 0 ? round(($auditLogsByEventType['system_event'] / $totalEvents) * 100) : 0;
-                                    $securityEventPercent = $totalEvents > 0 ? round(($auditLogsByEventType['security_event'] / $totalEvents) * 100) : 0;
-                                    $dataAccessPercent = $totalEvents > 0 ? round(($auditLogsByEventType['data_access'] / $totalEvents) * 100) : 0;
+                                    $userAction = $auditLogsByEventType['user_action'] ?? 0;
+                                    $systemEvent = $auditLogsByEventType['system_event'] ?? 0;
+                                    $securityEvent = $auditLogsByEventType['security_event'] ?? 0;
+                                    $dataAccess = $auditLogsByEventType['data_access'] ?? 0;
+                                    $totalEvents = $userAction + $systemEvent + $securityEvent + $dataAccess;
+                                    $userActionPercent = $totalEvents > 0 ? round(($userAction / $totalEvents) * 100) : 0;
+                                    $systemEventPercent = $totalEvents > 0 ? round(($systemEvent / $totalEvents) * 100) : 0;
+                                    $securityEventPercent = $totalEvents > 0 ? round(($securityEvent / $totalEvents) * 100) : 0;
+                                    $dataAccessPercent = $totalEvents > 0 ? round(($dataAccess / $totalEvents) * 100) : 0;
                                 @endphp
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">User Actions</span>
-                                        <span class="font-bold text-blue-800">{{ $auditLogsByEventType['user_action'] ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ $userAction }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-blue-400 h-1 rounded-full" style="width: {{ $userActionPercent }}%"></div>
@@ -342,7 +371,7 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">System Events</span>
-                                        <span class="font-bold text-blue-800">{{ $auditLogsByEventType['system_event'] ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ $systemEvent }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-green-400 h-1 rounded-full" style="width: {{ $systemEventPercent }}%"></div>
@@ -351,7 +380,7 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">Security Events</span>
-                                        <span class="font-bold text-blue-800">{{ $auditLogsByEventType['security_event'] ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ $securityEvent }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-yellow-400 h-1 rounded-full" style="width: {{ $securityEventPercent }}%"></div>
@@ -360,7 +389,7 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">Data Access</span>
-                                        <span class="font-bold text-blue-800">{{ $auditLogsByEventType['data_access'] ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ $dataAccess }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-purple-400 h-1 rounded-full" style="width: {{ $dataAccessPercent }}%"></div>
@@ -407,13 +436,13 @@
                                             <span class="text-xs font-bold">{{ $loop->iteration }}</span>
                                         </div>
                                         <div>
-                                            <div class="text-xs font-semibold text-blue-800">{{ $club['club_name'] }}</div>
-                                            <div class="text-xs text-emerald-200">{{ $club['total_players'] }} players</div>
+                                            <div class="text-xs font-semibold text-blue-800">{{ $club->name ?? 'Unknown Club' }}</div>
+                                            <div class="text-xs text-emerald-200">{{ $club->players_count ?? 0 }} players</div>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-xs font-bold text-blue-800">{{ $club['performance_score'] }}</div>
-                                        <div class="text-xs text-emerald-200">Score</div>
+                                        <div class="text-xs font-bold text-blue-800">{{ $club->players_count ?? 0 }}</div>
+                                        <div class="text-xs text-emerald-200">Players</div>
                                     </div>
                                 </div>
                                 @empty
@@ -734,10 +763,10 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between">
                                         <span class="font-semibold text-gray-800">{{ $club->name ?? 'Club' }}</span>
-                                        <span class="text-sm font-bold text-green-700 ml-2">{{ $club['total_players'] ?? 0 }}</span>
+                                        <span class="text-sm font-bold text-green-700 ml-2">{{ $club->players_count ?? 0 }}</span>
                                     </div>
                                     <div class="w-full bg-green-50 rounded h-3 mt-2 relative">
-                                        <div class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded" style="width: {{ $maxPlayers > 0 ? (($club['total_players'] ?? 0) / $maxPlayers * 100) : 0 }}%"></div>
+                                        <div class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded" style="width: {{ $maxPlayers > 0 ? (($club->players_count ?? 0) / $maxPlayers * 100) : 0 }}%"></div>
                                     </div>
                                 </div>
                             </div>

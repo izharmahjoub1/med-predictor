@@ -30,6 +30,7 @@ class User extends Authenticatable
         'club_id', // direct club relationship
         'association_id', // direct association relationship
         'team_id', // team relationship for team officials
+        'player_id', // player relationship for player portal
         'fifa_connect_id',
         'permissions',
         'preferences',
@@ -85,6 +86,11 @@ class User extends Authenticatable
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'team_id');
+    }
+
+    public function player(): BelongsTo
+    {
+        return $this->belongsTo(Player::class, 'player_id');
     }
 
     public function roleModel(): BelongsTo

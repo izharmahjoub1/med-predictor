@@ -17,7 +17,7 @@
                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
                         ← Retour au joueur
                     </a>
-                    <a href="{{ route('legacy.health-records.create', ['player_id' => $player->id]) }}" 
+                    <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}" 
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                         + Nouveau dossier
                     </a>
@@ -150,11 +150,11 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <a href="{{ route('legacy.health-records.show', $record) }}" 
+                                            <a href="{{ route('health-records.show', $record) }}" 
                                                class="text-blue-600 hover:text-blue-900">Voir</a>
-                                            <a href="{{ route('legacy.health-records.edit', $record) }}" 
+                                            <a href="{{ route('health-records.edit', $record) }}" 
                                                class="text-indigo-600 hover:text-indigo-900">Modifier</a>
-                                            <form action="{{ route('legacy.health-records.destroy', $record) }}" method="POST" class="inline">
+                                            <form action="{{ route('health-records.destroy', $record) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" 
@@ -182,7 +182,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun dossier médical</h3>
                     <p class="text-gray-500 mb-6">Ce joueur n'a pas encore de dossier médical enregistré.</p>
-                    <a href="{{ route('legacy.health-records.create', ['player_id' => $player->id]) }}" 
+                    <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}" 
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                         Créer le premier dossier
                     </a>

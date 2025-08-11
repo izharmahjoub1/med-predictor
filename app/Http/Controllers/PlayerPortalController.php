@@ -10,6 +10,7 @@ use App\Models\Club;
 use App\Models\Association;
 use App\Models\MatchModel;
 use App\Models\Performance;
+use App\Services\PlayerPerformanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -81,7 +82,17 @@ class PlayerPortalController extends Controller
 
             $player->load(['club', 'association', 'healthRecords', 'pcmas', 'performances']);
 
-            return view('player-portal.fifa-ultimate-optimized', compact('player'));
+            // Utiliser le service de performance pour calculer les statistiques réelles
+            $performanceService = new PlayerPerformanceService($player);
+            $performanceData = [
+                'offensiveStats' => $performanceService->getOffensiveStats(),
+                'physicalStats' => $performanceService->getPhysicalStats(),
+                'technicalStats' => $performanceService->getTechnicalStats(),
+                'performanceEvolution' => $performanceService->getPerformanceEvolution(),
+                'seasonSummary' => $performanceService->getSeasonSummary()
+            ];
+
+            return view('player-portal.fifa-ultimate-optimized', compact('player', 'performanceData'));
         } catch (\Exception $e) {
             \Log::error('PlayerPortalController fifaUltimateDashboard error: ' . $e->getMessage());
             \Log::error('Stack trace: ' . $e->getTraceAsString());

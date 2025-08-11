@@ -182,17 +182,17 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('healthcare.records.show', $record) }}" 
+                                                    <a href="{{ route('healthcare.records.show', ['record' => $record->id]) }}" 
                                                        class="text-indigo-600 hover:text-indigo-900">{{ __('healthcare.view') }}</a>
-                                                    <a href="{{ route('healthcare.records.edit', $record) }}" 
+                                                    <a href="{{ route('healthcare.records.edit', ['record' => $record->id]) }}" 
                                                        class="text-blue-600 hover:text-blue-900">{{ __('healthcare.edit') }}</a>
-                                                    <form action="{{ route('healthcare.records.sync', $record) }}" method="POST" class="inline">
+                                                    <form action="{{ route('healthcare.records.sync', ['record' => $record->id]) }}" method="POST" class="inline">
                                                         @csrf
                                                         <button type="submit" class="text-green-600 hover:text-green-900">
                                                             {{ __('healthcare.sync') }}
                                                         </button>
                                                     </form>
-                                                    <form action="{{ route('healthcare.records.destroy', $record) }}" method="POST" class="inline">
+                                                    <form action="{{ route('healthcare.records.destroy', ['record' => $record->id]) }}" method="POST" class="inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="text-red-600 hover:text-red-900" 

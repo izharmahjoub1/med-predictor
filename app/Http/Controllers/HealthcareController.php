@@ -126,17 +126,13 @@ class HealthcareController extends Controller
         
         $validated = $request->validate([
             'player_id' => 'required|exists:players,id',
-            'record_type' => 'required|in:medical_check,injury_report,recovery_update,health_assessment',
             'status' => 'required|in:healthy,injured,recovering,unfit',
-            'description' => 'required|string',
             'diagnosis' => 'nullable|string',
-            'treatment' => 'nullable|string',
+            'treatment_plan' => 'nullable|string',
             'medications' => 'nullable|string',
-            'restrictions' => 'nullable|string',
-            'next_checkup' => 'nullable|date|after:today',
-            'doctor_name' => 'nullable|string|max:255',
-            'hospital_clinic' => 'nullable|string|max:255',
-            'severity' => 'nullable|in:low,medium,high,critical',
+            'symptoms' => 'nullable|string',
+            'next_checkup_date' => 'nullable|date|after:today',
+            'record_date' => 'nullable|date',
             'fifa_connect_id' => 'nullable|string|unique:fifa_connect_ids,fifa_id',
         ]);
 
@@ -162,17 +158,13 @@ class HealthcareController extends Controller
             // Create health record
             $healthRecord = HealthRecord::create([
                 'player_id' => $validated['player_id'],
-                'record_type' => $validated['record_type'],
                 'status' => $validated['status'],
-                'description' => $validated['description'],
                 'diagnosis' => $validated['diagnosis'],
-                'treatment' => $validated['treatment'],
+                'treatment_plan' => $validated['treatment_plan'],
                 'medications' => $validated['medications'],
-                'restrictions' => $validated['restrictions'],
-                'next_checkup' => $validated['next_checkup'],
-                'doctor_name' => $validated['doctor_name'],
-                'hospital_clinic' => $validated['hospital_clinic'],
-                'severity' => $validated['severity'],
+                'symptoms' => $validated['symptoms'],
+                'next_checkup_date' => $validated['next_checkup_date'],
+                'record_date' => $validated['record_date'] ?? now(),
                 'fifa_connect_id' => $fifaConnectId->id,
             ]);
 
@@ -208,12 +200,12 @@ class HealthcareController extends Controller
         $user = Auth::user();
         $players = collect();
 
-        if ($user->role === 'club') {
+        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
             $players = Player::where('club_id', $user->club_id)
                 ->orderBy('first_name')
                 ->orderBy('last_name')
                 ->get();
-        } elseif ($user->role === 'association') {
+        } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
             $players = Player::whereHas('club', function ($query) use ($user) {
                 $query->where('association_id', $user->association_id);
             })
@@ -269,7 +261,7 @@ class HealthcareController extends Controller
 
             DB::commit();
 
-            return redirect()->route('healthcare.records.show', $healthRecord)
+            return redirect()->route('healthcare.records.show', ['record' => $healthRecord->id])
                 ->with('success', 'Health record updated successfully');
 
         } catch (\Exception $e) {
@@ -505,11 +497,11 @@ class HealthcareController extends Controller
             abort(404, 'Player not found');
         }
 
-        if ($user->role === 'club' && $player->club_id !== $user->club_id) {
+        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical']) && $player->club_id !== $user->club_id) {
             abort(403, 'Unauthorized access to health record');
         }
 
-        if ($user->role === 'association') {
+        if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
             $club = $player->club;
             if (!$club || $club->association_id !== $user->association_id) {
                 abort(403, 'Unauthorized access to health record');
@@ -521,11 +513,11 @@ class HealthcareController extends Controller
     {
         $user = Auth::user();
         
-        if ($user->role === 'club' && $player->club_id !== $user->club_id) {
+        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical']) && $player->club_id !== $user->club_id) {
             abort(403, 'Unauthorized access to player');
         }
         
-        if ($user->role === 'association') {
+        if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
             $club = $player->club;
             if (!$club || $club->association_id !== $user->association_id) {
                 abort(403, 'Unauthorized access to player');

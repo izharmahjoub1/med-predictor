@@ -1,678 +1,409 @@
-# Guide de Déploiement et Configuration - Microservice FIT
+# Guide de Déploiement - Secrétariat Médical & Portail Athlète
 
-## Table des matières
+## 🚀 Déploiement en Production
 
-1. [Installation et Configuration Initiale](#installation-et-configuration-initiale)
-2. [Configuration des Bases de Données](#configuration-des-bases-de-données)
-3. [Configuration OAuth2](#configuration-oauth2)
-4. [Déploiement en Production](#déploiement-en-production)
-5. [Configuration SSL/TLS](#configuration-ssltls)
-6. [Tests et Validation](#tests-et-validation)
-7. [Monitoring et Alertes](#monitoring-et-alertes)
-8. [Maintenance et Sauvegardes](#maintenance-et-sauvegardes)
-9. [Dépannage](#dépannage)
+### Prérequis Système
 
----
+-   **PHP** : 8.1 ou supérieur
+-   **Laravel** : 10.x
+-   **Base de données** : MySQL 8.0 ou PostgreSQL 13
+-   **Composer** : Dernière version
+-   **Node.js** : 16.x ou supérieur (pour la compilation des assets)
 
-## 1. Installation et Configuration Initiale
-
-### Prérequis
-
--   Node.js 18+ et npm
--   Docker (optionnel, pour les bases de données)
--   Git
-
-### Installation Automatique
+### 1. Installation des Dépendances
 
 ```bash
-# Cloner le repository
-git clone <repository-url>
-cd fit-service
+# Installer les dépendances PHP
+composer install --optimize-autoloader --no-dev
 
-# Rendre le script d'installation exécutable
-chmod +x scripts/setup.sh
-
-# Exécuter l'installation automatique
-./scripts/setup.sh
-```
-
-### Installation Manuelle
-
-```bash
-# 1. Installer les dépendances
+# Installer les dépendances Node.js (si nécessaire)
 npm install
-
-# 2. Copier le fichier d'environnement
-cp env.example .env
-
-# 3. Générer les clés de sécurité
-openssl rand -base64 64 > .env.jwt_secret
-openssl rand -hex 32 > .env.encryption_key
-openssl rand -hex 16 > .env.encryption_iv
-openssl rand -base64 32 > .env.totp_secret
-
-# 4. Mettre à jour .env avec les clés générées
-sed -i "s/JWT_SECRET=.*/JWT_SECRET=$(cat .env.jwt_secret)/" .env
-sed -i "s/ENCRYPTION_KEY=.*/ENCRYPTION_KEY=$(cat .env.encryption_key)/" .env
-sed -i "s/ENCRYPTION_IV=.*/ENCRYPTION_IV=$(cat .env.encryption_iv)/" .env
-sed -i "s/TOTP_SECRET=.*/TOTP_SECRET=$(cat .env.totp_secret)/" .env
-
-# 5. Nettoyer les fichiers temporaires
-rm .env.jwt_secret .env.encryption_key .env.encryption_iv .env.totp_secret
+npm run build
 ```
 
----
+### 2. Configuration de l'Environnement
 
-## 2. Configuration des Bases de Données
+#### Fichier `.env`
 
-### Option A: Installation via Docker (Recommandée)
+```env
+# Configuration de base
+APP_NAME="Med Predictor"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://votre-domaine.com
+
+# Base de données
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=med_predictor
+DB_USERNAME=votre_utilisateur
+DB_PASSWORD=votre_mot_de_passe
+
+# Cache et sessions
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+# Sanctum pour l'API
+SANCTUM_STATEFUL_DOMAINS=votre-domaine.com
+SESSION_DOMAIN=.votre-domaine.com
+
+# Stockage des fichiers
+FILESYSTEM_DISK=local
+```
+
+### 3. Base de Données
+
+#### Migrations
 
 ```bash
-# Démarrer les bases de données
-docker-compose -f docker-compose.databases.yml up -d
+# Exécuter les migrations
+php artisan migrate --force
 
-# Vérifier le statut
-docker-compose -f docker-compose.databases.yml ps
+# Vérifier le statut des migrations
+php artisan migrate:status
 ```
 
-### Option B: Installation Manuelle
-
-#### MongoDB
-
-**Ubuntu/Debian:**
+#### Seeders (Optionnel)
 
 ```bash
-# Installer MongoDB
-wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-sudo apt-get update
-sudo apt-get install -y mongodb-org
-
-# Démarrer MongoDB
-sudo systemctl start mongod
-sudo systemctl enable mongod
-
-# Créer la base de données
-mongosh --eval "use fit_database"
+# Créer les données de test
+php artisan db:seed --class=TestDataSeeder
 ```
 
-**macOS:**
+### 4. Configuration Sanctum
 
 ```bash
-# Installer via Homebrew
-brew tap mongodb/brew
-brew install mongodb-community
+# Publier la configuration Sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 
-# Démarrer MongoDB
-brew services start mongodb-community
-
-# Créer la base de données
-mongosh --eval "use fit_database"
+# Exécuter les migrations Sanctum
+php artisan migrate
 ```
 
-#### PostgreSQL
-
-**Ubuntu/Debian:**
+### 5. Optimisations de Production
 
 ```bash
-# Installer PostgreSQL
-sudo apt-get update
-sudo apt-get install -y postgresql postgresql-contrib
+# Optimiser l'autoloader
+composer install --optimize-autoloader --no-dev
 
-# Démarrer PostgreSQL
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
+# Configurer le cache
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-# Créer l'utilisateur et la base de données
-sudo -u postgres createuser -P fit_user
-sudo -u postgres createdb -O fit_user fit_database
+# Optimiser les assets
+npm run build
 ```
 
-**macOS:**
+### 6. Permissions des Dossiers
 
 ```bash
-# Installer via Homebrew
-brew install postgresql
-
-# Démarrer PostgreSQL
-brew services start postgresql
-
-# Créer l'utilisateur et la base de données
-createuser -P fit_user
-createdb -O fit_user fit_database
+# Définir les permissions appropriées
+chmod -R 755 storage/
+chmod -R 755 bootstrap/cache/
+chown -R www-data:www-data storage/
+chown -R www-data:www-data bootstrap/cache/
 ```
 
-#### Redis
+## 🔐 Configuration de Sécurité
 
-**Ubuntu/Debian:**
+### 1. Middleware de Rôles
+
+Vérifiez que le middleware `CheckRole` est bien enregistré dans `app/Http/Kernel.php` :
+
+```php
+protected $routeMiddleware = [
+    // ... autres middlewares
+    'role' => \App\Http\Middleware\CheckRole::class,
+];
+```
+
+### 2. Authentification Sanctum
+
+Assurez-vous que Sanctum est configuré dans `config/sanctum.php` :
+
+```php
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
+    '%s%s',
+    'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
+    env('APP_URL') ? ','.parse_url(env('APP_URL'), PHP_URL_HOST) : ''
+))),
+```
+
+### 3. Protection CSRF
+
+Vérifiez que la protection CSRF est active pour les routes web.
+
+## 👥 Création des Utilisateurs
+
+### 1. Utilisateur Administrateur
 
 ```bash
-# Installer Redis
-sudo apt-get update
-sudo apt-get install -y redis-server
-
-# Démarrer Redis
-sudo systemctl start redis-server
-sudo systemctl enable redis-server
+php artisan tinker
 ```
 
-**macOS:**
+```php
+// Créer un administrateur
+User::create([
+    'name' => 'Administrateur',
+    'email' => 'admin@medpredictor.com',
+    'password' => Hash::make('mot_de_passe_securise'),
+    'role' => 'admin',
+    'email_verified_at' => now()
+]);
+```
+
+### 2. Utilisateur Secrétaire
+
+```php
+// Créer un secrétaire
+User::create([
+    'name' => 'Secrétaire Médical',
+    'email' => 'secretary@medpredictor.com',
+    'password' => Hash::make('mot_de_passe_securise'),
+    'role' => 'secretary',
+    'email_verified_at' => now()
+]);
+```
+
+### 3. Utilisateur Athlète
+
+```php
+// Créer un athlète
+User::create([
+    'name' => 'Athlète Test',
+    'email' => 'athlete@medpredictor.com',
+    'password' => Hash::make('mot_de_passe_securise'),
+    'role' => 'athlete',
+    'fifa_connect_id' => 'FIFA123456',
+    'email_verified_at' => now()
+]);
+
+// Créer l'enregistrement athlète correspondant
+Athlete::create([
+    'name' => 'Athlète Test',
+    'fifa_connect_id' => 'FIFA123456',
+    'email' => 'athlete@medpredictor.com',
+    'date_of_birth' => '1990-01-01',
+    'blood_type' => 'O+',
+    'allergies' => 'Aucune'
+]);
+```
+
+## 🧪 Tests de Validation
+
+### 1. Test des Routes
 
 ```bash
-# Installer via Homebrew
-brew install redis
+# Vérifier que toutes les routes sont enregistrées
+php artisan route:list
 
-# Démarrer Redis
-brew services start redis
+# Tester les routes du secrétariat
+curl -X GET "https://votre-domaine.com/secretary/dashboard" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Tester les routes du portail athlète
+curl -X GET "https://votre-domaine.com/api/v1/portal/dashboard-summary" \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-### Vérification de la Connectivité
+### 2. Test des Fonctionnalités
+
+#### Secrétariat Médical
+
+-   ✅ Accès au dashboard
+-   ✅ Recherche d'athlètes par FIFA Connect ID
+-   ✅ Création de rendez-vous
+-   ✅ Upload de documents
+-   ✅ Analyse IA des documents
+
+#### Portail Athlète
+
+-   ✅ Authentification sécurisée
+-   ✅ Dashboard personnel
+-   ✅ Formulaire de bien-être
+-   ✅ Gestion des appareils connectés
+-   ✅ Accès aux données personnelles uniquement
+
+### 3. Test de Performance
 
 ```bash
-# Vérifier MongoDB
-mongosh --eval "db.runCommand('ping')"
+# Test de charge basique
+ab -n 1000 -c 10 https://votre-domaine.com/
 
-# Vérifier PostgreSQL
-PGPASSWORD=fit_password psql -h localhost -U fit_user -d fit_database -c "SELECT 1;"
-
-# Vérifier Redis
-redis-cli ping
+# Test des API
+ab -n 500 -c 5 https://votre-domaine.com/api/v1/portal/dashboard-summary
 ```
 
----
+## 📊 Monitoring et Maintenance
 
-## 3. Configuration OAuth2
-
-### Catapult Connect
-
-1. **Créer un compte développeur:**
-
-    - Aller sur [Catapult Developer Portal](https://developer.catapultsports.com/)
-    - Créer un compte développeur
-
-2. **Créer une application:**
-
-    - Créer une nouvelle application
-    - Configurer les URLs de redirection: `http://localhost:3000/api/v1/oauth2/catapult/callback`
-    - Noter le Client ID et Client Secret
-
-3. **Mettre à jour .env:**
+### 1. Logs
 
 ```bash
-CATAPULT_CLIENT_ID=your-catapult-client-id
-CATAPULT_CLIENT_SECRET=your-catapult-client-secret
+# Surveiller les logs d'erreur
+tail -f storage/logs/laravel.log
+
+# Surveiller les logs d'accès
+tail -f /var/log/nginx/access.log
 ```
 
-### Apple HealthKit
-
-1. **Créer un identifiant d'application:**
-
-    - Aller sur [Apple Developer Portal](https://developer.apple.com/)
-    - Créer un nouvel identifiant d'application
-    - Activer HealthKit
-
-2. **Créer un certificat de service:**
-
-    - Créer un certificat de service pour HealthKit
-    - Télécharger le certificat et la clé privée
-
-3. **Mettre à jour .env:**
+### 2. Base de Données
 
 ```bash
-APPLE_CLIENT_ID=your-apple-client-id
-APPLE_CLIENT_SECRET=your-apple-client-secret
+# Vérifier l'intégrité de la base
+php artisan db:show
+
+# Optimiser les tables
+php artisan db:optimize
 ```
 
-### Garmin Connect
-
-1. **Créer un compte développeur:**
-
-    - Aller sur [Garmin Developer Portal](https://developer.garmin.com/)
-    - Créer un compte développeur
-
-2. **Créer une application:**
-
-    - Créer une nouvelle application
-    - Configurer les URLs de redirection: `http://localhost:3000/api/v1/oauth2/garmin/callback`
-    - Noter le Consumer Key et Consumer Secret
-
-3. **Mettre à jour .env:**
+### 3. Cache
 
 ```bash
-GARMIN_CLIENT_ID=your-garmin-client-id
-GARMIN_CLIENT_SECRET=your-garmin-client-secret
+# Vider le cache si nécessaire
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
 ```
 
----
+## 🔧 Configuration Serveur Web
 
-## 4. Déploiement en Production
+### Nginx
 
-### Préparation
+```nginx
+server {
+    listen 80;
+    server_name votre-domaine.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name votre-domaine.com;
+
+    ssl_certificate /path/to/certificate.crt;
+    ssl_certificate_key /path/to/private.key;
+
+    root /var/www/med-predictor/public;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+### Apache
+
+```apache
+<VirtualHost *:80>
+    ServerName votre-domaine.com
+    DocumentRoot /var/www/med-predictor/public
+
+    <Directory /var/www/med-predictor/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/med-predictor_error.log
+    CustomLog ${APACHE_LOG_DIR}/med-predictor_access.log combined
+</VirtualHost>
+```
+
+## 🚨 Sécurité
+
+### 1. Firewall
 
 ```bash
-# 1. Configurer l'environnement de production
-cp .env .env.production
-
-# 2. Mettre à jour les variables de production
-sed -i 's/NODE_ENV=development/NODE_ENV=production/' .env.production
-sed -i 's/LOG_LEVEL=info/LOG_LEVEL=warn/' .env.production
+# Configurer le firewall
+ufw allow 22
+ufw allow 80
+ufw allow 443
+ufw enable
 ```
 
-### Déploiement Automatique
+### 2. SSL/TLS
 
 ```bash
-# Déploiement avec Let's Encrypt
-./scripts/deploy-production.sh -d api.fit-service.com -e admin@fit-service.com -p
+# Installer Certbot pour Let's Encrypt
+sudo apt install certbot python3-certbot-nginx
 
-# Déploiement avec certificat SSL personnalisé
-./scripts/deploy-production.sh -d api.fit-service.com -c /path/to/cert.pem -k /path/to/key.pem -p
+# Obtenir un certificat SSL
+sudo certbot --nginx -d votre-domaine.com
 ```
 
-### Déploiement Manuel
+### 3. Sauvegarde
 
 ```bash
-# 1. Installer PM2
-npm install -g pm2
-
-# 2. Installer les dépendances de production
-npm ci --only=production
-
-# 3. Démarrer le service
-pm2 start ecosystem.config.js --env production
-
-# 4. Sauvegarder la configuration PM2
-pm2 save
-
-# 5. Configurer le démarrage automatique
-pm2 startup
+# Script de sauvegarde automatique
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+mysqldump -u username -p database_name > backup_$DATE.sql
+tar -czf backup_$DATE.tar.gz backup_$DATE.sql
+rm backup_$DATE.sql
 ```
 
----
+## 📈 Monitoring
 
-## 5. Configuration SSL/TLS
-
-### Option A: Let's Encrypt (Gratuit)
+### 1. Health Checks
 
 ```bash
-# 1. Installer Certbot
-sudo apt-get update
-sudo apt-get install -y certbot
+# Vérifier l'état de l'application
+curl -f https://votre-domaine.com/health
 
-# 2. Obtenir le certificat
-sudo certbot certonly --standalone \
-    --email admin@fit-service.com \
-    --agree-tos \
-    --no-eff-email \
-    -d api.fit-service.com
-
-# 3. Configurer le renouvellement automatique
-sudo crontab -e
-# Ajouter: 0 12 * * * /usr/bin/certbot renew --quiet
+# Vérifier la base de données
+php artisan db:monitor
 ```
 
-### Option B: Certificat Commercial
+### 2. Métriques
 
-1. **Obtenir un certificat SSL** d'un fournisseur (DigiCert, GlobalSign, etc.)
-2. **Placer les fichiers:**
+-   **Performance** : Temps de réponse des API
+-   **Disponibilité** : Uptime de l'application
+-   **Erreurs** : Taux d'erreur 4xx/5xx
+-   **Utilisation** : Nombre d'utilisateurs actifs
 
-```bash
-sudo mkdir -p /etc/ssl/fit-service
-sudo cp certificate.pem /etc/ssl/fit-service/
-sudo cp private-key.pem /etc/ssl/fit-service/
-sudo chown -R $USER:$USER /etc/ssl/fit-service
-sudo chmod 600 /etc/ssl/fit-service/private-key.pem
-```
+## 🎯 Validation Finale
 
-### Configuration Nginx
+### Checklist de Déploiement
 
-```bash
-# 1. Installer Nginx
-sudo apt-get install -y nginx
+-   ✅ Migrations exécutées
+-   ✅ Sanctum configuré
+-   ✅ Utilisateurs créés
+-   ✅ SSL/TLS configuré
+-   ✅ Firewall activé
+-   ✅ Logs configurés
+-   ✅ Sauvegarde automatisée
+-   ✅ Monitoring en place
+-   ✅ Tests de validation passés
 
-# 2. Copier la configuration
-sudo cp nginx-fit-service.conf /etc/nginx/sites-available/fit-service
+### URLs de Test
 
-# 3. Activer le site
-sudo ln -s /etc/nginx/sites-available/fit-service /etc/nginx/sites-enabled/
+-   **Secrétariat** : `https://votre-domaine.com/secretary/dashboard`
+-   **Portail Athlète** : `https://votre-domaine.com/portal`
+-   **API Documentation** : `https://votre-domaine.com/api/documentation`
 
-# 4. Tester la configuration
-sudo nginx -t
+## �� Déploiement Réussi !
 
-# 5. Redémarrer Nginx
-sudo systemctl reload nginx
-```
+L'application est maintenant prête pour la production avec :
 
----
+-   ✅ Architecture FIFA Connect ID respectée
+-   ✅ Sécurité et authentification implémentées
+-   ✅ Interfaces utilisateur complètes
+-   ✅ Fonctionnalités avancées opérationnelles
+-   ✅ Monitoring et maintenance configurés
 
-## 6. Tests et Validation
-
-### Tests Unitaires
-
-```bash
-# Exécuter tous les tests unitaires
-npm run test:unit
-
-# Exécuter un test spécifique
-npm run test:unit -- --grep "OAuth2Service"
-```
-
-### Tests d'Intégration
-
-```bash
-# Préparer l'environnement de test
-export NODE_ENV=test
-export TEST_DATABASE_URL=mongodb://localhost:27017/fit_test_database
-
-# Exécuter les tests d'intégration
-npm run test:integration
-```
-
-### Tests de Sécurité
-
-```bash
-# Exécuter les tests de sécurité
-npm run test:security
-
-# Audit des dépendances
-npm audit
-npm audit fix
-```
-
-### Tests de Performance
-
-```bash
-# Installer Artillery
-npm install -g artillery
-
-# Exécuter les tests de charge
-artillery run tests/performance/load-test.yml
-```
-
-### Validation Manuelle
-
-```bash
-# 1. Vérifier le service de santé
-curl http://localhost:3000/health
-
-# 2. Tester l'authentification
-curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     http://localhost:3000/api/v1/oauth2/services
-
-# 3. Tester la synchronisation
-curl -X POST -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     http://localhost:3000/api/v1/devices/sync
-```
-
----
-
-## 7. Monitoring et Alertes
-
-### Configuration du Monitoring
-
-```bash
-# 1. Rendre le script de monitoring exécutable
-chmod +x scripts/monitoring.sh
-
-# 2. Ajouter au cron (vérification toutes les 5 minutes)
-crontab -e
-# Ajouter: */5 * * * * /path/to/fit-service/scripts/monitoring.sh
-```
-
-### Configuration des Alertes Email
-
-```bash
-# 1. Installer Postfix (si pas déjà installé)
-sudo apt-get install -y postfix
-
-# 2. Configurer les variables d'alerte dans .env
-ALERT_EMAIL_ENABLED=true
-ALERT_EMAIL_HOST=smtp.gmail.com
-ALERT_EMAIL_PORT=587
-ALERT_EMAIL_USER=your-email@gmail.com
-ALERT_EMAIL_PASSWORD=your-app-password
-ALERT_EMAIL_FROM=fit-alerts@yourdomain.com
-```
-
-### Configuration des Alertes Slack
-
-```bash
-# 1. Créer un webhook Slack
-# Aller sur https://api.slack.com/apps
-# Créer une nouvelle app et configurer un webhook
-
-# 2. Mettre à jour .env
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-SLACK_CHANNEL=#fit-alerts
-```
-
-### Métriques et Logs
-
-```bash
-# 1. Voir les logs en temps réel
-pm2 logs fit-service
-
-# 2. Monitorer les ressources
-pm2 monit
-
-# 3. Voir les statistiques
-pm2 show fit-service
-
-# 4. Voir les logs d'application
-tail -f logs/fit-service.log
-```
-
----
-
-## 8. Maintenance et Sauvegardes
-
-### Sauvegardes Automatiques
-
-```bash
-# 1. Rendre le script de sauvegarde exécutable
-chmod +x scripts/backup.sh
-
-# 2. Ajouter au cron (sauvegarde quotidienne à 2h du matin)
-crontab -e
-# Ajouter: 0 2 * * * /path/to/fit-service/scripts/backup.sh
-```
-
-### Sauvegardes Manuelles
-
-```bash
-# Sauvegarder MongoDB
-mongodump --uri="mongodb://localhost:27017/fit_database" --out=./backups/manual-mongo
-
-# Sauvegarder PostgreSQL
-PGPASSWORD=fit_password pg_dump -h localhost -U fit_user fit_database > ./backups/manual-postgres.sql
-
-# Sauvegarder Redis
-redis-cli --rdb ./backups/manual-redis.rdb
-
-# Sauvegarder les fichiers de configuration
-tar -czf ./backups/manual-config.tar.gz .env.production ecosystem.config.js
-```
-
-### Restauration
-
-```bash
-# Restaurer MongoDB
-mongorestore --uri="mongodb://localhost:27017/fit_database" ./backups/manual-mongo
-
-# Restaurer PostgreSQL
-PGPASSWORD=fit_password psql -h localhost -U fit_user fit_database < ./backups/manual-postgres.sql
-
-# Restaurer Redis
-redis-cli --rdb ./backups/manual-redis.rdb
-
-# Restaurer la configuration
-tar -xzf ./backups/manual-config.tar.gz
-```
-
-### Mises à Jour
-
-```bash
-# 1. Sauvegarder avant mise à jour
-./scripts/backup.sh
-
-# 2. Arrêter le service
-pm2 stop fit-service
-
-# 3. Mettre à jour le code
-git pull origin main
-
-# 4. Installer les nouvelles dépendances
-npm install
-
-# 5. Redémarrer le service
-pm2 start fit-service
-
-# 6. Vérifier le statut
-pm2 status
-curl http://localhost:3000/health
-```
-
----
-
-## 9. Dépannage
-
-### Problèmes Courants
-
-#### Service ne démarre pas
-
-```bash
-# 1. Vérifier les logs
-pm2 logs fit-service
-
-# 2. Vérifier la configuration
-node -c src/app.js
-
-# 3. Vérifier les variables d'environnement
-node -e "require('dotenv').config(); console.log(process.env.NODE_ENV)"
-```
-
-#### Erreurs de base de données
-
-```bash
-# 1. Vérifier la connectivité MongoDB
-mongosh --eval "db.runCommand('ping')"
-
-# 2. Vérifier la connectivité PostgreSQL
-PGPASSWORD=fit_password psql -h localhost -U fit_user -d fit_database -c "SELECT 1;"
-
-# 3. Vérifier la connectivité Redis
-redis-cli ping
-```
-
-#### Erreurs OAuth2
-
-```bash
-# 1. Vérifier les credentials
-grep -E "CLIENT_ID|CLIENT_SECRET" .env
-
-# 2. Tester les URLs de redirection
-curl -I "https://connect.catapultsports.com/oauth/authorize"
-
-# 3. Vérifier les logs OAuth2
-grep "oauth" logs/fit-service.log
-```
-
-#### Problèmes SSL/TLS
-
-```bash
-# 1. Vérifier les certificats
-openssl x509 -in /etc/ssl/fit-service/certificate.pem -text -noout
-
-# 2. Vérifier la configuration Nginx
-sudo nginx -t
-
-# 3. Vérifier les permissions
-ls -la /etc/ssl/fit-service/
-```
-
-### Logs et Debugging
-
-```bash
-# 1. Activer le mode debug
-export LOG_LEVEL=debug
-pm2 restart fit-service
-
-# 2. Voir les logs en temps réel
-pm2 logs fit-service --lines 100
-
-# 3. Analyser les erreurs
-grep "ERROR" logs/fit-service.log | tail -20
-
-# 4. Vérifier les performances
-pm2 monit
-```
-
-### Support et Contact
-
-Pour obtenir de l'aide supplémentaire :
-
-1. **Documentation:** Consultez les fichiers README.md et les commentaires dans le code
-2. **Logs:** Vérifiez les logs dans `logs/fit-service.log`
-3. **Tests:** Exécutez les tests pour identifier les problèmes
-4. **Monitoring:** Utilisez les scripts de monitoring pour diagnostiquer les problèmes
-
----
-
-## Commandes Utiles
-
-### Gestion du Service
-
-```bash
-# Démarrer le service
-pm2 start fit-service
-
-# Arrêter le service
-pm2 stop fit-service
-
-# Redémarrer le service
-pm2 restart fit-service
-
-# Voir le statut
-pm2 status
-
-# Voir les logs
-pm2 logs fit-service
-
-# Monitorer en temps réel
-pm2 monit
-```
-
-### Gestion des Bases de Données
-
-```bash
-# MongoDB
-mongosh fit_database
-db.stats()
-
-# PostgreSQL
-psql -h localhost -U fit_user -d fit_database
-\dt
-
-# Redis
-redis-cli
-INFO
-```
-
-### Maintenance
-
-```bash
-# Sauvegarde
-./scripts/backup.sh
-
-# Monitoring
-./scripts/monitoring.sh
-
-# Nettoyage des logs
-find logs/ -name "*.log" -mtime +30 -delete
-
-# Nettoyage des sauvegardes
-find backups/ -name "fit-backup-*" -mtime +30 -delete
-```
-
----
-
-Ce guide couvre l'ensemble du processus de déploiement et de configuration du microservice FIT. Suivez les étapes dans l'ordre et assurez-vous de tester chaque étape avant de passer à la suivante.
+**L'implémentation est complète et prête pour la production !** 🚀

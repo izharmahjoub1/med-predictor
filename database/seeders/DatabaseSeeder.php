@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             // SeasonSeeder::class, // Run this separately to avoid duplicate season errors
             MatchRosterSeeder::class,
             HealthRecordSeeder::class,
+            PCMASeeder::class,
             PlayerLicenseSeeder::class,
             CompetitionTeamsSeeder::class, // Add the new seeder
         ]);

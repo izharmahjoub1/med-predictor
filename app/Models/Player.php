@@ -125,6 +125,11 @@ class Player extends Model
         return $this->belongsTo(FifaConnectId::class);
     }
 
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'player_id');
+    }
+
     public function fifaSyncLogs(): HasMany
     {
         return $this->hasMany(FifaSyncLog::class, 'entity_id')
@@ -164,6 +169,68 @@ class Player extends Model
     public function playerLicenses(): HasMany
     {
         return $this->hasMany(\App\Models\PlayerLicense::class, 'player_id');
+    }
+
+    public function pcmas(): HasMany
+    {
+        return $this->hasMany(PCMA::class);
+    }
+
+    /**
+     * Get the postural assessments for the player.
+     */
+    public function posturalAssessments(): HasMany
+    {
+        return $this->hasMany(PosturalAssessment::class);
+    }
+
+    /**
+     * Get the most recent valid PCMA for this player
+     */
+    public function getCurrentPCMA()
+    {
+        return $this->pcmas()
+            ->where('status', 'completed')
+            ->where('fifa_compliant', true)
+            ->where('completed_at', '>=', now()->subYear())
+            ->orderBy('completed_at', 'desc')
+            ->first();
+    }
+
+    /**
+     * Check if player has valid PCMA
+     */
+    public function hasValidPCMA(): bool
+    {
+        return $this->pcmas()
+            ->where('status', 'completed')
+            ->where('fifa_compliant', true)
+            ->where('completed_at', '>=', now()->subYear())
+            ->exists();
+    }
+
+    /**
+     * Get PCMA history for this player
+     */
+    public function getPCMAHistory()
+    {
+        return $this->pcmas()
+            ->where('status', 'completed')
+            ->orderBy('completed_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Check if PCMA is due for renewal (expires within 30 days)
+     */
+    public function isPCMADueForRenewal(): bool
+    {
+        $currentPCMA = $this->getCurrentPCMA();
+        if (!$currentPCMA) {
+            return true; // No valid PCMA, renewal needed
+        }
+        
+        return $currentPCMA->completed_at->addYear()->subDays(30)->isPast();
     }
 
     public function teamPlayers(): HasMany

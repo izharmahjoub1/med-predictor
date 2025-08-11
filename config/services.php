@@ -21,6 +21,12 @@ return [
         'scheme' => 'https',
     ],
 
+    'ai' => [
+        'base_url' => env('AI_BASE_URL', 'http://localhost:3001'),
+        'timeout' => env('AI_TIMEOUT', 30),
+        'api_key' => env('AI_API_KEY'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
@@ -29,6 +35,23 @@ return [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+    ],
+
+    'fhir' => [
+        'base_url' => env('FHIR_BASE_URL', 'http://localhost:8080/fhir'),
+        'timeout' => env('FHIR_TIMEOUT', 30),
+        'retry_attempts' => env('FHIR_RETRY_ATTEMPTS', 3),
+        'retry_delay' => env('FHIR_RETRY_DELAY', 5),
+        'audit_logging' => env('FHIR_AUDIT_LOGGING', true),
+        'batch_size' => env('FHIR_BATCH_SIZE', 100),
+        'version' => env('FHIR_VERSION', 'R4'),
+    ],
+
+    'pacs' => [
+        'base_url' => env('PACS_BASE_URL', 'http://localhost:8042/dicom-web'),
+        'timeout' => env('PACS_TIMEOUT', 60),
+        'username' => env('PACS_USERNAME'),
+        'password' => env('PACS_PASSWORD'),
     ],
 
     'fifa_connect' => [
@@ -54,6 +77,33 @@ return [
         'audit_logging' => env('HL7_FHIR_AUDIT_LOGGING', true),
         'batch_size' => env('HL7_FHIR_BATCH_SIZE', 100),
         'version' => env('HL7_FHIR_VERSION', 'R4'),
+    ],
+
+    'icd11' => [
+        'client_id' => env('ICD11_CLIENT_ID'),
+        'client_secret' => env('ICD11_CLIENT_SECRET'),
+        'base_url' => env('ICD11_BASE_URL', 'https://icd.who.int/icdapi'),
+        'timeout' => env('ICD11_TIMEOUT', 30),
+        'cache_ttl' => env('ICD11_CACHE_TTL', 3600),
+        'retry_attempts' => env('ICD11_RETRY_ATTEMPTS', 3),
+        'retry_delay' => env('ICD11_RETRY_DELAY', 5),
+    ],
+
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'timeout' => env('OPENAI_TIMEOUT', 60),
+        'max_tokens' => env('OPENAI_MAX_TOKENS', 1000),
+        'model' => env('OPENAI_MODEL', 'gpt-4'),
+    ],
+
+    'google' => [
+        'api_key' => env('GOOGLE_API_KEY'),
+        'base_url' => env('GOOGLE_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+        'timeout' => env('GOOGLE_TIMEOUT', 60),
+        'model' => env('GOOGLE_MODEL', 'gemini-pro'),
+        'max_tokens' => env('GOOGLE_MAX_TOKENS', 1000),
+        'temperature' => env('GOOGLE_TEMPERATURE', 0.7),
     ],
 
 ];

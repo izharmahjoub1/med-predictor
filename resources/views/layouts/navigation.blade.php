@@ -3,7 +3,7 @@
 @endphp
 
 <!-- Main Navigation Menu - Fixed at top -->
-<nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-2 shadow-sm z-50">
+<nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-3 shadow-sm z-50 nav-bar" style="z-index: 1000 !important; position: fixed !important;">
     <div class="flex flex-col sm:flex-row items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center space-x-3 mb-2 sm:mb-0">
@@ -105,12 +105,20 @@
                     <a href="{{ route('healthcare.export') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.export_data') }}</a>
                     <div class="border-t my-1"></div>
                     <a href="{{ route('health-records.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.health_records') }}</a>
+                    <a href="{{ route('pcma.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">📋 PCMA Management</a>
                     <a href="{{ route('medical-predictions.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.prediction_models') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('appointments.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">📅 {{ __('navigation.appointments') }}</a>
+                    <a href="{{ route('visits.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">🏥 {{ __('navigation.visits') }}</a>
+                    <a href="{{ route('documents.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">📄 {{ __('navigation.documents') }}</a>
+                    <div class="border-t my-1"></div>
+                    <a href="{{ route('portal.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-green-700">🏃‍♂️ Portail Athlète</a>
+                    <a href="{{ route('secretary.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-purple-700">🏥 Secrétariat Médical</a>
                 </div>
             </div>
-            <!-- Referee Portal -->
+            <!-- Referee -->
             <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.referee_portal') }}</button>
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.referee') }}</button>
                 <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
                     <a href="{{ route('referee.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.dashboard') }}</a>
                     <a href="{{ route('referee.match-assignments') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.match_assignments') }}</a>
@@ -121,67 +129,96 @@
                     <a href="{{ route('referee.settings') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.settings') }}</a>
                 </div>
             </div>
-            <li>
-                <a href="{{ url('/performances') }}" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.performance') }}</a>
-            </li>
-            <!-- DTN Manager -->
-            <li>
-                <a href="{{ url('/dtn') }}" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.dtn_manager') }}</a>
-            </li>
-            <!-- RPM -->
-            <li>
-                <a href="{{ url('/rpm') }}" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.rpm') }}</a>
-            </li>
-        </div>
-        <!-- Notifications -->
-        <div class="mt-2 sm:mt-0 mr-4">
+            <!-- Performance Analytics -->
             <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open" class="flex items-center px-3 py-2 rounded hover:bg-blue-100 relative">
-                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    @php $unread = auth()->user() ? auth()->user()->unreadNotifications()->count() : 0; @endphp
-                    @if($unread > 0)
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $unread }}</span>
-                    @endif
-                </button>
-                <div x-show="open" @click.away="open = false" class="absolute right-0 z-20 bg-white border rounded shadow-lg mt-2 min-w-[300px] max-h-96 overflow-y-auto">
-                    <div class="p-2 font-semibold border-b">{{ __('navigation.notifications') }}</div>
-                    @forelse(auth()->user() ? auth()->user()->unreadNotifications : collect() as $notification)
-                        <div class="px-4 py-2 border-b hover:bg-blue-50">
-                            <div class="text-sm">{!! $notification->data['new_status'] ?? '' !!} - <a href="{{ route('license-requests.show', $notification->data['license_request_id'] ?? 0) }}" class="text-blue-600 hover:underline">Voir la demande</a></div>
-                            @if(!empty($notification->data['comment']))
-                                <div class="text-xs text-gray-600 mt-1">{{ $notification->data['comment'] }}</div>
-                            @endif
-                            <form method="POST" action="{{ route('notifications.markAsRead', $notification->id) }}" class="mt-1">
-                                @csrf
-                                <button type="submit" class="text-xs text-green-600 hover:underline">{{ __('navigation.mark_as_read') }}</button>
-                            </form>
+                <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.performance_analytics') }}</button>
+                <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                    <a href="{{ route('performance-recommendations.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.recommendations') }}</a>
+                    <a href="{{ route('performances.analytics') }}" class="block px-4 py-2 hover:bg-blue-50">📊 {{ __('navigation.performance_analytics') }}</a>
+                    <a href="{{ route('performances.trends') }}" class="block px-4 py-2 hover:bg-blue-50">📈 {{ __('navigation.performance_trends') }}</a>
+                    <a href="{{ route('alerts.performance') }}" class="block px-4 py-2 hover:bg-blue-50">⚠️ {{ __('navigation.performance_alerts') }}</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Menu -->
+        <div class="flex items-center space-x-4 mt-2 sm:mt-0">
+            @auth
+                <!-- Notifications -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="relative p-2 text-gray-600 hover:text-blue-700 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 0 1 6 6v3.25l-1.586 1.586A2 2 0 0 1 13.414 16H4.586a2 2 0 0 1-1.414-1.414L1.5 13.25V9.75a6 6 0 0 1 6-6z" />
+                        </svg>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 z-20 bg-white border rounded shadow-lg mt-2 min-w-[300px] max-h-[400px] overflow-y-auto">
+                        <div class="p-4 border-b">
+                            <h3 class="text-lg font-semibold text-gray-900">Notifications</h3>
                         </div>
-                    @empty
-                        <div class="px-4 py-2 text-gray-500">{{ __('navigation.no_unread_notifications') }}</div>
-                    @endforelse
-                    <div class="p-2 text-right">
-                        <a href="{{ route('profile.show') }}#notifications" class="text-blue-600 hover:underline text-xs">{{ __('navigation.view_all_notifications') }}</a>
+                        <div class="p-2">
+                            <!-- Sample notifications -->
+                            <div class="p-3 hover:bg-gray-50 rounded">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                                    <div class="flex-1">
+                                        <div class="text-sm">Licence validée - <a href="#" class="text-blue-600 hover:underline">Voir la demande</a></div>
+                                        <div class="text-xs text-gray-500 mt-1">Il y a 2 heures</div>
+                                    </div>
+                                    <button class="text-xs text-gray-400 hover:text-gray-600">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 hover:bg-gray-50 rounded">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                                    <div class="flex-1">
+                                        <div class="text-sm">Nouveau dossier médical créé pour Athlète #1234</div>
+                                        <div class="text-xs text-gray-500 mt-1">Il y a 4 heures</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 hover:bg-gray-50 rounded">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                                    <div class="flex-1">
+                                        <div class="text-sm">Licence en attente de validation</div>
+                                        <div class="text-xs text-gray-500 mt-1">Il y a 6 heures</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t">
+                            <a href="{{ route('profile.show') }}#notifications" class="text-blue-600 hover:underline text-xs">{{ __('navigation.view_all_notifications') }}</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Profil utilisateur / Logout -->
-        <div class="mt-2 sm:mt-0">
-            <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open" class="flex items-center px-3 py-2 rounded hover:bg-blue-100">
-                    <span class="mr-2 font-semibold">{{ $user ? $user->name : __('navigation.user') }}</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                <div x-show="open" @click.away="open = false" class="absolute right-0 z-20 bg-white border rounded shadow-lg mt-2 min-w-[150px]">
-                    <a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.profile') }}</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-50">{{ __('navigation.logout') }}</button>
-                    </form>
+                
+                <!-- User Profile -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-blue-100 text-gray-700 hover:text-blue-700 transition-colors">
+                        <span>{{ $user->name ?? 'User' }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
+                        <a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-blue-50">Profile</a>
+                        <form method="POST" action="{{ route('logout') }}" class="block">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-50">Logout</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            @else
+                <a href="{{ route('login') }}" class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                    Login
+                </a>
+            @endauth
         </div>
     </div>
-</nav> 
+</nav>
+
+<!-- Spacer for fixed navigation -->
+<div class="h-20"></div> 

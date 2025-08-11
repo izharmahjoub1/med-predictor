@@ -295,7 +295,7 @@
                                         {{ ucfirst($medicalPrediction->healthRecord->status) }}
                                     </span>
                                 </div>
-                                <a href="{{ route('legacy.health-records.show', $medicalPrediction->healthRecord) }}"
+                                <a href="{{ route('health-records.show', $medicalPrediction->healthRecord) }}"
                                    class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center px-4 py-2 rounded-lg transition-colors">
                                     Voir le dossier médical
                                 </a>

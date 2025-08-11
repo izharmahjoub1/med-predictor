@@ -68,13 +68,13 @@
                                                 {{ $record->player ? $record->player->full_name : 'Patient anonyme' }}
                                             </div>
                                             <div class="text-sm text-gray-500">
-                                                {{ $record->user->name }}
+                                                {{ $record->user ? $record->user->name : 'N/A' }}
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $record->record_date->format('d/m/Y') }}
+                                    {{ $record->record_date ? $record->record_date->format('d/m/Y') : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
@@ -97,7 +97,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $record->predictions->count() }} prédiction(s)
+                                    {{ $record->predictions ? $record->predictions->count() : 0 }} prédiction(s)
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
@@ -112,7 +112,9 @@
             </div>
             
             <div class="px-6 py-4 border-t border-gray-200">
-                {{ $healthRecords->links() }}
+                @if(method_exists($healthRecords, 'links'))
+                    {{ $healthRecords->links() }}
+                @endif
             </div>
         @else
             <div class="px-6 py-12 text-center">

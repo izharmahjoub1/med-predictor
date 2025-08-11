@@ -5,6 +5,7 @@
 
 import { registerDTNRoutes, setUserPermissions as setDTNPermissions } from './DTNManager/router/dtn.routes'
 import { registerRPMRoutes, setUserPermissions as setRPMPermissions } from './RPM/router/rpm.routes'
+import { registerMedicalRoutes, setUserPermissions as setMedicalPermissions } from './MedicalDataManager/router/medical.routes'
 
 /**
  * Classe principale pour la gestion des modules
@@ -23,6 +24,13 @@ class ModuleManager {
         name: 'RPM',
         description: 'Régulation & Préparation Matchs',
         icon: '⚽',
+        routes: [],
+        permissions: []
+      },
+      medical: {
+        name: 'Medical Data Manager',
+        description: 'Gestion des Données Médicales',
+        icon: '🏥',
         routes: [],
         permissions: []
       }
@@ -47,6 +55,10 @@ class ModuleManager {
       // Enregistrer les routes RPM
       registerRPMRoutes(router)
       setRPMPermissions(userPermissions)
+
+      // Enregistrer les routes Medical
+      registerMedicalRoutes(router)
+      setMedicalPermissions(userPermissions)
 
       // Mettre à jour les permissions des modules
       this.updateModulePermissions(userPermissions)
@@ -83,6 +95,20 @@ class ModuleManager {
     ]
 
     this.modules.rpm.permissions = rpmPermissions.filter(perm => 
+      userPermissions.includes(perm)
+    )
+
+    // Permissions Medical
+    const medicalPermissions = [
+      'medical_view', 'medical_records_view', 'medical_records_create', 'medical_records_edit',
+      'medical_injuries_view', 'medical_injuries_create', 'medical_injuries_edit',
+      'medical_treatments_view', 'medical_treatments_create', 'medical_treatments_edit',
+      'medical_examinations_view', 'medical_examinations_create', 'medical_examinations_edit',
+      'medical_compliance_view', 'medical_analytics_view', 'medical_reports_view',
+      'medical_settings', 'medical_admin'
+    ]
+
+    this.modules.medical.permissions = medicalPermissions.filter(perm => 
       userPermissions.includes(perm)
     )
   }
@@ -215,6 +241,19 @@ export const moduleConfig = {
       'Préparation des matchs',
       'Monitoring charge joueurs',
       'Suivi des présences'
+    ]
+  },
+  medical: {
+    name: 'Medical Data Manager',
+    description: 'Gestion des Données Médicales',
+    icon: '🏥',
+    color: 'red',
+    features: [
+      'Dossiers médicaux complets',
+      'Suivi des blessures',
+      'Plans de traitement',
+      'Examens médicaux',
+      'Conformité FIFA'
     ]
   }
 }
