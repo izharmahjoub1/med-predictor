@@ -1684,14 +1684,7 @@
                         'socialScore' => 85,
                         'injuryRisk' => 15
                     ]); @endphp,
-                        vitals: [
-                            { name: 'Fréquence Cardiaque', value: '72', unit: 'bpm', icon: 'fas fa-heartbeat', color: '#ef4444', status: 'normal' },
-                            { name: 'Tension Artérielle', value: '125/80', unit: 'mmHg', icon: 'fas fa-thermometer-half', color: '#3b82f6', status: 'normal' },
-                            { name: 'Température', value: '36.8°', unit: 'C', icon: 'fas fa-temperature-low', color: '#f59e0b', status: 'normal' },
-                            { name: 'Saturation O2', value: '98%', unit: 'SpO2', icon: 'fas fa-lungs', color: '#10b981', status: 'normal' },
-                            { name: 'Hydratation', value: '82%', unit: 'niveau', icon: 'fas fa-tint', color: '#06b6d4', status: 'normal' },
-                            { name: 'Stress Cortisol', value: '12.5', unit: 'µg/dL', icon: 'fas fa-brain', color: '#8b5cf6', status: 'normal' }
-                        ],
+                        // Les vitals sont maintenant dans healthData.vitals
                         // Les recentMetrics sont maintenant dans healthData.recentMetrics
                         // Les recommendations sont maintenant dans healthData.recommendations
                     },
@@ -1704,95 +1697,23 @@
                         'alerts' => [],
                         'recommendations' => []
                     ]); @endphp,
-                                title: 'Examen Dentaire',
-                                doctor: 'Dr. Paul Bernard',
-                                date: '10/02/2025',
-                                status: 'completed'
-                            }
+                    deviceData: @php echo json_encode([
+                        'connectedDevices' => 3,
+                        'dailyDataPoints' => 1440,
+                        'lastSync' => '2 min',
+                        'devices' => [
+                            ['id' => 1, 'name' => 'Polar H10', 'type' => 'Capteur cardiaque', 'brand' => 'Polar', 'icon' => 'fas fa-heartbeat', 'connected' => true, 'batteryLevel' => 85, 'lastData' => 'Il y a 2 min'],
+                            ['id' => 2, 'name' => 'WHOOP 4.0', 'type' => 'Tracker fitness', 'brand' => 'WHOOP', 'icon' => 'fas fa-running', 'connected' => true, 'batteryLevel' => 62, 'lastData' => 'Il y a 5 min']
                         ],
-                        pcmas: [
-                            { id: 1, title: 'Évaluation PCMA Saison 2024-2025', date: '01/09/2024', fitness: 'fit' },
-                            { id: 2, title: 'Contrôle PCMA Mi-saison', date: '15/01/2025', fitness: 'fit' },
-                            { id: 3, title: 'Évaluation PCMA Post-blessure', date: '01/03/2025', fitness: 'limited' }
-                        // Toutes les données médicales sont maintenant dans medicalData
-                    },
-                    deviceData: {
-                        connectedDevices: 3,
-                        dailyDataPoints: 1440,
-                        lastSync: '2 min',
-                        devices: [
-                            {
-                                id: 1,
-                                name: 'Polar H10',
-                                type: 'Capteur cardiaque',
-                                brand: 'Polar',
-                                icon: 'fas fa-heartbeat',
-                                connected: true,
-                                batteryLevel: 85,
-                                lastData: 'Il y a 2 min'
-                            },
-                            {
-                                id: 2,
-                                name: 'WHOOP 4.0',
-                                type: 'Tracker fitness',
-                                brand: 'WHOOP',
-                                icon: 'fas fa-running',
-                                connected: true,
-                                batteryLevel: 62,
-                                lastData: 'Il y a 5 min'
-                            },
-                            {
-                                id: 3,
-                                name: 'GPS Catapult',
-                                type: 'Tracker GPS',
-                                brand: 'Catapult',
-                                icon: 'fas fa-satellite',
-                                connected: true,
-                                batteryLevel: 92,
-                                lastData: 'Il y a 1 min'
-                            },
-                            {
-                                id: 4,
-                                name: 'Balance InBody',
-                                type: 'Composition corporelle',
-                                brand: 'InBody',
-                                icon: 'fas fa-weight',
-                                connected: false,
-                                batteryLevel: null,
-                                lastData: 'Il y a 2h'
-                            },
-                            {
-                                id: 5,
-                                name: 'Oura Ring',
-                                type: 'Tracker sommeil',
-                                brand: 'Oura',
-                                icon: 'fas fa-bed',
-                                connected: true,
-                                batteryLevel: 45,
-                                lastData: 'Il y a 10 min'
-                            }
-                        ],
-                        recentData: {
-                            heartRate: 68,
-                            steps: 15420,
-                            sleep: '7h32',
-                            calories: 2847
-                        }
-                    },
-                    dopingData: {
-                        lastControl: '28/02/2025',
-                        nextControl: '15/04/2025',
-                        controlHistory: [
-                            {
-                                id: 1,
-                                type: 'Contrôle inopiné',
-                                date: '28/02/2025',
-                                location: 'Centre d\'entraînement',
-                                status: 'completed',
-                                result: 'négatif',
-                                substances: 'Aucune substance interdite détectée',
-                                notes: 'Contrôle standard, aucun problème détecté'
-                            },
+                        'recentData' => ['heartRate' => 68, 'steps' => 15420, 'sleep' => '7h32', 'calories' => 2847]
+                    ]); @endphp,
+                    dopingData: @php echo json_encode([
+                        'lastControl' => '28/02/2025',
+                        'nextControl' => '15/04/2025',
+                        'controlHistory' => [
+                            ['id' => 1, 'type' => 'Contrôle inopiné', 'date' => '28/02/2025', 'location' => 'Centre d\'entraînement', 'status' => 'completed', 'result' => 'négatif']
+                        ]
+                    ]); @endphp,
                             {
                                 id: 2,
                                 type: 'Contrôle post-match',
@@ -1826,39 +1747,7 @@
                                 endDate: '31/08/2025',
                                 status: 'active',
                                 riskLevel: 'low'
-                            },
-                            {
-                                id: 2,
-                                substance: 'Vitamine D3',
-                                reason: 'Carence saisonnière',
-                                dosage: '2000 UI par jour',
-                                frequency: '1 fois par jour',
-                                doctor: 'Dr. Sophie Moreau',
-                                startDate: '01/12/2024',
-                                endDate: '31/03/2025',
-                                status: 'active',
-                                riskLevel: 'none'
-                            }
-                        ],
-                        riskAlerts: [
-                            {
-                                id: 1,
-                                type: 'warning',
-                                title: 'Attention aux compléments',
-                                message: 'Vérifiez toujours la composition des compléments alimentaires',
-                                priority: 'medium',
-                                date: '08/03/2025'
-                            }
-                        ],
-                        prohibitedSubstances: [
-                            'Stéroïdes anabolisants',
-                            'Hormones de croissance',
-                            'EPO',
-                            'Stimulants (amphétamines, cocaïne)',
-                            'Diurétiques',
-                            'Bêta-bloquants',
-                            'Cannabinoïdes'
-                        ]
+                            // Données de dopage simplifiées
                     }
                 }
             },
