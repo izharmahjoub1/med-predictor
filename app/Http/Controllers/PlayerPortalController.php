@@ -12,6 +12,7 @@ use App\Models\MatchModel;
 use App\Models\Performance;
 use App\Services\PlayerPerformanceService;
 use App\Services\PlayerNotificationService;
+use App\Services\PlayerHealthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -103,7 +104,11 @@ class PlayerPortalController extends Controller
                 'socialMedia' => $notificationService->getSocialMediaNotifications()
             ];
 
-            return view('player-portal.fifa-ultimate-optimized', compact('player', 'performanceData', 'notificationData'));
+            // Utiliser le service de santé pour les données réelles
+            $healthService = new PlayerHealthService($player);
+            $healthData = $healthService->getHealthData();
+
+            return view('player-portal/fifa-ultimate-optimized', compact('player', 'performanceData', 'notificationData', 'healthData'));
         } catch (\Exception $e) {
             \Log::error('PlayerPortalController fifaUltimateDashboard error: ' . $e->getMessage());
             \Log::error('Stack trace: ' . $e->getTraceAsString());

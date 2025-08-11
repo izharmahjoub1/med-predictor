@@ -1673,13 +1673,14 @@
                     ]); @endphp,
                         // Toutes les données de notifications sont maintenant dans notificationData
                     },
-                    healthData: {
-                        globalScore: 85,
-                        physicalScore: 88,
-                        mentalScore: 78,
-                        sleepScore: 82,
-                        socialScore: 85,
-                        injuryRisk: 15,
+                    healthData: @php echo json_encode($healthData ?? [
+                        'globalScore' => 85,
+                        'physicalScore' => 88,
+                        'mentalScore' => 78,
+                        'sleepScore' => 82,
+                        'socialScore' => 85,
+                        'injuryRisk' => 15
+                    ]); @endphp,
                         vitals: [
                             { name: 'Fréquence Cardiaque', value: '72', unit: 'bpm', icon: 'fas fa-heartbeat', color: '#ef4444', status: 'normal' },
                             { name: 'Tension Artérielle', value: '125/80', unit: 'mmHg', icon: 'fas fa-thermometer-half', color: '#3b82f6', status: 'normal' },
