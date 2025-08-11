@@ -371,24 +371,24 @@
                 <!-- Résumé de la saison -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="performance-card p-6 text-center">
-                        <div class="text-3xl font-bold text-green-600">12</div>
+                        <div class="text-3xl font-bold text-green-600" v-text="seasonSummary.goals.total"></div>
                         <div class="text-sm text-gray-600">Buts marqués</div>
-                        <div class="text-xs text-green-600 mt-1">↗️ +3 vs mois dernier</div>
+                        <div class="text-xs text-green-600 mt-1" v-text="'↗️ ' + seasonSummary.goals.trend + ' vs mois dernier'"></div>
                     </div>
                     <div class="performance-card p-6 text-center">
-                        <div class="text-3xl font-bold text-blue-600">8</div>
+                        <div class="text-3xl font-bold text-blue-600" v-text="seasonSummary.assists.total"></div>
                         <div class="text-sm text-gray-600">Passes décisives</div>
-                        <div class="text-xs text-blue-600 mt-1">↗️ +2 vs mois dernier</div>
+                        <div class="text-xs text-blue-600 mt-1" v-text="'↗️ +' + seasonSummary.assists.trend + ' vs mois dernier'"></div>
                     </div>
                     <div class="performance-card p-6 text-center">
-                        <div class="text-3xl font-bold text-purple-600">84.2km</div>
+                        <div class="text-3xl font-bold text-purple-600" v-text="seasonSummary.matches.distance"></div>
                         <div class="text-sm text-gray-600">Distance parcourue</div>
-                        <div class="text-xs text-gray-600 mt-1">Moyenne/match: 10.1km</div>
+                        <div class="text-xs text-gray-600 mt-1" v-text="'Moyenne/match: ' + (parseFloat(seasonSummary.matches.distance.replace(' km', '')) / seasonSummary.matches.total).toFixed(1) + 'km'"></div>
                     </div>
                     <div class="performance-card p-6 text-center">
-                        <div class="text-3xl font-bold text-orange-600">89%</div>
-                        <div class="text-sm text-gray-600">Précision passes</div>
-                        <div class="text-xs text-orange-600 mt-1">↗️ +4% vs saison dernière</div>
+                        <div class="text-3xl font-bold text-orange-600" v-text="seasonSummary.matches.rating"></div>
+                        <div class="text-sm text-gray-600">Rating moyen</div>
+                        <div class="text-xs text-orange-600 mt-1" v-text="'Basé sur ' + seasonSummary.matches.total + ' matchs'"></div>
                     </div>
                 </div>
 
@@ -1653,6 +1653,17 @@
                     offensiveStats: @json($performanceData['offensiveStats'] ?? []),
                     physicalStats: @json($performanceData['physicalStats'] ?? []),
                     technicalStats: @json($performanceData['technicalStats'] ?? []),
+                    seasonSummary: {
+                        goals: { total: 3, trend: '+3', avg: 1.5 },
+                        assists: { total: 3, trend: '+1', avg: 1.5 },
+                        matches: { total: 2, rating: 8.4, distance: '20.3 km' }
+                    },
+                    performanceEvolution: {
+                        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                        ratings: [0, 0, 0, 0, 0, 8.4],
+                        goals: [0, 0, 0, 0, 0, 3],
+                        assists: [0, 0, 0, 0, 0, 3]
+                    },
                     notificationData: {
                         nationalTeam: [
                             {
@@ -2156,17 +2167,40 @@
                     const ctx = document.getElementById('performanceChart');
                     if (!ctx) return;
 
+                    // Utiliser les données dynamiques de l'évolution des performances
+                    const labels = this.performanceEvolution.labels || ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'];
+                    const ratings = this.performanceEvolution.ratings || [75, 78, 76, 82, 85, 88];
+                    const goals = this.performanceEvolution.goals || [0, 0, 0, 0, 0, 0];
+                    const assists = this.performanceEvolution.assists || [0, 0, 0, 0, 0, 0];
+
                     new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                            labels: labels,
                             datasets: [{
-                                label: 'Performance Global',
-                                data: [75, 78, 76, 82, 85, 88],
+                                label: 'Rating Performance',
+                                data: ratings,
                                 borderColor: '#3b82f6',
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                                 tension: 0.4,
-                                fill: true
+                                fill: true,
+                                yAxisID: 'y'
+                            }, {
+                                label: 'Buts marqués',
+                                data: goals,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4,
+                                fill: false,
+                                yAxisID: 'y1'
+                            }, {
+                                label: 'Assists délivrés',
+                                data: assists,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                tension: 0.4,
+                                fill: false,
+                                yAxisID: 'y1'
                             }]
                         },
                         options: {
@@ -2175,12 +2209,41 @@
                             plugins: {
                                 legend: {
                                     position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Évolution des Performances - Saison 2024/25',
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    }
                                 }
                             },
                             scales: {
                                 y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
                                     beginAtZero: true,
-                                    max: 100
+                                    max: 10,
+                                    title: {
+                                        display: true,
+                                        text: 'Rating (0-10)'
+                                    }
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    beginAtZero: true,
+                                    max: 5,
+                                    title: {
+                                        display: true,
+                                        text: 'Buts/Assists'
+                                    },
+                                    grid: {
+                                        drawOnChartArea: false,
+                                    },
                                 }
                             }
                         }
