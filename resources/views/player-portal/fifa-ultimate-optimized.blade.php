@@ -1075,7 +1075,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Radar Chart SDOH -->
                         <div class="w-full">
-                            <div class="chart-container mb-4">
+                            <div class="chart-container mb-4" style="height: 400px; min-height: 400px;">
                                 <canvas id="sdohRadarChart"></canvas>
                             </div>
                         </div>
@@ -2352,8 +2352,8 @@
                                     pointHoverBackgroundColor: '#fff',
                                     pointHoverBorderColor: 'rgba(20, 184, 166, 1)',
                                     pointHoverBorderWidth: 3,
-                                    pointRadius: 5,
-                                    pointHoverRadius: 8
+                                    pointRadius: 7,
+                                    pointHoverRadius: 10
                                 },
                                 {
                                     label: 'Moyenne FIFA Athletes',
@@ -2364,7 +2364,7 @@
                                     pointBackgroundColor: 'rgba(99, 102, 241, 0.8)',
                                     pointBorderColor: '#fff',
                                     pointBorderWidth: 1,
-                                    pointRadius: 3,
+                                    pointRadius: 5,
                                     borderDash: [5, 5]
                                 }
                             ]
@@ -2372,6 +2372,7 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            aspectRatio: 1.2,
                             plugins: {
                                 legend: { 
                                     position: 'top',
@@ -2408,10 +2409,11 @@
                                     },
                                     pointLabels: {
                                         font: {
-                                            size: 12,
-                                            weight: '500'
+                                            size: 14,
+                                            weight: '600'
                                         },
-                                        color: '#374151'
+                                        color: '#374151',
+                                        padding: 15
                                     },
                                     suggestedMin: 0,
                                     suggestedMax: 100,
