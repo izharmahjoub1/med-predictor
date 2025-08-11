@@ -348,6 +348,8 @@
             </div>
         </div>
 
+
+
         <!-- Navigation Tabs -->
         <div class="px-6 mb-6">
             <div class="flex flex-wrap gap-4">
@@ -1634,6 +1636,7 @@
                 return {
                     activeTab: 'performance',
                     activeNotificationFilter: 'all',
+
                     navigationTabs: [
                         { id: 'performance', name: 'Performance', icon: 'fas fa-chart-line', count: null },
                         { id: 'notifications', name: 'Notifications', icon: 'fas fa-bell', count: 12 },
@@ -1689,109 +1692,18 @@
                             { name: 'Hydratation', value: '82%', unit: 'niveau', icon: 'fas fa-tint', color: '#06b6d4', status: 'normal' },
                             { name: 'Stress Cortisol', value: '12.5', unit: 'µg/dL', icon: 'fas fa-brain', color: '#8b5cf6', status: 'normal' }
                         ],
-                        recentMetrics: [
-                            { id: 1, type: 'Poids Corporel', value: '72.1 kg', date: '10/03/2025', icon: 'fas fa-weight', color: '#3b82f6', trend: 'stable', change: '+0.1kg' },
-                            { id: 2, type: 'Masse Grasse', value: '8.2%', date: '10/03/2025', icon: 'fas fa-chart-pie', color: '#10b981', trend: 'down', change: '-0.3%' },
-                            { id: 3, type: 'Masse Musculaire', value: '65.8 kg', date: '10/03/2025', icon: 'fas fa-dumbbell', color: '#f59e0b', trend: 'up', change: '+0.5kg' },
-                            { id: 4, type: 'VO2 Max', value: '68.5 ml/kg/min', date: '08/03/2025', icon: 'fas fa-lungs', color: '#ef4444', trend: 'up', change: '+1.2' },
-                            { id: 5, type: 'VFC (HRV)', value: '52ms', date: '10/03/2025', icon: 'fas fa-heartbeat', color: '#8b5cf6', trend: 'up', change: '+3ms' }
-                        ],
-                        recommendations: [
-                            { 
-                                id: 1, 
-                                title: 'Optimiser la Récupération', 
-                                description: 'Augmenter la durée de sommeil profond avec une routine de 30min avant coucher', 
-                                priority: 'HAUTE', 
-                                color: '#ef4444', 
-                                icon: 'fas fa-bed',
-                                impact: 'Performance +8%'
-                            },
-                            { 
-                                id: 2, 
-                                title: 'Nutrition Périodisée', 
-                                description: 'Adapter l\'apport calorique selon l\'intensité d\'entraînement (±200 cal)', 
-                                priority: 'MOYENNE', 
-                                color: '#f59e0b', 
-                                icon: 'fas fa-utensils',
-                                impact: 'Énergie +12%'
-                            },
-                            { 
-                                id: 3, 
-                                title: 'Hydratation Intelligente', 
-                                description: 'Surveillance électrolytes pendant entraînements >90min', 
-                                priority: 'MOYENNE', 
-                                color: '#06b6d4', 
-                                icon: 'fas fa-tint',
-                                impact: 'Endurance +5%'
-                            },
-                            { 
-                                id: 4, 
-                                title: 'Méditation Ciblée', 
-                                description: 'Sessions pré-match de 10min pour optimiser concentration', 
-                                priority: 'FAIBLE', 
-                                color: '#8b5cf6', 
-                                icon: 'fas fa-brain',
-                                impact: 'Focus +15%'
-                            },
-                            { 
-                                id: 5, 
-                                title: 'Mobilité Préventive', 
-                                description: 'Routine quotidienne 15min pour prévenir blessures musculaires', 
-                                priority: 'HAUTE', 
-                                color: '#10b981', 
-                                icon: 'fas fa-stretching',
-                                impact: 'Prévention -25%'
-                            },
-                            { 
-                                id: 6, 
-                                title: 'Analyse Postural', 
-                                description: 'Évaluation biomécanique mensuelle avec corrections ciblées', 
-                                priority: 'MOYENNE', 
-                                color: '#3b82f6', 
-                                icon: 'fas fa-user-md',
-                                impact: 'Technique +10%'
-                            }
-                        ]
+                        // Les recentMetrics sont maintenant dans healthData.recentMetrics
+                        // Les recommendations sont maintenant dans healthData.recommendations
                     },
-                    medicalData: {
-                        healthRecords: [
-                            {
-                                id: 1,
-                                title: 'Consultation Cardiologique',
-                                doctor: 'Dr. Jean Martin',
-                                date: '05/03/2025',
-                                status: 'completed'
-                            },
-                            {
-                                id: 2,
-                                title: 'Examen Orthopédique',
-                                doctor: 'Dr. Sophie Moreau',
-                                date: '28/02/2025',
-                                status: 'completed'
-                            },
-                            {
-                                id: 3,
-                                title: 'Consultation Kinésithérapie',
-                                doctor: 'Sophie Moreau',
-                                date: '05/02/2025',
-                                status: 'pending'
-                            },
-                            {
-                                id: 4,
-                                title: 'Bilan Biologique Complet',
-                                doctor: 'Dr. Pierre Dubois',
-                                date: '20/02/2025',
-                                status: 'completed'
-                            },
-                            {
-                                id: 5,
-                                title: 'Consultation Nutrition',
-                                doctor: 'Dr. Marie Laurent',
-                                date: '15/02/2025',
-                                status: 'completed'
-                            },
-                            {
-                                id: 6,
+                    medicalData: @php echo json_encode($medicalData ?? [
+                        'recentHealthRecords' => [],
+                        'pcmas' => [],
+                        'medicalPredictions' => [],
+                        'injuries' => [],
+                        'illnesses' => [],
+                        'alerts' => [],
+                        'recommendations' => []
+                    ]); @endphp,
                                 title: 'Examen Dentaire',
                                 doctor: 'Dr. Paul Bernard',
                                 date: '10/02/2025',
@@ -1802,78 +1714,7 @@
                             { id: 1, title: 'Évaluation PCMA Saison 2024-2025', date: '01/09/2024', fitness: 'fit' },
                             { id: 2, title: 'Contrôle PCMA Mi-saison', date: '15/01/2025', fitness: 'fit' },
                             { id: 3, title: 'Évaluation PCMA Post-blessure', date: '01/03/2025', fitness: 'limited' }
-                        ],
-                        predictions: [
-                            { id: 1, title: 'Risque de Blessure', confidence: 87, risk: 'low' },
-                            { id: 2, title: 'Performance Prédictive', confidence: 92, risk: 'low' }
-                        ],
-                        injuries: [
-                            {
-                                id: 1,
-                                type: 'Élongation ischio-jambiers',
-                                location: 'Jambe droite',
-                                severity: 'moderate',
-                                date: '15/02/2025',
-                                recovery: 75,
-                                status: 'recovering',
-                                description: 'Élongation grade 2 des ischio-jambiers lors d\'un sprint',
-                                treatment: 'Kinésithérapie, étirements, renforcement progressif',
-                                doctor: 'Dr. Sophie Moreau',
-                                estimatedReturn: '25/03/2025'
-                            },
-                            {
-                                id: 2,
-                                type: 'Entorse cheville',
-                                location: 'Cheville gauche',
-                                severity: 'mild',
-                                date: '10/01/2025',
-                                recovery: 100,
-                                status: 'recovered',
-                                description: 'Entorse légère lors d\'un changement de direction',
-                                treatment: 'Repos, glace, compression, élévation',
-                                doctor: 'Dr. Jean Martin',
-                                estimatedReturn: '25/01/2025'
-                            },
-                            {
-                                id: 3,
-                                type: 'Contusion cuisse',
-                                location: 'Cuisse droite',
-                                severity: 'mild',
-                                date: '28/12/2024',
-                                recovery: 100,
-                                status: 'recovered',
-                                description: 'Contusion suite à un choc avec un adversaire',
-                                treatment: 'Glace, anti-inflammatoires, étirements doux',
-                                doctor: 'Dr. Pierre Dubois',
-                                estimatedReturn: '05/01/2025'
-                            }
-                        ],
-                        illnesses: [
-                            {
-                                id: 1,
-                                type: 'Infection respiratoire',
-                                diagnosis: 'Bronchite aiguë',
-                                date: '20/01/2025',
-                                recovery: 100,
-                                status: 'recovered',
-                                description: 'Infection des voies respiratoires avec toux et fièvre',
-                                treatment: 'Antibiotiques, repos, hydratation',
-                                doctor: 'Dr. Marie Laurent',
-                                estimatedReturn: '30/01/2025'
-                            },
-                            {
-                                id: 2,
-                                type: 'Gastro-entérite',
-                                diagnosis: 'Intoxication alimentaire',
-                                date: '05/12/2024',
-                                recovery: 100,
-                                status: 'recovered',
-                                description: 'Troubles digestifs suite à un repas',
-                                treatment: 'Réhydratation, régime alimentaire, repos',
-                                doctor: 'Dr. Sophie Moreau',
-                                estimatedReturn: '10/12/2024'
-                            }
-                        ]
+                        // Toutes les données médicales sont maintenant dans medicalData
                     },
                     deviceData: {
                         connectedDevices: 3,
