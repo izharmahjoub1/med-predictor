@@ -37,7 +37,14 @@ class LoginController extends Controller
             // Log successful login
             AuditTrailService::logLogin(Auth::user(), true);
 
-            // Rediriger vers le dashboard principal
+            $user = Auth::user();
+            
+            // Si l'utilisateur est un joueur, rediriger vers le portail joueur FIFA Ultimate
+            if ($user->role === 'player' && $user->player) {
+                return redirect()->intended(route('player-portal.fifa-ultimate'));
+            }
+            
+            // Sinon, rediriger vers le dashboard principal
             return redirect()->intended(route('dashboard'));
         }
 
