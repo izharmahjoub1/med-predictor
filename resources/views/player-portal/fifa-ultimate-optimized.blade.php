@@ -1650,20 +1650,20 @@
                         { id: 'medical', name: 'Médical', icon: 'fas fa-user-md', count: 2 },
                         { id: 'social', name: 'Réseaux Sociaux', icon: 'fas fa-share-alt', count: 3 }
                     ],
-                    offensiveStats: @json($performanceData['offensiveStats'] ?? []),
-                    physicalStats: @json($performanceData['physicalStats'] ?? []),
-                    technicalStats: @json($performanceData['technicalStats'] ?? []),
-                    seasonSummary: {
-                        goals: { total: 3, trend: '+3', avg: 1.5 },
-                        assists: { total: 3, trend: '+1', avg: 1.5 },
-                        matches: { total: 2, rating: 8.4, distance: '20.3 km' }
-                    },
-                    performanceEvolution: {
-                        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-                        ratings: [0, 0, 0, 0, 0, 8.4],
-                        goals: [0, 0, 0, 0, 0, 3],
-                        assists: [0, 0, 0, 0, 0, 3]
-                    },
+                    offensiveStats: @php echo json_encode($performanceData['offensiveStats'] ?? []); @endphp,
+                    physicalStats: @php echo json_encode($performanceData['physicalStats'] ?? []); @endphp,
+                    technicalStats: @php echo json_encode($performanceData['technicalStats'] ?? []); @endphp,
+                    seasonSummary: @php echo json_encode($performanceData['seasonSummary'] ?? [
+                        'goals' => ['total' => 0, 'trend' => '0', 'avg' => 0],
+                        'assists' => ['total' => 0, 'trend' => '0', 'avg' => 0],
+                        'matches' => ['total' => 0, 'rating' => 0, 'distance' => '0 km']
+                    ]); @endphp,
+                    performanceEvolution: @php echo json_encode($performanceData['performanceEvolution'] ?? [
+                        'labels' => ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                        'ratings' => [0, 0, 0, 0, 0, 0],
+                        'goals' => [0, 0, 0, 0, 0, 0],
+                        'assists' => [0, 0, 0, 0, 0, 0]
+                    ]); @endphp,
                     notificationData: {
                         nationalTeam: [
                             {
