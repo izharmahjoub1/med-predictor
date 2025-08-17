@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'referee.access' => \App\Http\Middleware\RefereeAccessMiddleware::class,
             'player.access' => \App\Http\Middleware\PlayerAccessMiddleware::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'auth.session' => \App\Http\Middleware\AuthSessionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

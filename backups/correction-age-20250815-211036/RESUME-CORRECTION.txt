@@ -1,0 +1,20 @@
+🔧 CORRECTION DE L'ÂGE - RÉSUMÉ
+
+PROBLÈME : L'âge s'affichait avec des décimales (ex: 40.525598918641)
+
+CAUSE : Utilisation de diffInYears(now()) au lieu de l'accesseur $player->age
+
+SOLUTION APPLIQUÉE :
+1. Cast (int) dans getAgeAttribute() du modèle Player
+2. Remplacement de diffInYears(now()) par $player->age dans le portail
+
+RÉSULTAT : Âge affiché comme entier sans décimales
+
+FICHIERS MODIFIÉS :
+- app/Models/Player.php
+- resources/views/portail-joueur-final-corrige-dynamique.blade.php
+
+RESTAURATION : ./restaurer-correction-age.sh
+
+Date : 15 août 2025 - 21:12
+

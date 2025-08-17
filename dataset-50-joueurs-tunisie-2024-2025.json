@@ -1,0 +1,4329 @@
+{
+    "metadata": {
+        "championnat": "Ligue Professionnelle 1, Tunisie",
+        "saison": "2024-2025",
+        "nombre_joueurs": 50,
+        "date_creation": "2025-08-14",
+        "description": "Dataset complet pour le calcul du FIT Score - 5 piliers : Health, Performance, SDOH, Market Value, Adherence"
+    },
+    "joueurs": [
+        {
+            "id": 1,
+            "nom": "Jebali",
+            "prenom": "Ali",
+            "age": 24,
+            "nationalite": "Tunisie",
+            "poste": "Milieu offensif",
+            "club": "AS Gabès",
+            "taille": 187,
+            "poids": 71,
+            "pied_fort": "Gauche",
+            "date_naissance": "2001-08-14",
+            "email": "ali.jebali@asgabès.tn",
+            "telephone": "+216 22 132535",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-11",
+                        "date_fin": "2025-04-16",
+                        "duree_indisponibilite": 64,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-12-08",
+                        "date_fin": "2025-03-19",
+                        "duree_indisponibilite": 101,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 36,
+                    "ck_creatine_kinase": 156,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 14.2,
+                    "ferritine": 60
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 93,
+                    "test_force_isocinetique": 83,
+                    "test_agilite_t": 11.1,
+                    "test_saut_vertical": 69
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 81
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2551,
+                    "matchs_joues": 28,
+                    "buts": 9,
+                    "passes_decisives": 1,
+                    "tacles_reussis": 106,
+                    "pourcentage_passes_reussies": 75
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 31,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8700000000000001,
+                    "stabilite_logement_nutrition": 0.8200000000000001,
+                    "education_adaptation_culturelle": 0.8700000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1866915,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 18075
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 94,
+                "disponibilite_generale": 95,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 85,
+                "performance_score": 87,
+                "sdoh_score": 67,
+                "market_value_score": 81,
+                "adherence_score": 88,
+                "fit_score_final": 81.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 2,
+            "nom": "Ben Amor",
+            "prenom": "Samir",
+            "age": 27,
+            "nationalite": "Tunisie",
+            "poste": "Gardien",
+            "club": "Club Africain",
+            "taille": 173,
+            "poids": 75,
+            "pied_fort": "Gauche",
+            "date_naissance": "1998-08-14",
+            "email": "samir.ben amor@clubafricain.tn",
+            "telephone": "+216 22 839805",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 21,
+                    "ck_creatine_kinase": 127,
+                    "hs_crp": 0.2,
+                    "hemoglobine": 15,
+                    "ferritine": 94
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 86,
+                    "test_force_isocinetique": 86,
+                    "test_agilite_t": 7.8,
+                    "test_saut_vertical": 76
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 79
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2250,
+                    "matchs_joues": 25,
+                    "buts": 8,
+                    "passes_decisives": 14,
+                    "tacles_reussis": 6,
+                    "pourcentage_passes_reussies": 85
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 21
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8500000000000001,
+                    "stabilite_logement_nutrition": 0.7000000000000001,
+                    "education_adaptation_culturelle": 0.88
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2049128,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 55835
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 93,
+                "disponibilite_generale": 88,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 85,
+                "performance_score": 92,
+                "sdoh_score": 70,
+                "market_value_score": 67,
+                "adherence_score": 96,
+                "fit_score_final": 82,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 3,
+            "nom": "Trabelsi",
+            "prenom": "Mohamed",
+            "age": 25,
+            "nationalite": "Tunisie",
+            "poste": "Milieu central",
+            "club": "Espérance de Tunis",
+            "taille": 191,
+            "poids": 68,
+            "pied_fort": "Gauche",
+            "date_naissance": "2000-08-14",
+            "email": "mohamed.trabelsi@espérancedetunis.tn",
+            "telephone": "+216 22 241071",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-27",
+                        "date_fin": "2025-07-09",
+                        "duree_indisponibilite": 132,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-22",
+                        "date_fin": "2025-08-20",
+                        "duree_indisponibilite": 179,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-07",
+                        "date_fin": "2025-07-01",
+                        "duree_indisponibilite": 116,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 30,
+                    "ck_creatine_kinase": 131,
+                    "hs_crp": 0.2,
+                    "hemoglobine": 15.6,
+                    "ferritine": 114
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 76,
+                    "test_force_isocinetique": 90,
+                    "test_agilite_t": 11.1,
+                    "test_saut_vertical": 79
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 92
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2269,
+                    "matchs_joues": 25,
+                    "buts": 4,
+                    "passes_decisives": 3,
+                    "tacles_reussis": 57,
+                    "pourcentage_passes_reussies": 79
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 29,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 15
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8200000000000001,
+                    "stabilite_logement_nutrition": 0.88,
+                    "education_adaptation_culturelle": 0.78
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1815837,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 37036
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 93,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 85,
+                "performance_score": 78,
+                "sdoh_score": 70,
+                "market_value_score": 88,
+                "adherence_score": 80,
+                "fit_score_final": 80.2,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 4,
+            "nom": "Trabelsi",
+            "prenom": "Samir",
+            "age": 26,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "Stade Tunisien",
+            "taille": 175,
+            "poids": 81,
+            "pied_fort": "Gauche",
+            "date_naissance": "1999-08-14",
+            "email": "samir.trabelsi@stadetunisien.tn",
+            "telephone": "+216 22 565181",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-08-26",
+                        "date_fin": "2024-10-21",
+                        "duree_indisponibilite": 56,
+                        "gravite": "Modérée"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 34,
+                    "ck_creatine_kinase": 119,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 16.5,
+                    "ferritine": 118
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 88,
+                    "test_force_isocinetique": 86,
+                    "test_agilite_t": 11.6,
+                    "test_saut_vertical": 67
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 97
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2439,
+                    "matchs_joues": 27,
+                    "buts": 11,
+                    "passes_decisives": 7,
+                    "tacles_reussis": 61,
+                    "pourcentage_passes_reussies": 78
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 25
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.74,
+                    "stabilite_logement_nutrition": 0.8300000000000001,
+                    "education_adaptation_culturelle": 0.89
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2473111,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 21433
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 85,
+                "disponibilite_generale": 82,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 72,
+                "performance_score": 92,
+                "sdoh_score": 78,
+                "market_value_score": 76,
+                "adherence_score": 85,
+                "fit_score_final": 80.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 5,
+            "nom": "Bouguerra",
+            "prenom": "Ahmed",
+            "age": 19,
+            "nationalite": "Tunisie",
+            "poste": "Milieu offensif",
+            "club": "CS Sfaxien",
+            "taille": 183,
+            "poids": 83,
+            "pied_fort": "Droit",
+            "date_naissance": "2006-08-14",
+            "email": "ahmed.bouguerra@cssfaxien.tn",
+            "telephone": "+216 22 752647",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-27",
+                        "date_fin": "2025-07-17",
+                        "duree_indisponibilite": 140,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-11-24",
+                        "date_fin": "2025-05-11",
+                        "duree_indisponibilite": 168,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-11",
+                        "date_fin": "2025-06-14",
+                        "duree_indisponibilite": 154,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 21,
+                    "ck_creatine_kinase": 140,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 16.7,
+                    "ferritine": 96
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 91,
+                    "test_force_isocinetique": 77,
+                    "test_agilite_t": 11.5,
+                    "test_saut_vertical": 52
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 77
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2304,
+                    "matchs_joues": 26,
+                    "buts": 9,
+                    "passes_decisives": 8,
+                    "tacles_reussis": 45,
+                    "pourcentage_passes_reussies": 74
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 29,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.7200000000000001,
+                    "stabilite_logement_nutrition": 0.88,
+                    "education_adaptation_culturelle": 0.8
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 3547112,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 20274
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 89,
+                "disponibilite_generale": 97,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 77,
+                "performance_score": 87,
+                "sdoh_score": 81,
+                "market_value_score": 72,
+                "adherence_score": 81,
+                "fit_score_final": 79.6,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 6,
+            "nom": "Trabelsi",
+            "prenom": "Ahmed",
+            "age": 32,
+            "nationalite": "Tunisie",
+            "poste": "Milieu défensif",
+            "club": "Espérance de Tunis",
+            "taille": 190,
+            "poids": 68,
+            "pied_fort": "Gauche",
+            "date_naissance": "1993-08-14",
+            "email": "ahmed.trabelsi@espérancedetunis.tn",
+            "telephone": "+216 22 262100",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 37,
+                    "ck_creatine_kinase": 173,
+                    "hs_crp": 0.2,
+                    "hemoglobine": 14.8,
+                    "ferritine": 92
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 86,
+                    "test_force_isocinetique": 95,
+                    "test_agilite_t": 8.3,
+                    "test_saut_vertical": 50
+                },
+                "statut_pcma": "En attente",
+                "score_pcma": 88
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2433,
+                    "matchs_joues": 27,
+                    "buts": 16,
+                    "passes_decisives": 5,
+                    "tacles_reussis": 0,
+                    "pourcentage_passes_reussies": 89
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 22
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.75,
+                    "stabilite_logement_nutrition": 0.89,
+                    "education_adaptation_culturelle": 0.8600000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1634118,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 30845
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 95,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 76,
+                "performance_score": 89,
+                "sdoh_score": 63,
+                "market_value_score": 84,
+                "adherence_score": 96,
+                "fit_score_final": 81.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 7,
+            "nom": "Ben Romdhane",
+            "prenom": "Tarek",
+            "age": 31,
+            "nationalite": "Tunisie",
+            "poste": "Latéral droit",
+            "club": "JS Kairouan",
+            "taille": 174,
+            "poids": 72,
+            "pied_fort": "Droit",
+            "date_naissance": "1994-08-14",
+            "email": "tarek.ben romdhane@jskairouan.tn",
+            "telephone": "+216 22 681942",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-05-24",
+                        "date_fin": "2025-10-24",
+                        "duree_indisponibilite": 153,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-29",
+                        "date_fin": "2025-08-18",
+                        "duree_indisponibilite": 142,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 31,
+                    "ck_creatine_kinase": 137,
+                    "hs_crp": 0.5,
+                    "hemoglobine": 13.7,
+                    "ferritine": 103
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 86,
+                    "test_force_isocinetique": 75,
+                    "test_agilite_t": 9.6,
+                    "test_saut_vertical": 72
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 84
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 1951,
+                    "matchs_joues": 22,
+                    "buts": 18,
+                    "passes_decisives": 15,
+                    "tacles_reussis": 12,
+                    "pourcentage_passes_reussies": 85
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 33,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 17
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8500000000000001,
+                    "stabilite_logement_nutrition": 0.8200000000000001,
+                    "education_adaptation_culturelle": 0.8
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 538759,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 59892
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 91,
+                "disponibilite_generale": 85,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 70,
+                "performance_score": 92,
+                "sdoh_score": 87,
+                "market_value_score": 75,
+                "adherence_score": 84,
+                "fit_score_final": 81.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 8,
+            "nom": "Bouguerra",
+            "prenom": "Youssef",
+            "age": 22,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "US Monastir",
+            "taille": 179,
+            "poids": 84,
+            "pied_fort": "Droit",
+            "date_naissance": "2003-08-14",
+            "email": "youssef.bouguerra@usmonastir.tn",
+            "telephone": "+216 22 401908",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-20",
+                        "date_fin": "2025-05-17",
+                        "duree_indisponibilite": 58,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-30",
+                        "date_fin": "2024-10-31",
+                        "duree_indisponibilite": 31,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-04-06",
+                        "date_fin": "2025-08-22",
+                        "duree_indisponibilite": 138,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 26,
+                    "ck_creatine_kinase": 151,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 15.5,
+                    "ferritine": 113
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 93,
+                    "test_force_isocinetique": 81,
+                    "test_agilite_t": 10.1,
+                    "test_saut_vertical": 53
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 92
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2560,
+                    "matchs_joues": 28,
+                    "buts": 11,
+                    "passes_decisives": 5,
+                    "tacles_reussis": 72,
+                    "pourcentage_passes_reussies": 75
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 33,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 16
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.7100000000000001,
+                    "stabilite_logement_nutrition": 0.89,
+                    "education_adaptation_culturelle": 0.7100000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 3035995,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 54750
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 94,
+                "disponibilite_generale": 100,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 70,
+                "performance_score": 76,
+                "sdoh_score": 78,
+                "market_value_score": 74,
+                "adherence_score": 91,
+                "fit_score_final": 77.8,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 9,
+            "nom": "Mansouri",
+            "prenom": "Samir",
+            "age": 22,
+            "nationalite": "Tunisie",
+            "poste": "Ailier droit",
+            "club": "CA Bizertin",
+            "taille": 177,
+            "poids": 80,
+            "pied_fort": "Gauche",
+            "date_naissance": "2003-08-14",
+            "email": "samir.mansouri@cabizertin.tn",
+            "telephone": "+216 22 403939",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 32,
+                    "ck_creatine_kinase": 104,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 13.9,
+                    "ferritine": 87
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 71,
+                    "test_force_isocinetique": 78,
+                    "test_agilite_t": 8.1,
+                    "test_saut_vertical": 78
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 70
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2218,
+                    "matchs_joues": 25,
+                    "buts": 7,
+                    "passes_decisives": 4,
+                    "tacles_reussis": 103,
+                    "pourcentage_passes_reussies": 84
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 18
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.89,
+                    "stabilite_logement_nutrition": 0.7200000000000001,
+                    "education_adaptation_culturelle": 0.73
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 3029981,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 31996
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 100,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 91,
+                "performance_score": 80,
+                "sdoh_score": 55,
+                "market_value_score": 82,
+                "adherence_score": 89,
+                "fit_score_final": 79.4,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 10,
+            "nom": "Ndiaye",
+            "prenom": "Idrissa",
+            "age": 29,
+            "nationalite": "Sénégal",
+            "poste": "Gardien",
+            "club": "JS Kairouan",
+            "taille": 170,
+            "poids": 78,
+            "pied_fort": "Gauche",
+            "date_naissance": "1996-08-14",
+            "email": "idrissa.ndiaye@jskairouan.tn",
+            "telephone": "+216 22 605823",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 45,
+                    "ck_creatine_kinase": 131,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 16.1,
+                    "ferritine": 63
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 90,
+                    "test_force_isocinetique": 71,
+                    "test_agilite_t": 11.4,
+                    "test_saut_vertical": 62
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 79
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2435,
+                    "matchs_joues": 27,
+                    "buts": 9,
+                    "passes_decisives": 11,
+                    "tacles_reussis": 58,
+                    "pourcentage_passes_reussies": 72
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 18
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Sénégal avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.5599999999999999,
+                    "stabilite_logement_nutrition": 0.5599999999999999,
+                    "education_adaptation_culturelle": 0.61
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 652382,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 55434
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 84,
+                "disponibilite_generale": 92,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 73,
+                "performance_score": 90,
+                "sdoh_score": 83,
+                "market_value_score": 65,
+                "adherence_score": 93,
+                "fit_score_final": 80.8,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 11,
+            "nom": "Ghannouchi",
+            "prenom": "Tarek",
+            "age": 23,
+            "nationalite": "Tunisie",
+            "poste": "Ailier droit",
+            "club": "Club Africain",
+            "taille": 189,
+            "poids": 82,
+            "pied_fort": "Droit",
+            "date_naissance": "2002-08-14",
+            "email": "tarek.ghannouchi@clubafricain.tn",
+            "telephone": "+216 22 400540",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-05-24",
+                        "date_fin": "2025-08-06",
+                        "duree_indisponibilite": 74,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-08",
+                        "date_fin": "2025-04-18",
+                        "duree_indisponibilite": 41,
+                        "gravite": "Modérée"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 43,
+                    "ck_creatine_kinase": 191,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 15.7,
+                    "ferritine": 82
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 90,
+                    "test_force_isocinetique": 80,
+                    "test_agilite_t": 9.2,
+                    "test_saut_vertical": 76
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 82
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2756,
+                    "matchs_joues": 31,
+                    "buts": 3,
+                    "passes_decisives": 8,
+                    "tacles_reussis": 87,
+                    "pourcentage_passes_reussies": 75
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 22
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.79,
+                    "stabilite_logement_nutrition": 0.7200000000000001,
+                    "education_adaptation_culturelle": 0.89
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2752805,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 18080
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 92,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 77,
+                "performance_score": 78,
+                "sdoh_score": 70,
+                "market_value_score": 80,
+                "adherence_score": 89,
+                "fit_score_final": 78.8,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 12,
+            "nom": "Boudaoud",
+            "prenom": "Nabil",
+            "age": 24,
+            "nationalite": "Algérie",
+            "poste": "Ailier droit",
+            "club": "Club Africain",
+            "taille": 189,
+            "poids": 83,
+            "pied_fort": "Droit",
+            "date_naissance": "2001-08-14",
+            "email": "nabil.boudaoud@clubafricain.tn",
+            "telephone": "+216 22 373653",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-11-24",
+                        "date_fin": "2024-12-08",
+                        "duree_indisponibilite": 14,
+                        "gravite": "Légère"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-19",
+                        "date_fin": "2025-02-19",
+                        "duree_indisponibilite": 153,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 27,
+                    "ck_creatine_kinase": 98,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 13.5,
+                    "ferritine": 104
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 83,
+                    "test_force_isocinetique": 95,
+                    "test_agilite_t": 9.9,
+                    "test_saut_vertical": 59
+                },
+                "statut_pcma": "En attente",
+                "score_pcma": 98
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2440,
+                    "matchs_joues": 27,
+                    "buts": 4,
+                    "passes_decisives": 14,
+                    "tacles_reussis": 32,
+                    "pourcentage_passes_reussies": 78
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 20
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Algérie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.59,
+                    "stabilite_logement_nutrition": 0.69,
+                    "education_adaptation_culturelle": 0.51
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2882026,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 20395
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 91,
+                "disponibilite_generale": 97,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 71,
+                "performance_score": 80,
+                "sdoh_score": 71,
+                "market_value_score": 86,
+                "adherence_score": 90,
+                "fit_score_final": 79.6,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 13,
+            "nom": "Diallo",
+            "prenom": "Seydou",
+            "age": 29,
+            "nationalite": "Mali",
+            "poste": "Ailier droit",
+            "club": "Club Africain",
+            "taille": 181,
+            "poids": 79,
+            "pied_fort": "Gauche",
+            "date_naissance": "1996-08-14",
+            "email": "seydou.diallo@clubafricain.tn",
+            "telephone": "+216 22 763527",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 32,
+                    "ck_creatine_kinase": 156,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 14,
+                    "ferritine": 62
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 78,
+                    "test_force_isocinetique": 79,
+                    "test_agilite_t": 8.3,
+                    "test_saut_vertical": 54
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 75
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2193,
+                    "matchs_joues": 24,
+                    "buts": 12,
+                    "passes_decisives": 5,
+                    "tacles_reussis": 77,
+                    "pourcentage_passes_reussies": 90
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 31,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 18
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Mali avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.63,
+                    "stabilite_logement_nutrition": 0.54,
+                    "education_adaptation_culturelle": 0.6
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 486282,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 40504
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 85,
+                "disponibilite_generale": 91,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 82,
+                "performance_score": 81,
+                "sdoh_score": 59,
+                "market_value_score": 65,
+                "adherence_score": 89,
+                "fit_score_final": 75.2,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 14,
+            "nom": "Mansouri",
+            "prenom": "Samir",
+            "age": 32,
+            "nationalite": "Tunisie",
+            "poste": "Ailier droit",
+            "club": "Stade Tunisien",
+            "taille": 173,
+            "poids": 84,
+            "pied_fort": "Droit",
+            "date_naissance": "1993-08-14",
+            "email": "samir.mansouri@stadetunisien.tn",
+            "telephone": "+216 22 906404",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 25,
+                    "ck_creatine_kinase": 226,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 16.9,
+                    "ferritine": 60
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 74,
+                    "test_force_isocinetique": 89,
+                    "test_agilite_t": 9.3,
+                    "test_saut_vertical": 74
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 89
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2227,
+                    "matchs_joues": 25,
+                    "buts": 14,
+                    "passes_decisives": 1,
+                    "tacles_reussis": 90,
+                    "pourcentage_passes_reussies": 88
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 19
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8500000000000001,
+                    "stabilite_logement_nutrition": 0.9,
+                    "education_adaptation_culturelle": 0.8600000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1709706,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 51049
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 90,
+                "disponibilite_generale": 89,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 78,
+                "performance_score": 75,
+                "sdoh_score": 79,
+                "market_value_score": 79,
+                "adherence_score": 84,
+                "fit_score_final": 79,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 15,
+            "nom": "Ghannouchi",
+            "prenom": "Samir",
+            "age": 23,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "US Monastir",
+            "taille": 194,
+            "poids": 83,
+            "pied_fort": "Droit",
+            "date_naissance": "2002-08-14",
+            "email": "samir.ghannouchi@usmonastir.tn",
+            "telephone": "+216 22 800241",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 28,
+                    "ck_creatine_kinase": 107,
+                    "hs_crp": 0,
+                    "hemoglobine": 17.3,
+                    "ferritine": 83
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 71,
+                    "test_force_isocinetique": 95,
+                    "test_agilite_t": 10.2,
+                    "test_saut_vertical": 52
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 92
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2416,
+                    "matchs_joues": 27,
+                    "buts": 1,
+                    "passes_decisives": 3,
+                    "tacles_reussis": 16,
+                    "pourcentage_passes_reussies": 86
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 33,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.76,
+                    "stabilite_logement_nutrition": 0.8600000000000001,
+                    "education_adaptation_culturelle": 0.8400000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2914172,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 28176
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 89,
+                "disponibilite_generale": 89,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 81,
+                "performance_score": 89,
+                "sdoh_score": 86,
+                "market_value_score": 77,
+                "adherence_score": 86,
+                "fit_score_final": 83.8,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 16,
+            "nom": "Ben Amor",
+            "prenom": "Mohamed",
+            "age": 28,
+            "nationalite": "Tunisie",
+            "poste": "Milieu défensif",
+            "club": "AS Gabès",
+            "taille": 194,
+            "poids": 81,
+            "pied_fort": "Droit",
+            "date_naissance": "1997-08-14",
+            "email": "mohamed.ben amor@asgabès.tn",
+            "telephone": "+216 22 588109",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-16",
+                        "date_fin": "2025-07-25",
+                        "duree_indisponibilite": 131,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-30",
+                        "date_fin": "2024-12-18",
+                        "duree_indisponibilite": 79,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-06-24",
+                        "date_fin": "2025-08-25",
+                        "duree_indisponibilite": 62,
+                        "gravite": "Modérée"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 41,
+                    "ck_creatine_kinase": 232,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 14.9,
+                    "ferritine": 106
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 93,
+                    "test_force_isocinetique": 87,
+                    "test_agilite_t": 11.4,
+                    "test_saut_vertical": 61
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 96
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2097,
+                    "matchs_joues": 23,
+                    "buts": 2,
+                    "passes_decisives": 8,
+                    "tacles_reussis": 85,
+                    "pourcentage_passes_reussies": 84
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 19
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8200000000000001,
+                    "stabilite_logement_nutrition": 0.79,
+                    "education_adaptation_culturelle": 0.74
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1381064,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 25268
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 93,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 80,
+                "performance_score": 76,
+                "sdoh_score": 89,
+                "market_value_score": 75,
+                "adherence_score": 91,
+                "fit_score_final": 82.2,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 17,
+            "nom": "Ben Amor",
+            "prenom": "Ali",
+            "age": 31,
+            "nationalite": "Tunisie",
+            "poste": "Ailier droit",
+            "club": "Stade Tunisien",
+            "taille": 178,
+            "poids": 66,
+            "pied_fort": "Droit",
+            "date_naissance": "1994-08-14",
+            "email": "ali.ben amor@stadetunisien.tn",
+            "telephone": "+216 22 117002",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-05-01",
+                        "date_fin": "2025-08-10",
+                        "duree_indisponibilite": 101,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-06-13",
+                        "date_fin": "2025-09-03",
+                        "duree_indisponibilite": 82,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-06-15",
+                        "date_fin": "2025-11-16",
+                        "duree_indisponibilite": 154,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 25,
+                    "ck_creatine_kinase": 218,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 17.3,
+                    "ferritine": 76
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 93,
+                    "test_force_isocinetique": 70,
+                    "test_agilite_t": 8,
+                    "test_saut_vertical": 77
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 91
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2130,
+                    "matchs_joues": 24,
+                    "buts": 6,
+                    "passes_decisives": 6,
+                    "tacles_reussis": 2,
+                    "pourcentage_passes_reussies": 84
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 15
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.7000000000000001,
+                    "stabilite_logement_nutrition": 0.79,
+                    "education_adaptation_culturelle": 0.81
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 438533,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 54220
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 85,
+                "disponibilite_generale": 83,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 90,
+                "performance_score": 84,
+                "sdoh_score": 90,
+                "market_value_score": 83,
+                "adherence_score": 88,
+                "fit_score_final": 87,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 18,
+            "nom": "Bouguerra",
+            "prenom": "Youssef",
+            "age": 30,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "Espérance de Tunis",
+            "taille": 179,
+            "poids": 84,
+            "pied_fort": "Gauche",
+            "date_naissance": "1995-08-14",
+            "email": "youssef.bouguerra@espérancedetunis.tn",
+            "telephone": "+216 22 321853",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 28,
+                    "ck_creatine_kinase": 136,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 13.5,
+                    "ferritine": 118
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 83,
+                    "test_force_isocinetique": 81,
+                    "test_agilite_t": 8.4,
+                    "test_saut_vertical": 51
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 71
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2310,
+                    "matchs_joues": 26,
+                    "buts": 8,
+                    "passes_decisives": 4,
+                    "tacles_reussis": 94,
+                    "pourcentage_passes_reussies": 88
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 18
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.75,
+                    "stabilite_logement_nutrition": 0.7000000000000001,
+                    "education_adaptation_culturelle": 0.81
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 684638,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 30043
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 86,
+                "disponibilite_generale": 90,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 83,
+                "performance_score": 76,
+                "sdoh_score": 58,
+                "market_value_score": 77,
+                "adherence_score": 89,
+                "fit_score_final": 76.6,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 19,
+            "nom": "Bouguerra",
+            "prenom": "Hamza",
+            "age": 29,
+            "nationalite": "Tunisie",
+            "poste": "Gardien",
+            "club": "Olympique Béja",
+            "taille": 190,
+            "poids": 82,
+            "pied_fort": "Droit",
+            "date_naissance": "1996-08-14",
+            "email": "hamza.bouguerra@olympiquebéja.tn",
+            "telephone": "+216 22 943630",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-04-05",
+                        "date_fin": "2025-08-31",
+                        "duree_indisponibilite": 148,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-20",
+                        "date_fin": "2025-01-27",
+                        "duree_indisponibilite": 129,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 23,
+                    "ck_creatine_kinase": 123,
+                    "hs_crp": 0.2,
+                    "hemoglobine": 15,
+                    "ferritine": 85
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 83,
+                    "test_force_isocinetique": 78,
+                    "test_agilite_t": 10.7,
+                    "test_saut_vertical": 66
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 94
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2282,
+                    "matchs_joues": 25,
+                    "buts": 20,
+                    "passes_decisives": 11,
+                    "tacles_reussis": 85,
+                    "pourcentage_passes_reussies": 76
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 20
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.79,
+                    "stabilite_logement_nutrition": 0.88,
+                    "education_adaptation_culturelle": 0.76
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1500738,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 49991
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 83,
+                "disponibilite_generale": 92,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 90,
+                "performance_score": 92,
+                "sdoh_score": 80,
+                "market_value_score": 69,
+                "adherence_score": 84,
+                "fit_score_final": 83,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 20,
+            "nom": "Zaha",
+            "prenom": "Wilfried",
+            "age": 26,
+            "nationalite": "Côte d'Ivoire",
+            "poste": "Milieu central",
+            "club": "Club Africain",
+            "taille": 195,
+            "poids": 73,
+            "pied_fort": "Droit",
+            "date_naissance": "1999-08-14",
+            "email": "wilfried.zaha@clubafricain.tn",
+            "telephone": "+216 22 421303",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-22",
+                        "date_fin": "2025-07-10",
+                        "duree_indisponibilite": 169,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-06",
+                        "date_fin": "2024-10-05",
+                        "duree_indisponibilite": 29,
+                        "gravite": "Légère"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-27",
+                        "date_fin": "2025-04-25",
+                        "duree_indisponibilite": 180,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 36,
+                    "ck_creatine_kinase": 221,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 13.6,
+                    "ferritine": 96
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 75,
+                    "test_force_isocinetique": 91,
+                    "test_agilite_t": 7.7,
+                    "test_saut_vertical": 58
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 88
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2134,
+                    "matchs_joues": 24,
+                    "buts": 6,
+                    "passes_decisives": 9,
+                    "tacles_reussis": 24,
+                    "pourcentage_passes_reussies": 77
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 24
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Côte d'Ivoire avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.52,
+                    "stabilite_logement_nutrition": 0.58,
+                    "education_adaptation_culturelle": 0.65
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 641241,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 39753
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 86,
+                "disponibilite_generale": 86,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 74,
+                "performance_score": 79,
+                "sdoh_score": 62,
+                "market_value_score": 75,
+                "adherence_score": 87,
+                "fit_score_final": 75.4,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 21,
+            "nom": "Ben Amor",
+            "prenom": "Ali",
+            "age": 21,
+            "nationalite": "Tunisie",
+            "poste": "Milieu central",
+            "club": "Stade Tunisien",
+            "taille": 181,
+            "poids": 65,
+            "pied_fort": "Droit",
+            "date_naissance": "2004-08-14",
+            "email": "ali.ben amor@stadetunisien.tn",
+            "telephone": "+216 22 367733",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-11",
+                        "date_fin": "2025-06-07",
+                        "duree_indisponibilite": 88,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-04-24",
+                        "date_fin": "2025-08-09",
+                        "duree_indisponibilite": 107,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-12-27",
+                        "date_fin": "2025-02-01",
+                        "duree_indisponibilite": 36,
+                        "gravite": "Modérée"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 28,
+                    "ck_creatine_kinase": 139,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 13.7,
+                    "ferritine": 73
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 90,
+                    "test_force_isocinetique": 70,
+                    "test_agilite_t": 11,
+                    "test_saut_vertical": 51
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 70
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2384,
+                    "matchs_joues": 26,
+                    "buts": 20,
+                    "passes_decisives": 11,
+                    "tacles_reussis": 50,
+                    "pourcentage_passes_reussies": 79
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 31,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 20
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8,
+                    "stabilite_logement_nutrition": 0.77,
+                    "education_adaptation_culturelle": 0.7000000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2858232,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 30151
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 96,
+                "disponibilite_generale": 93,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 95,
+                "performance_score": 76,
+                "sdoh_score": 82,
+                "market_value_score": 68,
+                "adherence_score": 86,
+                "fit_score_final": 81.4,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 22,
+            "nom": "Bamba",
+            "prenom": "Salomon",
+            "age": 32,
+            "nationalite": "Côte d'Ivoire",
+            "poste": "Milieu défensif",
+            "club": "AS Gabès",
+            "taille": 170,
+            "poids": 65,
+            "pied_fort": "Gauche",
+            "date_naissance": "1993-08-14",
+            "email": "salomon.bamba@asgabès.tn",
+            "telephone": "+216 22 828323",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-22",
+                        "date_fin": "2024-11-07",
+                        "duree_indisponibilite": 16,
+                        "gravite": "Légère"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-15",
+                        "date_fin": "2025-07-02",
+                        "duree_indisponibilite": 168,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 30,
+                    "ck_creatine_kinase": 113,
+                    "hs_crp": 0,
+                    "hemoglobine": 14.5,
+                    "ferritine": 99
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 75,
+                    "test_force_isocinetique": 93,
+                    "test_agilite_t": 7.9,
+                    "test_saut_vertical": 62
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 88
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 1802,
+                    "matchs_joues": 20,
+                    "buts": 13,
+                    "passes_decisives": 14,
+                    "tacles_reussis": 108,
+                    "pourcentage_passes_reussies": 71
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 24
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Côte d'Ivoire avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.63,
+                    "stabilite_logement_nutrition": 0.54,
+                    "education_adaptation_culturelle": 0.5
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 515708,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 22782
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 84,
+                "disponibilite_generale": 85,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 95,
+                "performance_score": 84,
+                "sdoh_score": 64,
+                "market_value_score": 82,
+                "adherence_score": 88,
+                "fit_score_final": 82.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 23,
+            "nom": "Ben Amor",
+            "prenom": "Youssef",
+            "age": 18,
+            "nationalite": "Tunisie",
+            "poste": "Ailier gauche",
+            "club": "Olympique Béja",
+            "taille": 178,
+            "poids": 69,
+            "pied_fort": "Droit",
+            "date_naissance": "2007-08-14",
+            "email": "youssef.ben amor@olympiquebéja.tn",
+            "telephone": "+216 22 379455",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-08-22",
+                        "date_fin": "2025-01-23",
+                        "duree_indisponibilite": 154,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-04",
+                        "date_fin": "2025-03-25",
+                        "duree_indisponibilite": 80,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-08-25",
+                        "date_fin": "2025-02-20",
+                        "duree_indisponibilite": 179,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 41,
+                    "ck_creatine_kinase": 103,
+                    "hs_crp": 0,
+                    "hemoglobine": 13.5,
+                    "ferritine": 112
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 95,
+                    "test_force_isocinetique": 81,
+                    "test_agilite_t": 8.9,
+                    "test_saut_vertical": 64
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 77
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2336,
+                    "matchs_joues": 26,
+                    "buts": 16,
+                    "passes_decisives": 13,
+                    "tacles_reussis": 95,
+                    "pourcentage_passes_reussies": 75
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 29,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 22
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.76,
+                    "stabilite_logement_nutrition": 0.78,
+                    "education_adaptation_culturelle": 0.73
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2692746,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 26981
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 88,
+                "disponibilite_generale": 96,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 73,
+                "performance_score": 92,
+                "sdoh_score": 61,
+                "market_value_score": 73,
+                "adherence_score": 95,
+                "fit_score_final": 78.8,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 24,
+            "nom": "Bouguerra",
+            "prenom": "Karim",
+            "age": 20,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "CS Sfaxien",
+            "taille": 188,
+            "poids": 69,
+            "pied_fort": "Gauche",
+            "date_naissance": "2005-08-14",
+            "email": "karim.bouguerra@cssfaxien.tn",
+            "telephone": "+216 22 385825",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-04-28",
+                        "date_fin": "2025-07-16",
+                        "duree_indisponibilite": 79,
+                        "gravite": "Modérée"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 45,
+                    "ck_creatine_kinase": 220,
+                    "hs_crp": 0,
+                    "hemoglobine": 16.6,
+                    "ferritine": 109
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 87,
+                    "test_force_isocinetique": 91,
+                    "test_agilite_t": 10.6,
+                    "test_saut_vertical": 66
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 83
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2050,
+                    "matchs_joues": 23,
+                    "buts": 11,
+                    "passes_decisives": 1,
+                    "tacles_reussis": 27,
+                    "pourcentage_passes_reussies": 73
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 33,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 25
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.7000000000000001,
+                    "stabilite_logement_nutrition": 0.74,
+                    "education_adaptation_culturelle": 0.9
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 915409,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 59669
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 95,
+                "disponibilite_generale": 97,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 91,
+                "performance_score": 84,
+                "sdoh_score": 61,
+                "market_value_score": 85,
+                "adherence_score": 94,
+                "fit_score_final": 83,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 25,
+            "nom": "Mansouri",
+            "prenom": "Youssef",
+            "age": 21,
+            "nationalite": "Tunisie",
+            "poste": "Défenseur central",
+            "club": "Stade Tunisien",
+            "taille": 185,
+            "poids": 81,
+            "pied_fort": "Droit",
+            "date_naissance": "2004-08-14",
+            "email": "youssef.mansouri@stadetunisien.tn",
+            "telephone": "+216 22 746267",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-06-06",
+                        "date_fin": "2025-06-20",
+                        "duree_indisponibilite": 14,
+                        "gravite": "Légère"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-06-01",
+                        "date_fin": "2025-09-26",
+                        "duree_indisponibilite": 117,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 23,
+                    "ck_creatine_kinase": 93,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 16.8,
+                    "ferritine": 85
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 82,
+                    "test_force_isocinetique": 81,
+                    "test_agilite_t": 9.7,
+                    "test_saut_vertical": 65
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 89
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2144,
+                    "matchs_joues": 24,
+                    "buts": 12,
+                    "passes_decisives": 12,
+                    "tacles_reussis": 85,
+                    "pourcentage_passes_reussies": 84
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 31,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 24
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8600000000000001,
+                    "stabilite_logement_nutrition": 0.75,
+                    "education_adaptation_culturelle": 0.8
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1933525,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 48748
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 97,
+                "disponibilite_generale": 88,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 77,
+                "performance_score": 76,
+                "sdoh_score": 87,
+                "market_value_score": 70,
+                "adherence_score": 94,
+                "fit_score_final": 80.8,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 26,
+            "nom": "Mansouri",
+            "prenom": "Karim",
+            "age": 29,
+            "nationalite": "Tunisie",
+            "poste": "Attaquant",
+            "club": "Espérance de Tunis",
+            "taille": 173,
+            "poids": 80,
+            "pied_fort": "Droit",
+            "date_naissance": "1996-08-14",
+            "email": "karim.mansouri@espérancedetunis.tn",
+            "telephone": "+216 22 844587",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-04",
+                        "date_fin": "2025-05-25",
+                        "duree_indisponibilite": 110,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 29,
+                    "ck_creatine_kinase": 200,
+                    "hs_crp": 0,
+                    "hemoglobine": 16.3,
+                    "ferritine": 97
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 89,
+                    "test_force_isocinetique": 70,
+                    "test_agilite_t": 8.3,
+                    "test_saut_vertical": 72
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 77
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2266,
+                    "matchs_joues": 25,
+                    "buts": 15,
+                    "passes_decisives": 2,
+                    "tacles_reussis": 23,
+                    "pourcentage_passes_reussies": 80
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 31,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 22
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.76,
+                    "stabilite_logement_nutrition": 0.75,
+                    "education_adaptation_culturelle": 0.8600000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 980589,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 25051
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 83,
+                "disponibilite_generale": 90,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 86,
+                "performance_score": 84,
+                "sdoh_score": 65,
+                "market_value_score": 81,
+                "adherence_score": 92,
+                "fit_score_final": 81.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 27,
+            "nom": "Amrabat",
+            "prenom": "Younes",
+            "age": 24,
+            "nationalite": "Maroc",
+            "poste": "Latéral droit",
+            "club": "CS Sfaxien",
+            "taille": 176,
+            "poids": 83,
+            "pied_fort": "Gauche",
+            "date_naissance": "2001-08-14",
+            "email": "younes.amrabat@cssfaxien.tn",
+            "telephone": "+216 22 299930",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 23,
+                    "ck_creatine_kinase": 247,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 15.7,
+                    "ferritine": 102
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 89,
+                    "test_force_isocinetique": 82,
+                    "test_agilite_t": 9.9,
+                    "test_saut_vertical": 51
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 93
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2025,
+                    "matchs_joues": 23,
+                    "buts": 18,
+                    "passes_decisives": 13,
+                    "tacles_reussis": 39,
+                    "pourcentage_passes_reussies": 70
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 20
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.57,
+                    "stabilite_logement_nutrition": 0.57,
+                    "education_adaptation_culturelle": 0.52
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2931526,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 39868
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 94,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 76,
+                "performance_score": 78,
+                "sdoh_score": 63,
+                "market_value_score": 73,
+                "adherence_score": 80,
+                "fit_score_final": 74,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 28,
+            "nom": "Mahrez",
+            "prenom": "Said",
+            "age": 31,
+            "nationalite": "Algérie",
+            "poste": "Ailier droit",
+            "club": "Club Africain",
+            "taille": 171,
+            "poids": 80,
+            "pied_fort": "Droit",
+            "date_naissance": "1994-08-14",
+            "email": "said.mahrez@clubafricain.tn",
+            "telephone": "+216 22 181998",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-02",
+                        "date_fin": "2025-06-16",
+                        "duree_indisponibilite": 106,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-08-30",
+                        "date_fin": "2024-09-13",
+                        "duree_indisponibilite": 14,
+                        "gravite": "Légère"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 37,
+                    "ck_creatine_kinase": 184,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 16.4,
+                    "ferritine": 76
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 82,
+                    "test_force_isocinetique": 89,
+                    "test_agilite_t": 11.8,
+                    "test_saut_vertical": 71
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 84
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2171,
+                    "matchs_joues": 24,
+                    "buts": 7,
+                    "passes_decisives": 2,
+                    "tacles_reussis": 68,
+                    "pourcentage_passes_reussies": 89
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Algérie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.6,
+                    "stabilite_logement_nutrition": 0.7,
+                    "education_adaptation_culturelle": 0.63
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1291779,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 38007
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 89,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 84,
+                "performance_score": 83,
+                "sdoh_score": 89,
+                "market_value_score": 83,
+                "adherence_score": 96,
+                "fit_score_final": 87,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 29,
+            "nom": "Gueye",
+            "prenom": "Sadio",
+            "age": 22,
+            "nationalite": "Sénégal",
+            "poste": "Gardien",
+            "club": "Club Africain",
+            "taille": 175,
+            "poids": 85,
+            "pied_fort": "Gauche",
+            "date_naissance": "2003-08-14",
+            "email": "sadio.gueye@clubafricain.tn",
+            "telephone": "+216 22 227781",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 24,
+                    "ck_creatine_kinase": 182,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 14,
+                    "ferritine": 104
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 94,
+                    "test_force_isocinetique": 92,
+                    "test_agilite_t": 11.2,
+                    "test_saut_vertical": 78
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 81
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2147,
+                    "matchs_joues": 24,
+                    "buts": 14,
+                    "passes_decisives": 3,
+                    "tacles_reussis": 16,
+                    "pourcentage_passes_reussies": 80
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 18
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Sénégal avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.64,
+                    "stabilite_logement_nutrition": 0.51,
+                    "education_adaptation_culturelle": 0.52
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2897848,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 52642
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 97,
+                "disponibilite_generale": 85,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 90,
+                "performance_score": 88,
+                "sdoh_score": 72,
+                "market_value_score": 80,
+                "adherence_score": 90,
+                "fit_score_final": 84,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 30,
+            "nom": "Bentoumi",
+            "prenom": "Ismael",
+            "age": 31,
+            "nationalite": "Algérie",
+            "poste": "Latéral gauche",
+            "club": "Étoile du Sahel",
+            "taille": 193,
+            "poids": 77,
+            "pied_fort": "Droit",
+            "date_naissance": "1994-08-14",
+            "email": "ismael.bentoumi@Étoiledusahel.tn",
+            "telephone": "+216 22 412872",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-18",
+                        "date_fin": "2024-10-03",
+                        "duree_indisponibilite": 15,
+                        "gravite": "Légère"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-05",
+                        "date_fin": "2025-03-29",
+                        "duree_indisponibilite": 175,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 36,
+                    "ck_creatine_kinase": 212,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 17.1,
+                    "ferritine": 60
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 88,
+                    "test_force_isocinetique": 90,
+                    "test_agilite_t": 7.5,
+                    "test_saut_vertical": 69
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 94
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2115,
+                    "matchs_joues": 24,
+                    "buts": 11,
+                    "passes_decisives": 0,
+                    "tacles_reussis": 119,
+                    "pourcentage_passes_reussies": 83
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 19
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Algérie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.6599999999999999,
+                    "stabilite_logement_nutrition": 0.63,
+                    "education_adaptation_culturelle": 0.6799999999999999
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2269923,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 18209
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 88,
+                "disponibilite_generale": 94,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 77,
+                "performance_score": 81,
+                "sdoh_score": 78,
+                "market_value_score": 72,
+                "adherence_score": 94,
+                "fit_score_final": 80.4,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 31,
+            "nom": "Keita",
+            "prenom": "Moussa",
+            "age": 32,
+            "nationalite": "Mali",
+            "poste": "Gardien",
+            "club": "Club Africain",
+            "taille": 193,
+            "poids": 74,
+            "pied_fort": "Gauche",
+            "date_naissance": "1993-08-14",
+            "email": "moussa.keita@clubafricain.tn",
+            "telephone": "+216 22 695776",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-09-03",
+                        "date_fin": "2024-10-30",
+                        "duree_indisponibilite": 57,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-12-02",
+                        "date_fin": "2024-12-09",
+                        "duree_indisponibilite": 7,
+                        "gravite": "Légère"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 21,
+                    "ck_creatine_kinase": 130,
+                    "hs_crp": 0,
+                    "hemoglobine": 16.1,
+                    "ferritine": 102
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 72,
+                    "test_force_isocinetique": 77,
+                    "test_agilite_t": 10.3,
+                    "test_saut_vertical": 52
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 82
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2259,
+                    "matchs_joues": 25,
+                    "buts": 7,
+                    "passes_decisives": 6,
+                    "tacles_reussis": 85,
+                    "pourcentage_passes_reussies": 71
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 31,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 25
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Mali avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.6699999999999999,
+                    "stabilite_logement_nutrition": 0.6699999999999999,
+                    "education_adaptation_culturelle": 0.6799999999999999
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1659167,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 34442
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 90,
+                "disponibilite_generale": 95,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 77,
+                "performance_score": 78,
+                "sdoh_score": 57,
+                "market_value_score": 73,
+                "adherence_score": 92,
+                "fit_score_final": 75.4,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 32,
+            "nom": "Trabelsi",
+            "prenom": "Karim",
+            "age": 26,
+            "nationalite": "Tunisie",
+            "poste": "Défenseur central",
+            "club": "Club Africain",
+            "taille": 187,
+            "poids": 73,
+            "pied_fort": "Gauche",
+            "date_naissance": "1999-08-14",
+            "email": "karim.trabelsi@clubafricain.tn",
+            "telephone": "+216 22 461080",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 22,
+                    "ck_creatine_kinase": 250,
+                    "hs_crp": 0.5,
+                    "hemoglobine": 14.9,
+                    "ferritine": 102
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 77,
+                    "test_force_isocinetique": 88,
+                    "test_agilite_t": 9.5,
+                    "test_saut_vertical": 72
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 77
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2486,
+                    "matchs_joues": 28,
+                    "buts": 0,
+                    "passes_decisives": 12,
+                    "tacles_reussis": 63,
+                    "pourcentage_passes_reussies": 85
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 15
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.75,
+                    "stabilite_logement_nutrition": 0.79,
+                    "education_adaptation_culturelle": 0.73
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1417176,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 22998
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 91,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 76,
+                "performance_score": 80,
+                "sdoh_score": 59,
+                "market_value_score": 84,
+                "adherence_score": 93,
+                "fit_score_final": 78.4,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 33,
+            "nom": "Koné",
+            "prenom": "Samba",
+            "age": 27,
+            "nationalite": "Mali",
+            "poste": "Latéral gauche",
+            "club": "CS Sfaxien",
+            "taille": 186,
+            "poids": 70,
+            "pied_fort": "Droit",
+            "date_naissance": "1998-08-14",
+            "email": "samba.koné@cssfaxien.tn",
+            "telephone": "+216 22 659129",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 42,
+                    "ck_creatine_kinase": 187,
+                    "hs_crp": 0.5,
+                    "hemoglobine": 14.3,
+                    "ferritine": 84
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 95,
+                    "test_force_isocinetique": 83,
+                    "test_agilite_t": 10.7,
+                    "test_saut_vertical": 68
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 98
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 1924,
+                    "matchs_joues": 21,
+                    "buts": 15,
+                    "passes_decisives": 12,
+                    "tacles_reussis": 59,
+                    "pourcentage_passes_reussies": 83
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 24
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Mali avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.59,
+                    "stabilite_logement_nutrition": 0.5599999999999999,
+                    "education_adaptation_culturelle": 0.54
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2391777,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 58921
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 92,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 80,
+                "performance_score": 92,
+                "sdoh_score": 59,
+                "market_value_score": 65,
+                "adherence_score": 87,
+                "fit_score_final": 76.6,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 34,
+            "nom": "Benrahma",
+            "prenom": "Nabil",
+            "age": 24,
+            "nationalite": "Algérie",
+            "poste": "Milieu central",
+            "club": "JS Kairouan",
+            "taille": 195,
+            "poids": 67,
+            "pied_fort": "Droit",
+            "date_naissance": "2001-08-14",
+            "email": "nabil.benrahma@jskairouan.tn",
+            "telephone": "+216 22 627223",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-26",
+                        "date_fin": "2025-09-04",
+                        "duree_indisponibilite": 162,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-08-18",
+                        "date_fin": "2024-11-24",
+                        "duree_indisponibilite": 98,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 42,
+                    "ck_creatine_kinase": 200,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 13.6,
+                    "ferritine": 112
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 71,
+                    "test_force_isocinetique": 88,
+                    "test_agilite_t": 10.4,
+                    "test_saut_vertical": 54
+                },
+                "statut_pcma": "En attente",
+                "score_pcma": 89
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2464,
+                    "matchs_joues": 27,
+                    "buts": 6,
+                    "passes_decisives": 10,
+                    "tacles_reussis": 19,
+                    "pourcentage_passes_reussies": 79
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 20
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Algérie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.69,
+                    "stabilite_logement_nutrition": 0.7,
+                    "education_adaptation_culturelle": 0.62
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1559798,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 42624
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 95,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 78,
+                "performance_score": 89,
+                "sdoh_score": 73,
+                "market_value_score": 71,
+                "adherence_score": 91,
+                "fit_score_final": 80.4,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 35,
+            "nom": "Ziyech",
+            "prenom": "Achraf",
+            "age": 18,
+            "nationalite": "Maroc",
+            "poste": "Latéral droit",
+            "club": "Olympique Béja",
+            "taille": 194,
+            "poids": 72,
+            "pied_fort": "Droit",
+            "date_naissance": "2007-08-14",
+            "email": "achraf.ziyech@olympiquebéja.tn",
+            "telephone": "+216 22 377601",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 35,
+                    "ck_creatine_kinase": 101,
+                    "hs_crp": 0,
+                    "hemoglobine": 14.6,
+                    "ferritine": 93
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 79,
+                    "test_force_isocinetique": 82,
+                    "test_agilite_t": 10.6,
+                    "test_saut_vertical": 77
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 97
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2616,
+                    "matchs_joues": 29,
+                    "buts": 11,
+                    "passes_decisives": 14,
+                    "tacles_reussis": 89,
+                    "pourcentage_passes_reussies": 88
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 16
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.51,
+                    "stabilite_logement_nutrition": 0.51,
+                    "education_adaptation_culturelle": 0.53
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1781582,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 56986
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 88,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 78,
+                "performance_score": 77,
+                "sdoh_score": 84,
+                "market_value_score": 74,
+                "adherence_score": 92,
+                "fit_score_final": 81,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 36,
+            "nom": "Hamdi",
+            "prenom": "Samir",
+            "age": 31,
+            "nationalite": "Tunisie",
+            "poste": "Milieu défensif",
+            "club": "Club Africain",
+            "taille": 184,
+            "poids": 74,
+            "pied_fort": "Gauche",
+            "date_naissance": "1994-08-14",
+            "email": "samir.hamdi@clubafricain.tn",
+            "telephone": "+216 22 374639",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 23,
+                    "ck_creatine_kinase": 243,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 16.9,
+                    "ferritine": 75
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 83,
+                    "test_force_isocinetique": 70,
+                    "test_agilite_t": 9.4,
+                    "test_saut_vertical": 60
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 83
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2331,
+                    "matchs_joues": 26,
+                    "buts": 7,
+                    "passes_decisives": 5,
+                    "tacles_reussis": 113,
+                    "pourcentage_passes_reussies": 89
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 19
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.9,
+                    "stabilite_logement_nutrition": 0.74,
+                    "education_adaptation_culturelle": 0.73
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 778382,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 49033
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 86,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 71,
+                "performance_score": 76,
+                "sdoh_score": 69,
+                "market_value_score": 84,
+                "adherence_score": 85,
+                "fit_score_final": 77,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 37,
+            "nom": "Hamdi",
+            "prenom": "Hamza",
+            "age": 29,
+            "nationalite": "Tunisie",
+            "poste": "Milieu central",
+            "club": "AS Gabès",
+            "taille": 183,
+            "poids": 84,
+            "pied_fort": "Gauche",
+            "date_naissance": "1996-08-14",
+            "email": "hamza.hamdi@asgabès.tn",
+            "telephone": "+216 22 547162",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-12-07",
+                        "date_fin": "2025-02-03",
+                        "duree_indisponibilite": 58,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-14",
+                        "date_fin": "2025-07-28",
+                        "duree_indisponibilite": 136,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-01",
+                        "date_fin": "2025-01-12",
+                        "duree_indisponibilite": 103,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 38,
+                    "ck_creatine_kinase": 237,
+                    "hs_crp": 0,
+                    "hemoglobine": 13.6,
+                    "ferritine": 87
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 84,
+                    "test_force_isocinetique": 81,
+                    "test_agilite_t": 10.5,
+                    "test_saut_vertical": 68
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 71
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2477,
+                    "matchs_joues": 28,
+                    "buts": 6,
+                    "passes_decisives": 0,
+                    "tacles_reussis": 70,
+                    "pourcentage_passes_reussies": 79
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.9,
+                    "stabilite_logement_nutrition": 0.73,
+                    "education_adaptation_culturelle": 0.8200000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2396042,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 24262
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 83,
+                "disponibilite_generale": 86,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 91,
+                "performance_score": 75,
+                "sdoh_score": 56,
+                "market_value_score": 86,
+                "adherence_score": 83,
+                "fit_score_final": 78.2,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 38,
+            "nom": "Ziyech",
+            "prenom": "Younes",
+            "age": 30,
+            "nationalite": "Maroc",
+            "poste": "Ailier gauche",
+            "club": "Espérance de Tunis",
+            "taille": 185,
+            "poids": 84,
+            "pied_fort": "Droit",
+            "date_naissance": "1995-08-14",
+            "email": "younes.ziyech@espérancedetunis.tn",
+            "telephone": "+216 22 216510",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-13",
+                        "date_fin": "2024-11-28",
+                        "duree_indisponibilite": 46,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-26",
+                        "date_fin": "2025-04-01",
+                        "duree_indisponibilite": 157,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-06",
+                        "date_fin": "2025-07-18",
+                        "duree_indisponibilite": 162,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 24,
+                    "ck_creatine_kinase": 187,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 15.7,
+                    "ferritine": 75
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 93,
+                    "test_force_isocinetique": 74,
+                    "test_agilite_t": 10.5,
+                    "test_saut_vertical": 61
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 84
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2117,
+                    "matchs_joues": 24,
+                    "buts": 1,
+                    "passes_decisives": 1,
+                    "tacles_reussis": 45,
+                    "pourcentage_passes_reussies": 70
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 34,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 22
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.65,
+                    "stabilite_logement_nutrition": 0.51,
+                    "education_adaptation_culturelle": 0.5499999999999999
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 787709,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 28766
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 91,
+                "disponibilite_generale": 96,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 70,
+                "performance_score": 82,
+                "sdoh_score": 85,
+                "market_value_score": 83,
+                "adherence_score": 91,
+                "fit_score_final": 82.2,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 39,
+            "nom": "Chukwueze",
+            "prenom": "Victor",
+            "age": 22,
+            "nationalite": "Nigeria",
+            "poste": "Milieu offensif",
+            "club": "Olympique Béja",
+            "taille": 182,
+            "poids": 75,
+            "pied_fort": "Gauche",
+            "date_naissance": "2003-08-14",
+            "email": "victor.chukwueze@olympiquebéja.tn",
+            "telephone": "+216 22 172639",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure musculaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-07",
+                        "date_fin": "2024-10-16",
+                        "duree_indisponibilite": 9,
+                        "gravite": "Légère"
+                    },
+                    {
+                        "type": "Contusion",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-04-13",
+                        "date_fin": "2025-09-02",
+                        "duree_indisponibilite": 142,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 39,
+                    "ck_creatine_kinase": 116,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 15.3,
+                    "ferritine": 62
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 70,
+                    "test_force_isocinetique": 86,
+                    "test_agilite_t": 11.1,
+                    "test_saut_vertical": 79
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 97
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2167,
+                    "matchs_joues": 24,
+                    "buts": 6,
+                    "passes_decisives": 11,
+                    "tacles_reussis": 87,
+                    "pourcentage_passes_reussies": 85
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 29,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 21
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Nigeria avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.5499999999999999,
+                    "stabilite_logement_nutrition": 0.63,
+                    "education_adaptation_culturelle": 0.69
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2196390,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 19809
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 90,
+                "disponibilite_generale": 92,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 91,
+                "performance_score": 84,
+                "sdoh_score": 68,
+                "market_value_score": 75,
+                "adherence_score": 87,
+                "fit_score_final": 81,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 40,
+            "nom": "Mansouri",
+            "prenom": "Mohamed",
+            "age": 24,
+            "nationalite": "Tunisie",
+            "poste": "Gardien",
+            "club": "Étoile du Sahel",
+            "taille": 194,
+            "poids": 66,
+            "pied_fort": "Droit",
+            "date_naissance": "2001-08-14",
+            "email": "mohamed.mansouri@Étoiledusahel.tn",
+            "telephone": "+216 22 223912",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-05-12",
+                        "date_fin": "2025-08-07",
+                        "duree_indisponibilite": 87,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-22",
+                        "date_fin": "2025-07-01",
+                        "duree_indisponibilite": 160,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-06-19",
+                        "date_fin": "2025-10-12",
+                        "duree_indisponibilite": 115,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 31,
+                    "ck_creatine_kinase": 159,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 13.6,
+                    "ferritine": 66
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 77,
+                    "test_force_isocinetique": 84,
+                    "test_agilite_t": 9.2,
+                    "test_saut_vertical": 71
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 79
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2364,
+                    "matchs_joues": 26,
+                    "buts": 8,
+                    "passes_decisives": 6,
+                    "tacles_reussis": 42,
+                    "pourcentage_passes_reussies": 80
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8500000000000001,
+                    "stabilite_logement_nutrition": 0.8500000000000001,
+                    "education_adaptation_culturelle": 0.8300000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1098323,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 31771
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 90,
+                "disponibilite_generale": 96,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 92,
+                "performance_score": 84,
+                "sdoh_score": 76,
+                "market_value_score": 66,
+                "adherence_score": 92,
+                "fit_score_final": 82,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 41,
+            "nom": "Bouguerra",
+            "prenom": "Youssef",
+            "age": 31,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "Club Africain",
+            "taille": 171,
+            "poids": 79,
+            "pied_fort": "Droit",
+            "date_naissance": "1994-08-14",
+            "email": "youssef.bouguerra@clubafricain.tn",
+            "telephone": "+216 22 562012",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-11-23",
+                        "date_fin": "2025-03-09",
+                        "duree_indisponibilite": 106,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-02-05",
+                        "date_fin": "2025-04-10",
+                        "duree_indisponibilite": 64,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Entorse",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-03-09",
+                        "date_fin": "2025-04-15",
+                        "duree_indisponibilite": 37,
+                        "gravite": "Modérée"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 40,
+                    "ck_creatine_kinase": 185,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 14.6,
+                    "ferritine": 70
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 84,
+                    "test_force_isocinetique": 94,
+                    "test_agilite_t": 10,
+                    "test_saut_vertical": 51
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 95
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2076,
+                    "matchs_joues": 23,
+                    "buts": 13,
+                    "passes_decisives": 14,
+                    "tacles_reussis": 32,
+                    "pourcentage_passes_reussies": 77
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 28,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 24
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.73,
+                    "stabilite_logement_nutrition": 0.7000000000000001,
+                    "education_adaptation_culturelle": 0.8200000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2376652,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 30600
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 89,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Très bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 73,
+                "performance_score": 87,
+                "sdoh_score": 59,
+                "market_value_score": 77,
+                "adherence_score": 93,
+                "fit_score_final": 77.8,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 42,
+            "nom": "Jebali",
+            "prenom": "Karim",
+            "age": 18,
+            "nationalite": "Tunisie",
+            "poste": "Latéral gauche",
+            "club": "Étoile du Sahel",
+            "taille": 177,
+            "poids": 78,
+            "pied_fort": "Gauche",
+            "date_naissance": "2007-08-14",
+            "email": "karim.jebali@Étoiledusahel.tn",
+            "telephone": "+216 22 910281",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 33,
+                    "ck_creatine_kinase": 104,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 13.8,
+                    "ferritine": 107
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 90,
+                    "test_force_isocinetique": 72,
+                    "test_agilite_t": 11.1,
+                    "test_saut_vertical": 58
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 75
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2062,
+                    "matchs_joues": 23,
+                    "buts": 16,
+                    "passes_decisives": 7,
+                    "tacles_reussis": 21,
+                    "pourcentage_passes_reussies": 77
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 33,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 17
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.88,
+                    "stabilite_logement_nutrition": 0.79,
+                    "education_adaptation_culturelle": 0.81
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 3219733,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 46134
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 89,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 88,
+                "performance_score": 90,
+                "sdoh_score": 82,
+                "market_value_score": 85,
+                "adherence_score": 95,
+                "fit_score_final": 88,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 43,
+            "nom": "Mane",
+            "prenom": "Pape",
+            "age": 32,
+            "nationalite": "Sénégal",
+            "poste": "Gardien",
+            "club": "CS Sfaxien",
+            "taille": 193,
+            "poids": 71,
+            "pied_fort": "Droit",
+            "date_naissance": "1993-08-14",
+            "email": "pape.mane@cssfaxien.tn",
+            "telephone": "+216 22 796335",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-10",
+                        "date_fin": "2025-03-04",
+                        "duree_indisponibilite": 53,
+                        "gravite": "Modérée"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-05-07",
+                        "date_fin": "2025-10-04",
+                        "duree_indisponibilite": 150,
+                        "gravite": "Grave"
+                    },
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2025-01-04",
+                        "date_fin": "2025-05-16",
+                        "duree_indisponibilite": 132,
+                        "gravite": "Grave"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 38,
+                    "ck_creatine_kinase": 160,
+                    "hs_crp": 0.2,
+                    "hemoglobine": 14.6,
+                    "ferritine": 64
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 75,
+                    "test_force_isocinetique": 73,
+                    "test_agilite_t": 12,
+                    "test_saut_vertical": 61
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 71
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2035,
+                    "matchs_joues": 23,
+                    "buts": 6,
+                    "passes_decisives": 5,
+                    "tacles_reussis": 64,
+                    "pourcentage_passes_reussies": 73
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 19
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Sénégal avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.5599999999999999,
+                    "stabilite_logement_nutrition": 0.53,
+                    "education_adaptation_culturelle": 0.53
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2052524,
+                "duree_contrat_restante": 4,
+                "salaire_mensuel": 43515
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 85,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 80,
+                "performance_score": 83,
+                "sdoh_score": 84,
+                "market_value_score": 87,
+                "adherence_score": 84,
+                "fit_score_final": 83.6,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 44,
+            "nom": "Amrabat",
+            "prenom": "Achraf",
+            "age": 27,
+            "nationalite": "Maroc",
+            "poste": "Ailier gauche",
+            "club": "Espérance de Tunis",
+            "taille": 179,
+            "poids": 78,
+            "pied_fort": "Droit",
+            "date_naissance": "1998-08-14",
+            "email": "achraf.amrabat@espérancedetunis.tn",
+            "telephone": "+216 22 866854",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 30,
+                    "ck_creatine_kinase": 161,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 15.3,
+                    "ferritine": 60
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 81,
+                    "test_force_isocinetique": 72,
+                    "test_agilite_t": 10.7,
+                    "test_saut_vertical": 72
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 76
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2170,
+                    "matchs_joues": 24,
+                    "buts": 17,
+                    "passes_decisives": 10,
+                    "tacles_reussis": 19,
+                    "pourcentage_passes_reussies": 71
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 35,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 22
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.6,
+                    "stabilite_logement_nutrition": 0.5499999999999999,
+                    "education_adaptation_culturelle": 0.6699999999999999
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2082961,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 36765
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 80,
+                "performance_score": 88,
+                "sdoh_score": 67,
+                "market_value_score": 74,
+                "adherence_score": 91,
+                "fit_score_final": 80,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 45,
+            "nom": "Bennani",
+            "prenom": "Noussair",
+            "age": 25,
+            "nationalite": "Maroc",
+            "poste": "Ailier droit",
+            "club": "AS Gabès",
+            "taille": 192,
+            "poids": 68,
+            "pied_fort": "Droit",
+            "date_naissance": "2000-08-14",
+            "email": "noussair.bennani@asgabès.tn",
+            "telephone": "+216 22 845949",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 44,
+                    "ck_creatine_kinase": 229,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 16.2,
+                    "ferritine": 83
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 84,
+                    "test_force_isocinetique": 77,
+                    "test_agilite_t": 9.9,
+                    "test_saut_vertical": 65
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 86
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2274,
+                    "matchs_joues": 25,
+                    "buts": 17,
+                    "passes_decisives": 9,
+                    "tacles_reussis": 30,
+                    "pourcentage_passes_reussies": 90
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 30,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 21
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.63,
+                    "stabilite_logement_nutrition": 0.63,
+                    "education_adaptation_culturelle": 0.65
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 727784,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 25697
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 93,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 70,
+                "performance_score": 80,
+                "sdoh_score": 61,
+                "market_value_score": 85,
+                "adherence_score": 82,
+                "fit_score_final": 75.6,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 46,
+            "nom": "Amrabat",
+            "prenom": "Achraf",
+            "age": 30,
+            "nationalite": "Maroc",
+            "poste": "Ailier droit",
+            "club": "US Monastir",
+            "taille": 195,
+            "poids": 74,
+            "pied_fort": "Gauche",
+            "date_naissance": "1995-08-14",
+            "email": "achraf.amrabat@usmonastir.tn",
+            "telephone": "+216 22 874424",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 29,
+                    "ck_creatine_kinase": 173,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 15.9,
+                    "ferritine": 103
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 70,
+                    "test_force_isocinetique": 94,
+                    "test_agilite_t": 9.7,
+                    "test_saut_vertical": 52
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 89
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2234,
+                    "matchs_joues": 25,
+                    "buts": 10,
+                    "passes_decisives": 15,
+                    "tacles_reussis": 34,
+                    "pourcentage_passes_reussies": 76
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 33,
+                    "distance_moyenne_match": 12,
+                    "sprints_match": 16
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.69,
+                    "stabilite_logement_nutrition": 0.7,
+                    "education_adaptation_culturelle": 0.65
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1568092,
+                "duree_contrat_restante": 1,
+                "salaire_mensuel": 44654
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 86,
+                "disponibilite_generale": 80,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 92,
+                "performance_score": 75,
+                "sdoh_score": 59,
+                "market_value_score": 79,
+                "adherence_score": 87,
+                "fit_score_final": 78.4,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 47,
+            "nom": "Koné",
+            "prenom": "Moussa",
+            "age": 18,
+            "nationalite": "Mali",
+            "poste": "Latéral droit",
+            "club": "US Monastir",
+            "taille": 181,
+            "poids": 80,
+            "pied_fort": "Gauche",
+            "date_naissance": "2007-08-14",
+            "email": "moussa.koné@usmonastir.tn",
+            "telephone": "+216 22 807216",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 22,
+                    "ck_creatine_kinase": 99,
+                    "hs_crp": 0.4,
+                    "hemoglobine": 15.8,
+                    "ferritine": 86
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 74,
+                    "test_force_isocinetique": 79,
+                    "test_agilite_t": 7.7,
+                    "test_saut_vertical": 70
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 76
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2197,
+                    "matchs_joues": 24,
+                    "buts": 10,
+                    "passes_decisives": 12,
+                    "tacles_reussis": 82,
+                    "pourcentage_passes_reussies": 86
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 11,
+                    "sprints_match": 21
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Mali avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.65,
+                    "stabilite_logement_nutrition": 0.61,
+                    "education_adaptation_culturelle": 0.57
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2764152,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 51791
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 92,
+                "disponibilite_generale": 84,
+                "score_adherence_protocole": "Moyen"
+            },
+            "fit_score_calcul": {
+                "health_score": 79,
+                "performance_score": 76,
+                "sdoh_score": 90,
+                "market_value_score": 81,
+                "adherence_score": 88,
+                "fit_score_final": 82.8,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 48,
+            "nom": "Amrabat",
+            "prenom": "Achraf",
+            "age": 21,
+            "nationalite": "Maroc",
+            "poste": "Milieu central",
+            "club": "JS Kairouan",
+            "taille": 186,
+            "poids": 65,
+            "pied_fort": "Gauche",
+            "date_naissance": "2004-08-14",
+            "email": "achraf.amrabat@jskairouan.tn",
+            "telephone": "+216 22 783677",
+            "pillar_1_health": {
+                "historique_blessures": [
+                    {
+                        "type": "Blessure ligamentaire",
+                        "localisation": "Zone affectée",
+                        "date_debut": "2024-10-12",
+                        "date_fin": "2024-10-28",
+                        "duree_indisponibilite": 16,
+                        "gravite": "Légère"
+                    }
+                ],
+                "donnees_laboratoire": {
+                    "vitamine_d": 22,
+                    "ck_creatine_kinase": 102,
+                    "hs_crp": 0.5,
+                    "hemoglobine": 17.5,
+                    "ferritine": 85
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 70,
+                    "test_force_isocinetique": 74,
+                    "test_agilite_t": 10.3,
+                    "test_saut_vertical": 60
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 88
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2378,
+                    "matchs_joues": 26,
+                    "buts": 1,
+                    "passes_decisives": 0,
+                    "tacles_reussis": 31,
+                    "pourcentage_passes_reussies": 79
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 32,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 23
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Maroc avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.6599999999999999,
+                    "stabilite_logement_nutrition": 0.64,
+                    "education_adaptation_culturelle": 0.6599999999999999
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 3590911,
+                "duree_contrat_restante": 3,
+                "salaire_mensuel": 50686
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 96,
+                "disponibilite_generale": 90,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 90,
+                "performance_score": 78,
+                "sdoh_score": 71,
+                "market_value_score": 77,
+                "adherence_score": 80,
+                "fit_score_final": 79.2,
+                "categorie": "Bon"
+            }
+        },
+        {
+            "id": 49,
+            "nom": "Iheanacho",
+            "prenom": "Victor",
+            "age": 20,
+            "nationalite": "Nigeria",
+            "poste": "Milieu offensif",
+            "club": "CS Sfaxien",
+            "taille": 185,
+            "poids": 74,
+            "pied_fort": "Gauche",
+            "date_naissance": "2005-08-14",
+            "email": "victor.iheanacho@cssfaxien.tn",
+            "telephone": "+216 22 759156",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 43,
+                    "ck_creatine_kinase": 231,
+                    "hs_crp": 0.3,
+                    "hemoglobine": 16.7,
+                    "ferritine": 88
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 74,
+                    "test_force_isocinetique": 85,
+                    "test_agilite_t": 10.1,
+                    "test_saut_vertical": 78
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 84
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2724,
+                    "matchs_joues": 30,
+                    "buts": 13,
+                    "passes_decisives": 9,
+                    "tacles_reussis": 60,
+                    "pourcentage_passes_reussies": 87
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 29,
+                    "distance_moyenne_match": 10,
+                    "sprints_match": 16
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Nigeria avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.58,
+                    "stabilite_logement_nutrition": 0.6799999999999999,
+                    "education_adaptation_culturelle": 0.64
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 1005760,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 17873
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 92,
+                "score_adherence_protocole": "Bon"
+            },
+            "fit_score_calcul": {
+                "health_score": 73,
+                "performance_score": 79,
+                "sdoh_score": 85,
+                "market_value_score": 83,
+                "adherence_score": 86,
+                "fit_score_final": 81.2,
+                "categorie": "Très bon"
+            }
+        },
+        {
+            "id": 50,
+            "nom": "Jebali",
+            "prenom": "Karim",
+            "age": 19,
+            "nationalite": "Tunisie",
+            "poste": "Latéral droit",
+            "club": "AS Gabès",
+            "taille": 175,
+            "poids": 66,
+            "pied_fort": "Droit",
+            "date_naissance": "2006-08-14",
+            "email": "karim.jebali@asgabès.tn",
+            "telephone": "+216 22 348843",
+            "pillar_1_health": {
+                "historique_blessures": [],
+                "donnees_laboratoire": {
+                    "vitamine_d": 26,
+                    "ck_creatine_kinase": 249,
+                    "hs_crp": 0.1,
+                    "hemoglobine": 14.8,
+                    "ferritine": 100
+                },
+                "tests_fonctionnels": {
+                    "y_balance_test": 79,
+                    "test_force_isocinetique": 71,
+                    "test_agilite_t": 7.6,
+                    "test_saut_vertical": 61
+                },
+                "statut_pcma": "Clearance OK",
+                "score_pcma": 79
+            },
+            "pillar_2_performance": {
+                "stats_saison_precedente": {
+                    "minutes_jouees": 2096,
+                    "matchs_joues": 23,
+                    "buts": 14,
+                    "passes_decisives": 0,
+                    "tacles_reussis": 17,
+                    "pourcentage_passes_reussies": 86
+                },
+                "donnees_physiques": {
+                    "vitesse_maximale": 29,
+                    "distance_moyenne_match": 9,
+                    "sprints_match": 25
+                }
+            },
+            "pillar_3_sdoh": {
+                "profil_narratif": "Joueur Tunisie avec profil adapté au contexte tunisien.",
+                "scores_quantifies": {
+                    "support_social_familial": 0.8300000000000001,
+                    "stabilite_logement_nutrition": 0.89,
+                    "education_adaptation_culturelle": 0.8400000000000001
+                }
+            },
+            "pillar_4_market_value": {
+                "valeur_marchande": 2358054,
+                "duree_contrat_restante": 2,
+                "salaire_mensuel": 55364
+            },
+            "pillar_5_adherence_availability": {
+                "taux_presence_entrainements": 87,
+                "disponibilite_generale": 90,
+                "score_adherence_protocole": "Excellent"
+            },
+            "fit_score_calcul": {
+                "health_score": 74,
+                "performance_score": 83,
+                "sdoh_score": 81,
+                "market_value_score": 70,
+                "adherence_score": 95,
+                "fit_score_final": 80.6,
+                "categorie": "Très bon"
+            }
+        }
+    ]
+
+
+
+

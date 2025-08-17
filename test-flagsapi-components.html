@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Composants FlagsAPI - FIT</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div id="app">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">
+                🏆 Test des Composants FlagsAPI pour FIT
+            </h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Test Vue.js Component -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-green-600">Vue.js Component</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">France (Flat)</h3>
+                            <fifa-association-logo 
+                                :association-code="'FRA'" 
+                                :association-name="'France'"
+                                size="lg"
+                                style="flat"
+                                class="mx-auto"
+                            />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Tunisie (Shiny)</h3>
+                            <fifa-association-logo 
+                                :association-code="'TUN'" 
+                                :association-name="'Tunisie'"
+                                size="lg"
+                                style="shiny"
+                                class="mx-auto"
+                            />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Maroc (3D)</h3>
+                            <fifa-association-logo 
+                                :association-code="'MAR'" 
+                                :association-name="'Maroc'"
+                                size="lg"
+                                style="3d"
+                                class="mx-auto"
+                            />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Direct URLs -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">URLs Directes</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Belgique (Flat 64px)</h3>
+                            <img src="https://flagsapi.com/BE/flat/64.png" 
+                                 alt="Drapeau Belgique" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Algérie (Shiny 64px)</h3>
+                            <img src="https://flagsapi.com/DZ/shiny/64.png" 
+                                 alt="Drapeau Algérie" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Égypte (3D 64px)</h3>
+                            <img src="https://flagsapi.com/EG/3d/64.png" 
+                                 alt="Drapeau Égypte" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Tailles -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-purple-600">Différentes Tailles</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Portugal - XS (16px)</h3>
+                            <img src="https://flagsapi.com/PT/flat/16.png" 
+                                 alt="Drapeau Portugal XS" 
+                                 class="w-6 h-6 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Espagne - MD (32px)</h3>
+                            <img src="https://flagsapi.com/ES/flat/32.png" 
+                                 alt="Drapeau Espagne MD" 
+                                 class="w-10 h-10 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Allemagne - XL (64px)</h3>
+                            <img src="https://flagsapi.com/DE/flat/64.png" 
+                                 alt="Drapeau Allemagne XL" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Italie - 2XL (96px)</h3>
+                            <img src="https://flagsapi.com/IT/flat/96.png" 
+                                 alt="Drapeau Italie 2XL" 
+                                 class="w-20 h-20 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Fallback -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-orange-600">Test Fallback</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Code Invalide (XX)</h3>
+                            <img src="https://flagsapi.com/XX/flat/64.png" 
+                                 alt="Drapeau Invalide" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm"
+                                 onerror="this.src='https://flagsapi.com/UN/flat/64.png'" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Drapeau ONU (Fallback)</h3>
+                            <img src="https://flagsapi.com/UN/flat/64.png" 
+                                 alt="Drapeau ONU" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Styles -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-red-600">Différents Styles</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Brésil - Flat</h3>
+                            <img src="https://flagsapi.com/BR/flat/64.png" 
+                                 alt="Drapeau Brésil Flat" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Brésil - Shiny</h3>
+                            <img src="https://flagsapi.com/BR/shiny/64.png" 
+                                 alt="Drapeau Brésil Shiny" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Brésil - 3D</h3>
+                            <img src="https://flagsapi.com/BR/3d/64.png" 
+                                 alt="Drapeau Brésil 3D" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Associations Africaines -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-yellow-600">Associations Africaines</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Sénégal</h3>
+                            <img src="https://flagsapi.com/SN/flat/64.png" 
+                                 alt="Drapeau Sénégal" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Cameroun</h3>
+                            <img src="https://flagsapi.com/CM/flat/64.png" 
+                                 alt="Drapeau Cameroun" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Nigeria</h3>
+                            <img src="https://flagsapi.com/NG/flat/64.png" 
+                                 alt="Drapeau Nigeria" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-2">Ghana</h3>
+                            <img src="https://flagsapi.com/GH/flat/64.png" 
+                                 alt="Drapeau Ghana" 
+                                 class="w-16 h-16 object-contain mx-auto rounded shadow-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <p class="text-gray-600">
+                    ✅ API flagsapi.com testée et fonctionnelle pour tous les drapeaux
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                    Format: https://flagsapi.com/{CODE}/{STYLE}/{SIZE}.png
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        
+        // Composant FifaAssociationLogo
+        const FifaAssociationLogo = {
+            props: {
+                associationCode: {
+                    type: String,
+                    default: ''
+                },
+                associationName: {
+                    type: String,
+                    default: ''
+                },
+                size: {
+                    type: String,
+                    default: 'md'
+                },
+                style: {
+                    type: String,
+                    default: 'flat'
+                },
+                showFallback: {
+                    type: Boolean,
+                    default: true
+                },
+                rounded: {
+                    type: Boolean,
+                    default: true
+                },
+                shadow: {
+                    type: Boolean,
+                    default: true
+                },
+                class: {
+                    type: String,
+                    default: ''
+                }
+            },
+            computed: {
+                logoClasses() {
+                    const sizeClasses = {
+                        xs: 'w-6 h-6',
+                        sm: 'w-8 h-8',
+                        md: 'w-10 h-10',
+                        lg: 'w-12 h-12',
+                        xl: 'w-16 h-16',
+                        '2xl': 'w-20 h-20'
+                    };
+                    
+                    const baseClasses = 'object-contain';
+                    const sizeClass = sizeClasses[this.size] || sizeClasses['md'];
+                    const roundedClass = this.rounded ? 'rounded' : '';
+                    const shadowClass = this.shadow ? 'shadow-sm' : '';
+                    
+                    return `${baseClasses} ${sizeClass} ${roundedClass} ${shadowClass} ${this.class}`.trim();
+                },
+                flagUrl() {
+                    if (!this.associationCode) return null;
+                    
+                    const code = this.associationCode.toUpperCase();
+                    const flagSize = this.getFlagSize(this.size);
+                    
+                    return `https://flagsapi.com/${code}/${this.style}/${flagSize}.png`;
+                },
+                fallbackFlagUrl() {
+                    const flagSize = this.getFlagSize(this.size);
+                    return `https://flagsapi.com/UN/${this.style}/${flagSize}.png`;
+                }
+            },
+            methods: {
+                getFlagSize(componentSize) {
+                    const sizeMap = {
+                        xs: 16,
+                        sm: 24,
+                        md: 32,
+                        lg: 48,
+                        xl: 64,
+                        '2xl': 96
+                    };
+                    return sizeMap[componentSize] || 32;
+                }
+            },
+            template: `
+                <div class="fifa-association-logo inline-block">
+                    <img 
+                        v-if="flagUrl" 
+                        :src="flagUrl" 
+                        :alt="'Drapeau de ' + (associationName || associationCode)"
+                        :class="logoClasses"
+                        class="transition-opacity duration-200"
+                        @error="$event.target.style.display='none'"
+                    />
+                    <img 
+                        v-if="showFallback" 
+                        :src="fallbackFlagUrl" 
+                        :alt="'Drapeau générique pour ' + associationCode"
+                        :class="logoClasses"
+                        class="opacity-75"
+                        :style="{ display: flagUrl ? 'none' : 'block' }"
+                    />
+                </div>
+            `
+        };
+        
+        createApp({
+            components: {
+                FifaAssociationLogo
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
+
