@@ -348,8 +348,6 @@
             </div>
         </div>
 
-
-
         <!-- Navigation Tabs -->
         <div class="px-6 mb-6">
             <div class="flex flex-wrap gap-4">
@@ -1636,7 +1634,6 @@
                 return {
                     activeTab: 'performance',
                     activeNotificationFilter: 'all',
-
                     navigationTabs: [
                         { id: 'performance', name: 'Performance', icon: 'fas fa-chart-line', count: null },
                         { id: 'notifications', name: 'Notifications', icon: 'fas fa-bell', count: 12 },
@@ -1684,36 +1681,277 @@
                         'socialScore' => 85,
                         'injuryRisk' => 15
                     ]); @endphp,
-                        // Les vitals sont maintenant dans healthData.vitals
-                        // Les recentMetrics sont maintenant dans healthData.recentMetrics
-                        // Les recommendations sont maintenant dans healthData.recommendations
-                    },
-                    medicalData: @php echo json_encode($medicalData ?? [
-                        'recentHealthRecords' => [],
-                        'pcmas' => [],
-                        'medicalPredictions' => [],
-                        'injuries' => [],
-                        'illnesses' => [],
-                        'alerts' => [],
-                        'recommendations' => []
-                    ]); @endphp,
-                    deviceData: @php echo json_encode([
-                        'connectedDevices' => 3,
-                        'dailyDataPoints' => 1440,
-                        'lastSync' => '2 min',
-                        'devices' => [
-                            ['id' => 1, 'name' => 'Polar H10', 'type' => 'Capteur cardiaque', 'brand' => 'Polar', 'icon' => 'fas fa-heartbeat', 'connected' => true, 'batteryLevel' => 85, 'lastData' => 'Il y a 2 min'],
-                            ['id' => 2, 'name' => 'WHOOP 4.0', 'type' => 'Tracker fitness', 'brand' => 'WHOOP', 'icon' => 'fas fa-running', 'connected' => true, 'batteryLevel' => 62, 'lastData' => 'Il y a 5 min']
+                        vitals: [
+                            { name: 'Fréquence Cardiaque', value: '72', unit: 'bpm', icon: 'fas fa-heartbeat', color: '#ef4444', status: 'normal' },
+                            { name: 'Tension Artérielle', value: '125/80', unit: 'mmHg', icon: 'fas fa-thermometer-half', color: '#3b82f6', status: 'normal' },
+                            { name: 'Température', value: '36.8°', unit: 'C', icon: 'fas fa-temperature-low', color: '#f59e0b', status: 'normal' },
+                            { name: 'Saturation O2', value: '98%', unit: 'SpO2', icon: 'fas fa-lungs', color: '#10b981', status: 'normal' },
+                            { name: 'Hydratation', value: '82%', unit: 'niveau', icon: 'fas fa-tint', color: '#06b6d4', status: 'normal' },
+                            { name: 'Stress Cortisol', value: '12.5', unit: 'µg/dL', icon: 'fas fa-brain', color: '#8b5cf6', status: 'normal' }
                         ],
-                        'recentData' => ['heartRate' => 68, 'steps' => 15420, 'sleep' => '7h32', 'calories' => 2847]
-                    ]); @endphp,
-                    dopingData: @php echo json_encode([
-                        'lastControl' => '28/02/2025',
-                        'nextControl' => '15/04/2025',
-                        'controlHistory' => [
-                            ['id' => 1, 'type' => 'Contrôle inopiné', 'date' => '28/02/2025', 'location' => 'Centre d\'entraînement', 'status' => 'completed', 'result' => 'négatif']
+                        recentMetrics: [
+                            { id: 1, type: 'Poids Corporel', value: '72.1 kg', date: '10/03/2025', icon: 'fas fa-weight', color: '#3b82f6', trend: 'stable', change: '+0.1kg' },
+                            { id: 2, type: 'Masse Grasse', value: '8.2%', date: '10/03/2025', icon: 'fas fa-chart-pie', color: '#10b981', trend: 'down', change: '-0.3%' },
+                            { id: 3, type: 'Masse Musculaire', value: '65.8 kg', date: '10/03/2025', icon: 'fas fa-dumbbell', color: '#f59e0b', trend: 'up', change: '+0.5kg' },
+                            { id: 4, type: 'VO2 Max', value: '68.5 ml/kg/min', date: '08/03/2025', icon: 'fas fa-lungs', color: '#ef4444', trend: 'up', change: '+1.2' },
+                            { id: 5, type: 'VFC (HRV)', value: '52ms', date: '10/03/2025', icon: 'fas fa-heartbeat', color: '#8b5cf6', trend: 'up', change: '+3ms' }
+                        ],
+                        recommendations: [
+                            { 
+                                id: 1, 
+                                title: 'Optimiser la Récupération', 
+                                description: 'Augmenter la durée de sommeil profond avec une routine de 30min avant coucher', 
+                                priority: 'HAUTE', 
+                                color: '#ef4444', 
+                                icon: 'fas fa-bed',
+                                impact: 'Performance +8%'
+                            },
+                            { 
+                                id: 2, 
+                                title: 'Nutrition Périodisée', 
+                                description: 'Adapter l\'apport calorique selon l\'intensité d\'entraînement (±200 cal)', 
+                                priority: 'MOYENNE', 
+                                color: '#f59e0b', 
+                                icon: 'fas fa-utensils',
+                                impact: 'Énergie +12%'
+                            },
+                            { 
+                                id: 3, 
+                                title: 'Hydratation Intelligente', 
+                                description: 'Surveillance électrolytes pendant entraînements >90min', 
+                                priority: 'MOYENNE', 
+                                color: '#06b6d4', 
+                                icon: 'fas fa-tint',
+                                impact: 'Endurance +5%'
+                            },
+                            { 
+                                id: 4, 
+                                title: 'Méditation Ciblée', 
+                                description: 'Sessions pré-match de 10min pour optimiser concentration', 
+                                priority: 'FAIBLE', 
+                                color: '#8b5cf6', 
+                                icon: 'fas fa-brain',
+                                impact: 'Focus +15%'
+                            },
+                            { 
+                                id: 5, 
+                                title: 'Mobilité Préventive', 
+                                description: 'Routine quotidienne 15min pour prévenir blessures musculaires', 
+                                priority: 'HAUTE', 
+                                color: '#10b981', 
+                                icon: 'fas fa-stretching',
+                                impact: 'Prévention -25%'
+                            },
+                            { 
+                                id: 6, 
+                                title: 'Analyse Postural', 
+                                description: 'Évaluation biomécanique mensuelle avec corrections ciblées', 
+                                priority: 'MOYENNE', 
+                                color: '#3b82f6', 
+                                icon: 'fas fa-user-md',
+                                impact: 'Technique +10%'
+                            }
                         ]
-                    ]); @endphp,
+                    },
+                    medicalData: {
+                        healthRecords: [
+                            {
+                                id: 1,
+                                title: 'Consultation Cardiologique',
+                                doctor: 'Dr. Jean Martin',
+                                date: '05/03/2025',
+                                status: 'completed'
+                            },
+                            {
+                                id: 2,
+                                title: 'Examen Orthopédique',
+                                doctor: 'Dr. Sophie Moreau',
+                                date: '28/02/2025',
+                                status: 'completed'
+                            },
+                            {
+                                id: 3,
+                                title: 'Consultation Kinésithérapie',
+                                doctor: 'Sophie Moreau',
+                                date: '05/02/2025',
+                                status: 'pending'
+                            },
+                            {
+                                id: 4,
+                                title: 'Bilan Biologique Complet',
+                                doctor: 'Dr. Pierre Dubois',
+                                date: '20/02/2025',
+                                status: 'completed'
+                            },
+                            {
+                                id: 5,
+                                title: 'Consultation Nutrition',
+                                doctor: 'Dr. Marie Laurent',
+                                date: '15/02/2025',
+                                status: 'completed'
+                            },
+                            {
+                                id: 6,
+                                title: 'Examen Dentaire',
+                                doctor: 'Dr. Paul Bernard',
+                                date: '10/02/2025',
+                                status: 'completed'
+                            }
+                        ],
+                        pcmas: [
+                            { id: 1, title: 'Évaluation PCMA Saison 2024-2025', date: '01/09/2024', fitness: 'fit' },
+                            { id: 2, title: 'Contrôle PCMA Mi-saison', date: '15/01/2025', fitness: 'fit' },
+                            { id: 3, title: 'Évaluation PCMA Post-blessure', date: '01/03/2025', fitness: 'limited' }
+                        ],
+                        predictions: [
+                            { id: 1, title: 'Risque de Blessure', confidence: 87, risk: 'low' },
+                            { id: 2, title: 'Performance Prédictive', confidence: 92, risk: 'low' }
+                        ],
+                        injuries: [
+                            {
+                                id: 1,
+                                type: 'Élongation ischio-jambiers',
+                                location: 'Jambe droite',
+                                severity: 'moderate',
+                                date: '15/02/2025',
+                                recovery: 75,
+                                status: 'recovering',
+                                description: 'Élongation grade 2 des ischio-jambiers lors d\'un sprint',
+                                treatment: 'Kinésithérapie, étirements, renforcement progressif',
+                                doctor: 'Dr. Sophie Moreau',
+                                estimatedReturn: '25/03/2025'
+                            },
+                            {
+                                id: 2,
+                                type: 'Entorse cheville',
+                                location: 'Cheville gauche',
+                                severity: 'mild',
+                                date: '10/01/2025',
+                                recovery: 100,
+                                status: 'recovered',
+                                description: 'Entorse légère lors d\'un changement de direction',
+                                treatment: 'Repos, glace, compression, élévation',
+                                doctor: 'Dr. Jean Martin',
+                                estimatedReturn: '25/01/2025'
+                            },
+                            {
+                                id: 3,
+                                type: 'Contusion cuisse',
+                                location: 'Cuisse droite',
+                                severity: 'mild',
+                                date: '28/12/2024',
+                                recovery: 100,
+                                status: 'recovered',
+                                description: 'Contusion suite à un choc avec un adversaire',
+                                treatment: 'Glace, anti-inflammatoires, étirements doux',
+                                doctor: 'Dr. Pierre Dubois',
+                                estimatedReturn: '05/01/2025'
+                            }
+                        ],
+                        illnesses: [
+                            {
+                                id: 1,
+                                type: 'Infection respiratoire',
+                                diagnosis: 'Bronchite aiguë',
+                                date: '20/01/2025',
+                                recovery: 100,
+                                status: 'recovered',
+                                description: 'Infection des voies respiratoires avec toux et fièvre',
+                                treatment: 'Antibiotiques, repos, hydratation',
+                                doctor: 'Dr. Marie Laurent',
+                                estimatedReturn: '30/01/2025'
+                            },
+                            {
+                                id: 2,
+                                type: 'Gastro-entérite',
+                                diagnosis: 'Intoxication alimentaire',
+                                date: '05/12/2024',
+                                recovery: 100,
+                                status: 'recovered',
+                                description: 'Troubles digestifs suite à un repas',
+                                treatment: 'Réhydratation, régime alimentaire, repos',
+                                doctor: 'Dr. Sophie Moreau',
+                                estimatedReturn: '10/12/2024'
+                            }
+                        ]
+                    },
+                    deviceData: {
+                        connectedDevices: 3,
+                        dailyDataPoints: 1440,
+                        lastSync: '2 min',
+                        devices: [
+                            {
+                                id: 1,
+                                name: 'Polar H10',
+                                type: 'Capteur cardiaque',
+                                brand: 'Polar',
+                                icon: 'fas fa-heartbeat',
+                                connected: true,
+                                batteryLevel: 85,
+                                lastData: 'Il y a 2 min'
+                            },
+                            {
+                                id: 2,
+                                name: 'WHOOP 4.0',
+                                type: 'Tracker fitness',
+                                brand: 'WHOOP',
+                                icon: 'fas fa-running',
+                                connected: true,
+                                batteryLevel: 62,
+                                lastData: 'Il y a 5 min'
+                            },
+                            {
+                                id: 3,
+                                name: 'GPS Catapult',
+                                type: 'Tracker GPS',
+                                brand: 'Catapult',
+                                icon: 'fas fa-satellite',
+                                connected: true,
+                                batteryLevel: 92,
+                                lastData: 'Il y a 1 min'
+                            },
+                            {
+                                id: 4,
+                                name: 'Balance InBody',
+                                type: 'Composition corporelle',
+                                brand: 'InBody',
+                                icon: 'fas fa-weight',
+                                connected: false,
+                                batteryLevel: null,
+                                lastData: 'Il y a 2h'
+                            },
+                            {
+                                id: 5,
+                                name: 'Oura Ring',
+                                type: 'Tracker sommeil',
+                                brand: 'Oura',
+                                icon: 'fas fa-bed',
+                                connected: true,
+                                batteryLevel: 45,
+                                lastData: 'Il y a 10 min'
+                            }
+                        ],
+                        recentData: {
+                            heartRate: 68,
+                            steps: 15420,
+                            sleep: '7h32',
+                            calories: 2847
+                        }
+                    },
+                    dopingData: {
+                        lastControl: '28/02/2025',
+                        nextControl: '15/04/2025',
+                        controlHistory: [
+                            {
+                                id: 1,
+                                type: 'Contrôle inopiné',
+                                date: '28/02/2025',
+                                location: 'Centre d\'entraînement',
+                                status: 'completed',
+                                result: 'négatif',
+                                substances: 'Aucune substance interdite détectée',
+                                notes: 'Contrôle standard, aucun problème détecté'
+                            },
                             {
                                 id: 2,
                                 type: 'Contrôle post-match',
@@ -1747,7 +1985,39 @@
                                 endDate: '31/08/2025',
                                 status: 'active',
                                 riskLevel: 'low'
-                            // Données de dopage simplifiées
+                            },
+                            {
+                                id: 2,
+                                substance: 'Vitamine D3',
+                                reason: 'Carence saisonnière',
+                                dosage: '2000 UI par jour',
+                                frequency: '1 fois par jour',
+                                doctor: 'Dr. Sophie Moreau',
+                                startDate: '01/12/2024',
+                                endDate: '31/03/2025',
+                                status: 'active',
+                                riskLevel: 'none'
+                            }
+                        ],
+                        riskAlerts: [
+                            {
+                                id: 1,
+                                type: 'warning',
+                                title: 'Attention aux compléments',
+                                message: 'Vérifiez toujours la composition des compléments alimentaires',
+                                priority: 'medium',
+                                date: '08/03/2025'
+                            }
+                        ],
+                        prohibitedSubstances: [
+                            'Stéroïdes anabolisants',
+                            'Hormones de croissance',
+                            'EPO',
+                            'Stimulants (amphétamines, cocaïne)',
+                            'Diurétiques',
+                            'Bêta-bloquants',
+                            'Cannabinoïdes'
+                        ]
                     }
                 }
             },

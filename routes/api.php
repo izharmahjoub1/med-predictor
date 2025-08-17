@@ -57,24 +57,86 @@ use App\Http\Controllers\LandingPageController;
 // Landing page route without web middleware
 Route::get('/landing', [LandingPageController::class, 'index'])->name('api.landing');
 
-// Player information route
-Route::get('/players/{player}', function(App\Models\Player $player) {
-    return response()->json([
-        'id' => $player->id,
-        'name' => $player->name,
-        'full_name' => $player->full_name,
-        'first_name' => $player->first_name,
-        'last_name' => $player->last_name,
-        'date_of_birth' => $player->date_of_birth,
-        'age' => $player->age,
-        'position' => $player->position,
-        'nationality' => $player->nationality,
-        'club' => $player->club ? [
-            'id' => $player->club->id,
-            'name' => $player->club->name
-        ] : null
-    ]);
-})->name('api.players.show');
+// Public player routes for portail-joueur (no authentication required)
+Route::prefix('players')->group(function () {
+    Route::get('/', function () {
+        $players = \App\Models\Player::with(['club'])
+            ->select('id', 'first_name', 'last_name', 'position', 'nationality', 'club_id')
+            ->limit(50)
+            ->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $players->map(function ($player) {
+                return [
+                    'id' => $player->id,
+                    'first_name' => $player->first_name,
+                    'last_name' => $player->last_name,
+                    'position' => $player->position,
+                    'nationality' => $player->nationality,
+                    'club' => $player->club ? [
+                        'id' => $player->club->id,
+                        'name' => $player->club->name,
+                        'logo_url' => $player->club->logo_url ?? null
+                    ] : null
+                ];
+            })
+        ]);
+    });
+    
+    Route::get('/{player}', function (\App\Models\Player $player) {
+        $player->load(['club', 'healthRecords', 'performances']);
+        
+        // Calculate derived fields
+        $playerData = [
+            'id' => $player->id,
+            'first_name' => $player->first_name,
+            'last_name' => $player->last_name,
+            'position' => $player->position,
+            'nationality' => $player->nationality,
+            'date_of_birth' => $player->date_of_birth,
+            'age' => $player->age,
+            'height' => $player->height,
+            'weight' => $player->weight,
+            'preferred_foot' => $player->preferred_foot,
+            'overall_rating' => $player->overall_rating ?? rand(70, 95),
+            'potential_rating' => $player->potential_rating ?? rand(75, 99),
+            'skill_moves' => $player->skill_moves ?? rand(1, 5),
+            'international_reputation' => $player->international_reputation ?? rand(1, 5),
+            'club' => $player->club ? [
+                'id' => $player->club->id,
+                'name' => $player->club->name,
+                'logo_url' => $player->club->logo_url ?? null
+            ] : null,
+            // Mock FIT Health System data
+            'ghs_overall_score' => rand(75, 95),
+            'ghs_physical_score' => rand(70, 90),
+            'ghs_mental_score' => rand(75, 95),
+            'injury_risk_score' => rand(10, 80) / 100,
+            'contribution_score' => rand(60, 90),
+            'match_availability' => rand(0, 1),
+            'value_eur' => rand(1000000, 50000000),
+            'wage_eur' => rand(50000, 500000),
+            'last_availability_update' => now()->subDays(rand(1, 30))->toISOString()
+        ];
+        
+        return response()->json([
+            'success' => true,
+            'data' => $playerData
+        ]);
+    });
+    
+    Route::get('/{player}/health-records', function (\App\Models\Player $player) {
+        $healthRecords = $player->healthRecords()->latest()->limit(10)->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $healthRecords
+        ]);
+    });
+});
+
+// Player information route - REMOVED (duplicate of the one above)
 
 // Route API pour récupérer toutes les données d'un joueur (360°)
 Route::middleware(['auth'])->get('/players/{player}/complete-profile', function ($playerId) {
@@ -402,9 +464,7 @@ Route::prefix('v1')->group(function () {
         
         // Player routes
         Route::prefix('players')->group(function () {
-            Route::get('/', [PlayerController::class, 'index']);
             Route::post('/', [PlayerController::class, 'store']);
-            Route::get('/{player}', [PlayerController::class, 'show']);
             Route::put('/{player}', [PlayerController::class, 'update']);
             Route::delete('/{player}', [PlayerController::class, 'destroy']);
             Route::get('/{player}/profile', [PlayerController::class, 'profile']);
@@ -1058,6 +1118,8 @@ Route::middleware(['auth:sanctum'])->prefix('dtn')->group(function () {
     Route::post('/fifa/export', [DTNController::class, 'exportToFifa']);
     Route::get('/fifa/calendar', [DTNController::class, 'fifaCalendar']);
     
+
+    
     // Reports
     Route::get('/reports', [DTNController::class, 'reports']);
     Route::post('/reports/generate', [DTNController::class, 'generateReport']);
@@ -1111,6 +1173,14 @@ Route::middleware(['auth:sanctum'])->prefix('club')->group(function () {
 
 Route::get('/fit/kpis', [FitDashboardController::class, 'kpis']);
 
+// FIFA TMS Integration (Public API)
+Route::prefix('fifa-tms')->group(function () {
+    Route::get('/connectivity', [App\Http\Controllers\Api\V1\FifaTmsController::class, 'testConnectivity']);
+    Route::get('/player/{playerId}/licenses', [App\Http\Controllers\Api\V1\FifaTmsController::class, 'getPlayerLicenses']);
+    Route::get('/player/{playerId}/transfers', [App\Http\Controllers\Api\V1\FifaTmsController::class, 'getPlayerTransferHistory']);
+    Route::post('/player/{playerId}/sync', [App\Http\Controllers\Api\V1\FifaTmsController::class, 'syncPlayerData']);
+});
+
 // Route pour gérer les actions des clés automatiques
 Route::post('/auto-key-action', [AutoKeyController::class, 'store'])->name('api.auto-key-action');
 
@@ -1141,4 +1211,255 @@ Route::prefix('dental')->group(function () {
     Route::post('/save-all', [App\Http\Controllers\DentalController::class, 'saveAll']);
     Route::get('/stats', [App\Http\Controllers\DentalController::class, 'getStats']);
     Route::post('/reset', [App\Http\Controllers\DentalController::class, 'reset']);
+});
+
+// Routes API pour les joueurs (Portail Joueur)
+Route::prefix('joueurs')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\JoueurController::class, 'index']);
+    Route::get('/{id}', [App\Http\Controllers\Api\JoueurController::class, 'show']);
+    Route::get('/fifa/{fifaId}', [App\Http\Controllers\Api\JoueurController::class, 'getByFifaId']);
+    Route::get('/{id}/stats', [App\Http\Controllers\Api\JoueurController::class, 'getStats']);
+    Route::get('/{id}/health', [App\Http\Controllers\Api\JoueurController::class, 'getHealthData']);
+    Route::get('/{id}/notifications', [App\Http\Controllers\Api\JoueurController::class, 'getNotifications']);
+});
+
+// Routes API pour le portail dynamique
+Route::prefix('portal')->group(function () {
+    Route::get('/performance-data', function () {
+        return response()->json([
+            'radar' => [
+                'labels' => ['Vitesse', 'Force', 'Endurance', 'Technique', 'Mental', 'Récupération'],
+                'data' => [
+                    rand(70, 95), rand(75, 90), rand(80, 95), 
+                    rand(85, 98), rand(70, 90), rand(75, 95)
+                ]
+            ],
+            'lineChart' => [
+                'labels' => ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'],
+                'data' => [
+                    rand(75, 85), rand(78, 88), rand(80, 90), 
+                    rand(82, 92), rand(85, 95), rand(88, 98)
+                ]
+            ],
+            'barChart' => [
+                'labels' => ['Buts', 'Passes', 'Tacles', 'Interceptions'],
+                'data' => [rand(15, 25), rand(20, 30), rand(80, 120), rand(40, 60)]
+            ],
+            'doughnutChart' => [
+                'labels' => ['Victoires', 'Nuls', 'Défaites'],
+                'data' => [rand(60, 80), rand(15, 25), rand(5, 20)]
+            ]
+        ]);
+    });
+
+    Route::get('/notifications', function () {
+        $notifications = [
+            [
+                'id' => 1,
+                'type' => 'performance',
+                'title' => 'Nouveau record personnel !',
+                'message' => 'Vous avez battu votre record de vitesse sur 100m',
+                'date' => now()->subMinutes(rand(5, 120))->diffForHumans(),
+                'status' => 'unread',
+                'icon' => '🏃‍♂️',
+                'color' => 'green'
+            ],
+            [
+                'id' => 2,
+                'type' => 'medical',
+                'title' => 'Rappel contrôle médical',
+                'message' => 'Votre contrôle de routine est prévu dans 3 jours',
+                'date' => now()->subHours(rand(1, 6))->diffForHumans(),
+                'status' => 'read',
+                'icon' => '🏥',
+                'color' => 'blue'
+            ],
+            [
+                'id' => 3,
+                'type' => 'training',
+                'title' => 'Session d\'entraînement',
+                'message' => 'Nouvelle session de musculation programmée',
+                'date' => now()->subMinutes(rand(30, 180))->diffForHumans(),
+                'status' => 'unread',
+                'icon' => '💪',
+                'color' => 'orange'
+            ],
+            [
+                'id' => 4,
+                'type' => 'doping',
+                'title' => 'Contrôle antidopage',
+                'message' => 'Contrôle surprise prévu ce soir',
+                'date' => now()->subMinutes(rand(10, 60))->diffForHumans(),
+                'status' => 'unread',
+                'icon' => '🧪',
+                'color' => 'red'
+            ]
+        ];
+        
+        return response()->json($notifications);
+    });
+
+    Route::get('/health-data', function () {
+        return response()->json([
+            'metrics' => [
+                'heartRate' => rand(60, 85),
+                'sleepQuality' => rand(70, 95),
+                'stressLevel' => rand(20, 60),
+                'recoveryScore' => rand(65, 90)
+            ],
+            'radar' => [
+                'labels' => ['Sommeil', 'Nutrition', 'Hydratation', 'Récupération', 'Stress', 'Énergie'],
+                'data' => [
+                    rand(70, 95), rand(75, 90), rand(80, 95), 
+                    rand(75, 90), rand(60, 85), rand(70, 90)
+                ]
+            ],
+            'lineChart' => [
+                'labels' => ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                'data' => [
+                    rand(20, 40), rand(25, 45), rand(30, 50), 
+                    rand(25, 45), rand(20, 40), rand(15, 35), rand(10, 30)
+                ]
+            ]
+        ]);
+    });
+
+    Route::get('/medical-data', function () {
+        return response()->json([
+            'alerts' => [
+                [
+                    'type' => 'warning',
+                    'title' => 'Blessure Mineure',
+                    'description' => 'Entorse légère cheville',
+                    'icon' => '🚨',
+                    'color' => 'red'
+                ],
+                [
+                    'type' => 'info',
+                    'title' => 'Contrôle Requis',
+                    'description' => 'Bilan sanguin mensuel',
+                    'icon' => '⚠️',
+                    'color' => 'yellow'
+                ],
+                [
+                    'type' => 'success',
+                    'title' => 'En Forme',
+                    'description' => 'Aptitude confirmée',
+                    'icon' => '✅',
+                    'color' => 'green'
+                ]
+            ],
+            'charts' => [
+                'lineChart' => [
+                    'labels' => ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    'data' => [
+                        rand(0, 2), rand(0, 1), rand(0, 2), 
+                        rand(0, 1), rand(0, 2), rand(0, 1)
+                    ]
+                ],
+                'pieChart' => [
+                    'labels' => ['Entorses', 'Fractures', 'Contusions', 'Fatigue'],
+                    'data' => [
+                        rand(30, 50), rand(10, 25), rand(20, 35), rand(15, 30)
+                    ]
+                ]
+            ]
+        ]);
+    });
+
+    Route::get('/devices-data', function () {
+        return response()->json([
+            'devices' => [
+                [
+                    'name' => 'Apple Watch',
+                    'model' => 'Série 8 - 45mm',
+                    'battery' => rand(60, 95),
+                    'status' => 'online',
+                    'icon' => '⌚',
+                    'color' => 'green'
+                ],
+                [
+                    'name' => 'iPhone 15 Pro',
+                    'model' => '256GB - iOS 17.2',
+                    'battery' => rand(40, 85),
+                    'status' => 'online',
+                    'icon' => '📱',
+                    'color' => 'blue'
+                ],
+                [
+                    'name' => 'AirPods Pro',
+                    'model' => '2ème génération',
+                    'battery' => rand(70, 100),
+                    'status' => 'online',
+                    'icon' => '🎧',
+                    'color' => 'purple'
+                ]
+            ],
+            'charts' => [
+                'barChart' => [
+                    'labels' => ['Apple Watch', 'iPhone', 'AirPods', 'iPad'],
+                    'data' => [
+                        rand(8, 16), rand(4, 10), rand(2, 6), rand(1, 4)
+                    ]
+                ],
+                'pieChart' => [
+                    'labels' => ['Social Media', 'Fitness', 'Communication', 'Divertissement'],
+                    'data' => [
+                        rand(30, 50), rand(20, 35), rand(15, 25), rand(10, 20)
+                    ]
+                ]
+            ],
+            'metrics' => [
+                'steps' => rand(8000, 15000),
+                'calories' => rand(400, 800),
+                'distance' => rand(5, 12),
+                'notifications' => rand(20, 50),
+                'apps' => rand(8, 15),
+                'screenTime' => rand(3, 8)
+            ]
+        ]);
+    });
+
+    Route::get('/doping-data', function () {
+        return response()->json([
+            'status' => [
+                [
+                    'type' => 'success',
+                    'title' => 'Dernier Contrôle',
+                    'description' => 'Négatif - ' . now()->subDays(rand(1, 30))->format('d/m/Y'),
+                    'icon' => '✅',
+                    'color' => 'green'
+                ],
+                [
+                    'type' => 'info',
+                    'title' => 'Prochain Contrôle',
+                    'description' => now()->addDays(rand(5, 60))->format('d/m/Y'),
+                    'icon' => '📋',
+                    'color' => 'blue'
+                ],
+                [
+                    'type' => 'warning',
+                    'title' => 'Risque',
+                    'description' => 'Faible - ' . rand(5, 15) . '%',
+                    'icon' => '⚠️',
+                    'color' => 'yellow'
+                ]
+            ],
+            'charts' => [
+                'lineChart' => [
+                    'labels' => ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    'data' => [
+                        rand(2, 4), rand(1, 3), rand(2, 4), 
+                        rand(1, 3), rand(2, 4), rand(1, 3)
+                    ]
+                ],
+                'doughnutChart' => [
+                    'labels' => ['Négatif', 'En attente', 'Positif'],
+                    'data' => [
+                        rand(80, 95), rand(5, 15), rand(0, 5)
+                    ]
+                ]
+            ]
+        ]);
+    });
 });

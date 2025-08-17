@@ -67,6 +67,17 @@ return [
         'mock_mode' => env('FIFA_CONNECT_MOCK_MODE', false),
     ],
 
+    'fifa_tms' => [
+        'base_url' => env('FIFA_TMS_BASE_URL', 'https://api.fifa.com/tms/v1'),
+        'api_key' => env('FIFA_TMS_API_KEY'),
+        'timeout' => env('FIFA_TMS_TIMEOUT', 15),
+        'cache_ttl' => env('FIFA_TMS_CACHE_TTL', 3600),
+        'retry_attempts' => env('FIFA_TMS_RETRY_ATTEMPTS', 2),
+        'retry_delay' => env('FIFA_TMS_RETRY_DELAY', 3),
+        'mock_mode' => env('FIFA_TMS_MOCK_MODE', false),
+        'rate_limit' => env('FIFA_TMS_RATE_LIMIT', 100), // requêtes par minute
+    ],
+
     'hl7_fhir' => [
         'base_url' => env('HL7_FHIR_BASE_URL', 'https://fhir.example.com'),
         'client_id' => env('HL7_FHIR_CLIENT_ID'),
