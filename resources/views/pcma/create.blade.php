@@ -3,162 +3,748 @@
 @section('title', 'Nouveau PCMA - Med Predictor')
 
 @section('content')
+
+
+
+@push('styles')
+<style>
+    /*  STYLES POUR LES SECTIONS DE MODES SÉCURISÉES */
+    
+    /* Classe de base pour toutes les sections de modes */
+    .mode-section {
+        transition: all 0.3s ease-in-out;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Section cachée */
+    .mode-section.hidden {
+        display: none !important;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    
+    /* Boutons de sélection de mode */
+    .mode-selector {
+        transition: all 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .mode-selector::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease-in-out;
+    }
+    
+    .mode-selector:hover::before {
+        left: 100%;
+    }
+    
+    /* États actifs des boutons */
+    .mode-selector.active {
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .mode-selector.active::after {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #10b981;
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    /* Animation d'entrée pour les sections */
+    .mode-section:not(.hidden) {
+        animation: slideInUp 0.4s ease-out;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Boutons de transfert entre modes */
+    .transfer-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .transfer-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .transfer-button:active {
+        transform: translateY(0);
+    }
+    
+    /*  FORÇAGE DE L'AFFICHAGE DES ÉLÉMENTS VOCAUX */
+    [data-force-visible="true"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 9999 !important;
+        height: auto !important;
+        min-height: 500px !important;
+        overflow: visible !important;
+        clip: auto !important;
+        transform: none !important;
+        filter: none !important;
+    }
+    
+    /*  FORÇAGE COMPLET DES SECTIONS VOCALES */
+    [data-section-type="vocal"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 9999 !important;
+        height: auto !important;
+        min-height: 500px !important;
+        overflow: visible !important;
+        clip: auto !important;
+        transform: none !important;
+        filter: none !important;
+    }
+    
+    /*  DÉSACTIVATION COMPLÈTE DE LA CLASSE HIDDEN POUR LES SECTIONS VOCALES */
+    [data-section-type="vocal"].hidden {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* Indicateurs de mode actif */
+    .mode-indicator {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: #1f2937;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 600;
+        z-index: 1000;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        animation: slideInRight 0.5s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Responsive design pour les modes */
+    @media (max-width: 768px) {
+        .mode-section {
+            margin: 0 -1rem;
+        }
+        
+        .mode-selector {
+            padding: 1rem;
+        }
+        
+        .mode-indicator {
+            right: 10px;
+            left: 10px;
+            text-align: center;
+        }
+    }
+    
+    /*  STYLES POUR LES NOTIFICATIONS */
+    .mode-notification {
+        animation: slideInRight 0.3s ease-out;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .mode-notification:hover {
+        transform: translateX(-5px);
+    }
+    
+    /*  STYLES POUR LES BOUTONS DE TRANSFERT */
+    .transfer-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .transfer-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .transfer-button:active {
+        transform: translateY(0);
+    }
+    
+    /*  MASQUAGE CIBLÉ ET PROPRE - SEULEMENT LES SECTIONS VOCALES DUPLIQUÉES */
+    #voice-section {
+        display: none !important;
+    }
+    
+    /*  DÉSACTIVÉ : MASQUAGE AGGRESSIF DES ÉLÉMENTS VOCAUX */
+    /* 
+    h2:contains(""),
+    h3:contains(""),
+    h2:contains("Assistant Vocal"),
+    h3:contains("Assistant Vocal"),
+    div:has(h2:contains("")),
+    div:has(h3:contains("")),
+    div:has(h2:contains("Assistant Vocal")),
+    div:has(h3:contains("Assistant Vocal")) {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    #voice-section,
+    #voice-section * {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    .bg-blue-50:has(h2:contains("")),
+    .bg-blue-50:has(h3:contains("")),
+    .bg-blue-50:has(h2:contains("Assistant Vocal")),
+    .bg-blue-50:has(h3:contains("Assistant Vocal")) {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    */
+    
+    /* PRÉSERVER SEULEMENT l'Assistant IA PCMA (sans  ni "Vocal") */
+    h2:contains("Assistant IA PCMA"),
+    div:has(h2:contains("Assistant IA PCMA")) {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    /*  MASQUER LE POPUP DE CONFIRMATION EN MODE MANUEL */
+    #manual-mode-section #confirmation-modal,
+    body:not(.vocal-mode-active) #confirmation-modal {
+        display: none !important;
+        visibility: hidden !important;
+    }
+</style>
+@endpush
+
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-6xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">📋 Nouveau PCMA</h1>
-            <p class="text-gray-600 mt-2">Créer une nouvelle évaluation médicale pré-compétition</p>
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900"> Nouveau PCMA</h1>
+                    <p class="text-gray-600 mt-2">Créer une nouvelle évaluation médicale pré-compétition</p>
+                </div>
+                <a href="{{ route('pcma.dashboard') }}" 
+                   class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                    ← Retour au Dashboard
+                </a>
+            </div>
         </div>
 
         <!-- Input Method Selection -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Méthode de saisie</h2>
+                <h2 class="text-xl font-semibold text-gray-800">Modes de collecte</h2>
             </div>
             
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Manual Input -->
-                    <button type="button" id="manual-tab" class="input-method-tab active bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <!-- Mode Manuel -->
+                    <button type="button" id="mode-manuel" class="mode-selector active bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors">
                         <div class="text-center">
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            <h3 class="font-semibold">Saisie manuelle</h3>
-                            <p class="text-sm opacity-90">Remplir le formulaire directement</p>
+                            <h3 class="font-semibold">Mode Manuel</h3>
+                            <p class="text-sm opacity-90">Saisie directe au clavier</p>
                         </div>
                     </button>
 
-                    <!-- Voice Recording -->
-                    <button type="button" id="voice-tab" class="input-method-tab bg-gray-100 text-gray-700 p-4 rounded-lg hover:bg-gray-200 transition-colors">
+                    <!-- Mode Vocal -->
+                    <button type="button" id="mode-vocal" class="mode-selector bg-gray-100 text-gray-700 p-4 rounded-lg hover:bg-gray-200 transition-colors" onclick="console.log(' Clic sur Mode Vocal détecté !')">
                         <div class="text-center">
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                             </svg>
-                            <h3 class="font-semibold">Enregistrement vocal</h3>
-                            <p class="text-sm opacity-90">Dictée avec Whisper</p>
+                            <h3 class="font-semibold">Mode Vocal</h3>
+                            <p class="text-sm opacity-90">Reconnaissance vocale intelligente</p>
                         </div>
                     </button>
 
-                    <!-- FHIR Download -->
-                    <button type="button" id="fhir-tab" class="input-method-tab bg-gray-100 text-gray-700 p-4 rounded-lg hover:bg-gray-200 transition-colors">
-                        <div class="text-center">
-                            <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            <h3 class="font-semibold">Téléchargement FHIR</h3>
-                            <p class="text-sm opacity-90">Importer depuis FHIR</p>
-                        </div>
-                    </button>
 
-                    <!-- Image Scan -->
-                    <button type="button" id="scan-tab" class="input-method-tab bg-gray-100 text-gray-700 p-4 rounded-lg hover:bg-gray-200 transition-colors">
+
+                    <!-- Mode OCR (Scan d'image) -->
+                    <button type="button" id="scan-tab" class="mode-selector bg-gray-100 text-gray-700 p-4 rounded-lg hover:bg-gray-200 transition-colors">
                         <div class="text-center">
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <h3 class="font-semibold">Scan d'image</h3>
-                            <p class="text-sm opacity-90">OCR depuis papier</p>
+                            <h3 class="font-semibold">Mode OCR</h3>
+                            <p class="text-sm opacity-90">Scan d'image et extraction</p>
+                        </div>
+                    </button>
+
+                    <!-- Mode FHIR -->
+                    <button type="button" id="mode-fhir" class="mode-selector bg-gray-100 text-gray-700 p-4 rounded-lg hover:bg-gray-200 transition-colors">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <h3 class="font-semibold">Mode FHIR</h3>
+                            <p class="text-sm opacity-90">Import de données médicales</p>
                         </div>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Manual Input Section -->
-        <div id="manual-section" class="input-section">
-            <form action="{{ route('pcma.store') }}" method="POST" class="space-y-8">
-                @csrf
-                
-                <!-- AI-Assisted Section -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                    <div class="flex items-center mb-4">
-                        <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                        <h2 class="text-xl font-semibold text-blue-900">Assistant IA PCMA</h2>
-                    </div>
-                    <p class="text-blue-700 mb-4">Décrivez les résultats de l'examen médical pour une analyse automatique</p>
+        <!-- Sections de modes séparées -->
+        
+        <!-- Section 1: Mode Manuel (Formulaire PCMA) -->
+        <div id="manual-mode-section" class="mode-section">
+            <!-- Formulaire Principal PCMA -->
+            <div id="formulaire-principal" class="form-section">
+                <form action="{{ route('pcma.store') }}" method="POST" class="space-y-8">
+                    @csrf
                     
-                    <div class="space-y-4">
-                        <div>
-                            <label for="clinical_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                Notes Cliniques
+                    <!-- AI-Assisted Section -->
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                            <h2 class="text-xl font-semibold text-indigo-900">Assistant IA PCMA</h2>
+                        </div>
+                        <p class="text-indigo-700 mb-4">Décrivez les résultats de l'examen médical pour une analyse automatique</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="clinical_notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Notes Cliniques
+                                </label>
+                                <textarea 
+                                    id="clinical_notes" 
+                                    name="clinical_notes" 
+                                    rows="4" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Exemple: Patient présente une tension artérielle de 120/80 mmHg, fréquence cardiaque de 65 bpm au repos. Pas d'antécédents cardiovasculaires. Examen neurologique normal. Pas de douleurs musculo-squelettiques..."
+                                ></textarea>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button 
+                                    type="button" 
+                                    id="ai-analyze-btn"
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                                >
+                                    Analyser avec l'IA
+                                </button>
+                                <button 
+                                    type="button" 
+                                    id="clear-notes-btn"
+                                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                                >
+                                    Effacer
+                                </button>
+                            </div>
+                            
+                            <div id="ai-results" class="hidden bg-white border border-gray-200 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Analyse IA</h3>
+                                <div id="ai-content" class="text-sm text-gray-700"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section 2: Mode Vocal (Console Google Speech-to-Text) -->
+        <div id="vocal-mode-section" class="mode-section hidden" data-section-type="vocal">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                                         <h2 class="text-xl font-semibold text-gray-800">Mode Vocal - Reconnaissance Intelligente</h2>
+                </div>
+                
+                <div class="p-6 space-y-6">
+                    
+                    
+                    
+                                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Assistant Vocal Google Speech-to-Text</h3>
+                        
+                        <!-- Configuration API Google -->
+                        <div class="mb-6">
+                            <h4 class="text-md font-medium text-gray-700 mb-3">Configuration API Google</h4>
+                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4">
+                                <p class="text-gray-800 font-medium">Google Cloud configuré avec succès !</p>
+                                <p class="text-gray-700 text-sm">Votre projet est prêt et l'API Speech-to-Text est active.</p>
+                            </div>
+                            
+                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4">
+                                <p class="text-gray-800 font-medium">Clé chargée automatiquement depuis la configuration serveur</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Initialisation du Service -->
+                        <div class="mb-6">
+                            <h4 class="text-md font-medium text-blue-700 mb-3">Initialiser le Service</h4>
+                            <button type="button" id="init-service" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Tester le Service
+                            </button>
+                            <div id="service-status" class="mt-2 text-sm text-gray-600">Service non initialisé</div>
+                        </div>
+                        
+                        <!-- Contrôles de Reconnaissance -->
+                        <div class="mb-6">
+                            <h4 class="text-md font-medium text-blue-700 mb-3">Contrôles de Reconnaissance</h4>
+                            <div class="flex space-x-4">
+                                <button type="button" id="start-recording-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-full transition duration-200">
+                                                                         Démarrer Reconnaissance
+                                </button>
+                                <button type="button" id="stop-recording-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-full transition duration-200" class="hidden">
+                                    Arrêter Reconnaissance
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Statut et Résultats -->
+                        <div id="voice-status" class="text-sm text-gray-500 mb-4">Service non initialisé</div>
+                        
+                        <!-- Résultats de la reconnaissance vocale -->
+                        <div id="voice-results" class="hidden">
+                            <h4 class="font-medium text-blue-800 mb-3">Résultats de la reconnaissance :</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom du joueur</label>
+                                    <input type="text" id="voice_player_name_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Âge</label>
+                                    <input type="text" id="voice_age_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                                    <input type="text" id="voice_position_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Club</label>
+                                    <input type="text" id="voice_club_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Affichage du Texte Reconnu -->
+                        <div id="speech-text" class="hidden bg-gray-50 border-l-4 border-gray-400 p-4 mb-4">
+                            <h4 class="font-medium text-gray-800 mb-2">Texte reconnu :</h4>
+                            <p id="recognized-text" class="text-gray-700"></p>
+                            <p id="confidence" class="text-xs text-gray-600 mt-1"></p>
+                        </div>
+                        
+                        <!-- Données Extraites -->
+                        <div id="extracted-data-display" class="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg hidden">
+                            <h5 class="font-medium text-gray-800 mb-2">Données extraites :</h5>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div><strong>Nom:</strong> <span id="extracted-name" class="text-gray-700">-</span></div>
+                                <div><strong>Âge:</strong> <span id="extracted-age" class="text-gray-700">-</span></div>
+                                <div><strong>Position:</strong> <span id="extracted-position" class="text-gray-700">-</span></div>
+                                <div><strong>Club:</strong> <span id="extracted-club" class="text-gray-700">-</span></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'Action -->
+                        <div class="flex space-x-4 mt-4">
+                            <button type="button" id="apply-extracted-data" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm hidden">
+                                 Appliquer les données extraites
+                            </button>
+                            <button type="button" id="transfer-to-form-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                                 Transférer vers le formulaire PCMA
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- MESSAGE IMPORTANT -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-blue-800 text-sm">
+                            <strong>Note :</strong> Cette console vocale est connectée au formulaire PCMA du mode manuel. 
+                            Les données reconnues seront automatiquement transférées dans les champs correspondants.
+                        </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Mode OCR (Scan d'image) -->
+        <div id="ocr-mode-section" class="mode-section hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">Mode OCR - Scan d'image</h2>
+                </div>
+                
+                <div class="p-6 space-y-6">
+                    <div class="text-center">
+                        <p class="text-gray-600 mb-4">Téléchargez une image de document médical pour extraction automatique</p>
+                        
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4">
+                            <input type="file" id="image-upload" accept="image/*" class="hidden">
+                            <label for="image-upload" class="cursor-pointer">
+                                <div class="text-center">
+                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <p class="text-gray-600">Cliquez pour sélectionner une image</p>
+                                </div>
                             </label>
-                            <textarea 
-                                id="clinical_notes" 
-                                name="clinical_notes" 
-                                rows="4" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Exemple: Patient présente une tension artérielle de 120/80 mmHg, fréquence cardiaque de 65 bpm au repos. Pas d'antécédents cardiovasculaires. Examen neurologique normal. Pas de douleurs musculo-squelettiques..."
-                            ></textarea>
                         </div>
                         
-                        <div class="flex space-x-4">
-                            <button 
-                                type="button" 
-                                id="ai-analyze-btn"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                🔍 Analyser avec l'IA
-                            </button>
-                            <button 
-                                type="button" 
-                                id="clear-notes-btn"
-                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                            >
-                                Effacer
-                            </button>
-                        </div>
-                        
-                        <div id="ai-results" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Analyse IA</h3>
-                            <div id="ai-content" class="text-sm text-gray-700"></div>
-                        </div>
+                        <!-- Bouton pour transférer vers le formulaire -->
+                        <button type="button" id="transfer-ocr-to-form-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hidden">
+                            Transférer vers le formulaire PCMA
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- PCMA Form -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Informations PCMA</h2>
+        <!-- Section 4: Mode FHIR -->
+        <div id="fhir-mode-section" class="mode-section hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">Mode FHIR - Import de données</h2>
+                </div>
+                
+                <div class="p-6 space-y-6">
+                    <div>
+                        <label for="fhir_server_url" class="block text-sm font-medium text-gray-700 mb-2">
+                            URL du serveur FHIR
+                        </label>
+                        <input type="url" id="fhir_server_url" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="https://hapi.fhir.org/baseR4/">
                     </div>
                     
-                    <div class="p-6 space-y-6">
-                        <!-- Athlete Selection -->
-                        <div>
-                            <label for="athlete_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Athlète *
-                            </label>
-                            <select 
-                                id="athlete_id" 
-                                name="athlete_id" 
-                                required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="">Sélectionner un athlète</option>
-                                @foreach($athletes as $athlete)
-                                    <option value="{{ $athlete->id }}" {{ old('athlete_id') == $athlete->id ? 'selected' : '' }}>
-                                        {{ $athlete->first_name }} {{ $athlete->last_name }} ({{ $athlete->club->name ?? 'N/A' }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div>
+                        <label for="fhir_patient_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            ID du patient FHIR
+                        </label>
+                        <input type="text" id="fhir_patient_id" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="patient-123">
+                    </div>
+                    
+                    <div>
+                        <label for="fhir_resource_type" class="block text-sm font-medium text-gray-700 mb-2">
+                            Type de ressource
+                        </label>
+                        <select id="fhir_resource_type" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="Observation">Observation (Observations médicales)</option>
+                            <option value="Condition">Condition (Diagnostics)</option>
+                            <option value="Procedure">Procedure (Procédures)</option>
+                            <option value="MedicationRequest">MedicationRequest (Prescriptions)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" id="fetch-fhir-data" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                             Récupérer les données FHIR
+                        </button>
+                        <button type="button" id="clear-fhir" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                            Effacer
+                        </button>
+                    </div>
+                    
+                    <div id="fhir-results" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Données FHIR récupérées</h3>
+                        <div id="fhir-content" class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto"></div>
+                        
+                        <!-- Bouton pour transférer vers le formulaire -->
+                        <button type="button" id="transfer-fhir-to-form-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                            Transférer vers le formulaire PCMA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- FIFA Connect ID -->
-                        <div>
-                            <label for="fifa_connect_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                ID FIFA Connect
-                            </label>
-                            <input 
-                                type="text" 
-                                id="fifa_connect_id" 
-                                name="fifa_connect_id" 
-                                value="{{ old('fifa_connect_id') }}"
-                                placeholder="Entrez l'ID FIFA Connect du joueur"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                            <p class="text-xs text-gray-500 mt-1">Laissez vide si l'athlète n'a pas d'ID FIFA Connect</p>
+
+        <!-- Modal de confirmation des incohérences -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <!-- En-tête du modal -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+                                <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h3 class="ml-3 text-lg font-medium text-gray-900">Incohérences détectées</h3>
+                        </div>
+                        <button onclick="closeConfirmationModal()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Contenu du modal -->
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500 mb-4">
+                            Des différences ont été détectées entre vos données vocales et celles de la base. 
+                            Veuillez confirmer l'identité du joueur en utilisant l'une des méthodes suivantes :
+                        </p>
+                        
+                        <!-- Liste des incohérences -->
+                        <div id="inconsistencies-list" class="mb-6 space-y-3">
+                            <!-- Rempli dynamiquement par JavaScript -->
+                        </div>
+                        
+                        <!-- Méthodes de confirmation -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <h4 class="font-medium text-blue-900 mb-3">Méthodes de confirmation :</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <div class="bg-blue-100 rounded-lg p-3">
+                                        <div class="text-2xl mb-2">ID</div>
+                                        <div class="text-sm font-medium text-blue-800">ID FIFA Connect</div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="bg-blue-100 rounded-lg p-3">
+                                        <div class="text-2xl mb-2">LIC</div>
+                                        <div class="text-sm font-medium text-blue-800">Numéro de Licence</div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="bg-blue-100 rounded-lg p-3">
+                                        <div class="text-2xl mb-2">SEQ</div>
+                                        <div class="text-sm font-medium text-blue-800">Séquence complète</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Champs de confirmation -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ID FIFA Connect ou Numéro de Licence</label>
+                                <input type="text" id="confirmation-id" placeholder="Ex: TUN_001 ou LIC_2024_123" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Séquence complète (Nom + Âge + Club + Position)</label>
+                                <input type="text" id="confirmation-sequence" placeholder="Ex: Ali Jebali 24 AS Gabès Milieu offensif" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons d'action -->
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button onclick="closeConfirmationModal()" 
+                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+                            Annuler
+                        </button>
+                        <button onclick="confirmPlayerIdentity()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Confirmer l'identité
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+                <!-- SECTION PCMA DUPLIQUÉE ENTIÈREMENT SUPPRIMÉE -->
+
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">Informations de l'Athlète</h3>
+                            
+                            <!-- Athlète -->
+                            <div>
+                                <label for="athlete_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Athlète *
+                                </label>
+                                <select 
+                                    id="athlete_id" 
+                                    name="athlete_id" 
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Sélectionner un athlète</option>
+                                    @foreach($athletes as $athlete)
+                                        <option value="{{ $athlete->id }}" {{ old('athlete_id') == $athlete->id ? 'selected' : '' }}>
+                                            {{ $athlete->name }} - {{ $athlete->fifa_connect_id ?? 'Pas d\'ID FIFA' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- ID FIFA Connect -->
+                            <div class="mt-4">
+                                <label for="fifa_connect_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                    ID FIFA Connect
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="fifa_connect_id" 
+                                    name="fifa_connect_id" 
+                                    value="{{ old('fifa_connect_id') }}"
+                                    placeholder="Entrez l'ID FIFA Connect du joueur"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                <p class="text-xs text-gray-600 mt-1">Laissez vide si l'athlète n'a pas d'ID FIFA Connect</p>
+                            </div>
                         </div>
 
                         <!-- PCMA Type -->
@@ -252,12 +838,12 @@
                         <!-- Detailed Medical Assessment Sections -->
                         
                         <!-- Vital Signs Section -->
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
                             <div class="flex items-center mb-4">
-                                <svg class="w-6 h-6 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-yellow-900">📊 Signes Vitaux</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">Signes Vitaux</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -267,7 +853,7 @@
                                     </label>
                                     <input type="text" id="blood_pressure" name="blood_pressure" 
                                            value="{{ old('blood_pressure') }}"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                            placeholder="120/80 mmHg">
                                 </div>
                                 
@@ -277,7 +863,7 @@
                                     </label>
                                     <input type="number" id="heart_rate" name="heart_rate" 
                                            value="{{ old('heart_rate') }}"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                            placeholder="65 bpm">
                                 </div>
                                 
@@ -288,7 +874,7 @@
                                     <input type="number" id="temperature" name="temperature" 
                                            value="{{ old('temperature') }}"
                                            step="0.1"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                            placeholder="36.8 °C">
                                 </div>
                                 
@@ -298,7 +884,7 @@
                                     </label>
                                     <input type="number" id="respiratory_rate" name="respiratory_rate" 
                                            value="{{ old('respiratory_rate') }}"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                            placeholder="16/min">
                                 </div>
                                 
@@ -308,7 +894,7 @@
                                     </label>
                                     <input type="number" id="oxygen_saturation" name="oxygen_saturation" 
                                            value="{{ old('oxygen_saturation') }}"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-transparent"
                                            placeholder="98 %">
                                 </div>
                                 
@@ -319,7 +905,7 @@
                                     <input type="number" id="weight" name="weight" 
                                            value="{{ old('weight') }}"
                                            step="0.1"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                            placeholder="75 kg">
                                 </div>
                             </div>
@@ -331,7 +917,7 @@
                                 <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-green-900">🏥 Antécédents Médicaux</h3>
+                                <h3 class="text-lg font-semibold text-green-900"> Antécédents Médicaux</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -402,12 +988,12 @@
                         </div>
 
                         <!-- Physical Examination Section -->
-                        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
                             <div class="flex items-center mb-4">
-                                <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-red-900">🔍 Examen Physique</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">Examen Physique</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -416,7 +1002,7 @@
                                         Apparence Générale
                                     </label>
                                     <select id="general_appearance" name="general_appearance" 
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         <option value="">Sélectionner</option>
                                         <option value="normal" {{ old('general_appearance') == 'normal' ? 'selected' : '' }}>Normal</option>
                                         <option value="abnormal" {{ old('general_appearance') == 'abnormal' ? 'selected' : '' }}>Anormal</option>
@@ -428,7 +1014,7 @@
                                         Examen Cutané
                                     </label>
                                     <select id="skin_examination" name="skin_examination" 
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         <option value="">Sélectionner</option>
                                         <option value="normal" {{ old('skin_examination') == 'normal' ? 'selected' : '' }}>Normal</option>
                                         <option value="abnormal" {{ old('skin_examination') == 'abnormal' ? 'selected' : '' }}>Anormal</option>
@@ -440,7 +1026,7 @@
                                         Ganglions Lymphatiques
                                     </label>
                                     <select id="lymph_nodes" name="lymph_nodes" 
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         <option value="">Sélectionner</option>
                                         <option value="normal" {{ old('lymph_nodes') == 'normal' ? 'selected' : '' }}>Normal</option>
                                         <option value="enlarged" {{ old('lymph_nodes') == 'enlarged' ? 'selected' : '' }}>Hypertrophiés</option>
@@ -452,7 +1038,7 @@
                                         Examen Abdominal
                                     </label>
                                     <select id="abdomen_examination" name="abdomen_examination" 
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         <option value="">Sélectionner</option>
                                         <option value="normal" {{ old('abdomen_examination') == 'normal' ? 'selected' : '' }}>Normal</option>
                                         <option value="abnormal" {{ old('abdomen_examination') == 'abnormal' ? 'selected' : '' }}>Anormal</option>
@@ -467,7 +1053,7 @@
                                 <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-indigo-900">📷 Imagerie Médicale</h3>
+                                <h3 class="text-lg font-semibold text-indigo-900">Imagerie Médicale</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -477,7 +1063,7 @@
                                         <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
-                                        <h4 class="font-semibold text-gray-900">❤️ Électrocardiogramme (ECG)</h4>
+                                        <h4 class="font-semibold text-gray-900">Électrocardiogramme (ECG)</h4>
                                     </div>
                                     
                                     <div class="space-y-3">
@@ -608,7 +1194,7 @@
                             
                             <!-- Additional Imaging -->
                             <div class="mt-6">
-                                <h4 class="font-semibold text-gray-900 mb-3">📊 Autres Examens d'Imagerie</h4>
+                                <h4 class="font-semibold text-gray-900 mb-3"> Autres Examens d'Imagerie</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label for="xray_file" class="block text-sm font-medium text-gray-700 mb-2">
@@ -698,10 +1284,10 @@
                                             </label>
                                             <div class="flex space-x-2">
                                                 <button type="button" id="viewer-zoom-in" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                                                    🔍+
+                                                    +
                                                 </button>
                                                 <button type="button" id="viewer-zoom-out" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                                                    🔍-
+                                                    -
                                                 </button>
                                                 <button type="button" id="viewer-reset" class="px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
                                                     🔄
@@ -773,7 +1359,7 @@
                                     
                                     <!-- DICOM Metadata Panel -->
                                     <div id="dicom-metadata" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                                        <h5 class="font-semibold text-gray-900 mb-3">📋 Métadonnées DICOM</h5>
+                                        <h5 class="font-semibold text-gray-900 mb-3"> Métadonnées DICOM</h5>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                             <div>
                                                 <p><strong>Patient:</strong> <span id="dicom-patient-name">-</span></p>
@@ -847,7 +1433,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                             </svg>
-                                            🔍 Analyser ECG
+                                             Analyser ECG
                                         </button>
                                         
                                         <button type="button" id="ai-check-mri" 
@@ -863,7 +1449,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                                             </svg>
-                                            📷 Analyser X-Ray
+                                             Analyser X-Ray
                                         </button>
                                         
                                         <button type="button" id="ai-check-ct" 
@@ -887,13 +1473,13 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                             </svg>
-                                            🚀 Analyse Complète
+                                             Analyse Complète
                                         </button>
                                     </div>
                                     
                                     <!-- AI Analysis Results -->
                                     <div id="ai-analysis-results" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                                        <h5 class="font-semibold text-gray-900 mb-3">📊 Résultats de l'Analyse IA</h5>
+                                        <h5 class="font-semibold text-gray-900 mb-3"> Résultats de l'Analyse IA</h5>
                                         <div id="ai-results-content" class="space-y-3">
                                             <!-- Results will be populated here -->
                                         </div>
@@ -1255,12 +1841,12 @@
 
                                 <!-- Position -->
                                 <div>
-                                    <label for="position" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="position_secondary" class="block text-sm font-medium text-gray-700 mb-2">
                                         Poste du joueur
                                     </label>
                                     <select 
-                                        id="position" 
-                                        name="position" 
+                                        id="position_secondary" 
+                                        name="position_secondary" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                     >
                                         <option value="">Sélectionner le poste</option>
@@ -1283,7 +1869,7 @@
                                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                                         >
                                         <label for="fifa_compliant" class="ml-2 block text-sm font-medium text-gray-700">
-                                            ✅ Conforme aux standards FIFA
+                                             Conforme aux standards FIFA
                                         </label>
                                     </div>
                                     <p class="text-sm text-gray-500 mt-1">Cochez cette case si l'évaluation respecte tous les critères FIFA</p>
@@ -1316,7 +1902,7 @@
                     
                     <!-- Fitness Assessment Results -->
                     <div id="fitness-assessment-results" class="hidden mt-4 bg-white border border-purple-200 rounded-lg p-4">
-                        <h5 class="font-semibold text-purple-900 mb-3">📋 Rapport d'Évaluation Fitness</h5>
+                        <h5 class="font-semibold text-purple-900 mb-3"> Rapport d'Évaluation Fitness</h5>
                         <div id="fitness-results-content" class="space-y-3">
                             <!-- Fitness assessment results will be populated here -->
                         </div>
@@ -1362,7 +1948,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            👨‍⚕️ Signature Médecin
+                             Signature Médecin
                         </button>
                     </div>
                     
@@ -1378,12 +1964,7 @@
                 </div>
 
                 <!-- Submit Buttons -->
-                <div class="flex justify-between items-center">
-                    <a href="{{ route('pcma.dashboard') }}" 
-                       class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        ← Retour au Dashboard
-                    </a>
-                    
+                <div class="flex justify-end">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
                         💾 Enregistrer
                     </button>
@@ -1391,55 +1972,94 @@
             </form>
         </div>
 
-        <!-- Voice Recording Section -->
-        <div id="voice-section" class="input-section hidden">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">🎤 Enregistrement vocal avec Whisper</h2>
-                </div>
-                
-                <div class="p-6 space-y-6">
-                    <div class="text-center">
-                        <p class="text-gray-600 mb-4">Enregistrez votre évaluation médicale et elle sera automatiquement transcrite</p>
-                        
-                        <div class="flex justify-center space-x-4 mb-6">
-                            <button type="button" id="start-recording" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-full transition duration-200">
-                                🎤 Commencer l'enregistrement
-                            </button>
-                            <button type="button" id="stop-recording" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-full transition duration-200 hidden">
-                                ⏹️ Arrêter l'enregistrement
-                            </button>
-                        </div>
-                        
-                        <div id="recording-status" class="text-sm text-gray-500 mb-4"></div>
-                        
-                        <div id="audio-visualizer" class="hidden w-full h-20 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                            <div class="flex space-x-1">
-                                <div class="w-1 h-4 bg-blue-500 rounded animate-pulse"></div>
-                                <div class="w-1 h-6 bg-blue-500 rounded animate-pulse"></div>
-                                <div class="w-1 h-8 bg-blue-500 rounded animate-pulse"></div>
-                                <div class="w-1 h-6 bg-blue-500 rounded animate-pulse"></div>
-                                <div class="w-1 h-4 bg-blue-500 rounded animate-pulse"></div>
+        <!-- VOICE RECORDING SECTION SUPPRIMÉE - DISPONIBLE UNIQUEMENT EN MODE VOCAL -->
+
+                        <!-- Champs de base du joueur (remplis automatiquement par reconnaissance vocale) -->
+
+                            
+
+                            
+
+
+                    <!-- Debug panel -->
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                                                    <h4 class="text-lg font-semibold text-yellow-800 mb-3">Panel de Debug</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Clé API Google Speech-to-Text :</label>
+                                <input 
+                                    type="text" 
+                                    id="apiKeyInput" 
+                                    placeholder="Entrez votre clé API Google Speech-to-Text"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                >
+                            </div>
+                            <div class="flex gap-2">
+                                <button 
+                                    type="button" 
+                                    onclick="testAPIKey()" 
+                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition duration-200"
+                                >
+                                     Tester la Clé API
+                                </button>
+                                <button 
+                                    type="button" 
+                                    onclick="clearConsole()" 
+                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition duration-200"
+                                >
+                                    🗑️ Vider la Console
+                                </button>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-3">
+                                <button 
+                                    type="button" 
+                                    onclick="testVoiceAnalysis()" 
+                                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md transition duration-200"
+                                >
+                                    Test Analyse Vocale
+                                </button>
+                                <!-- Bouton de test SUPPRIMÉ (causait des données de test automatiques) -->
+                                <!-- <button 
+                                    type="button" 
+                                    onclick="testManualFieldFilling()" 
+                                    class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-md transition duration-200"
+                                >
+                                    Test Remplissage
+                                </button> -->
                             </div>
                         </div>
                     </div>
-                    
-                    <div id="transcription-result" class="hidden">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Transcription</h3>
-                        <textarea id="transcribed-text" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="La transcription apparaîtra ici..."></textarea>
-                        
-                        <div class="flex space-x-4 mt-4">
-                            <button type="button" id="process-transcription" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                🔍 Analyser avec l'IA
+
+
+
+
+
+
+
+                        <!-- Boutons d'action -->
+                        <div class="flex gap-3">
+                            <button 
+                                type="submit" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition duration-200"
+                            >
+                                💾 Enregistrer
                             </button>
-                            <button type="button" id="clear-transcription" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                Effacer
+                            
+                            <button 
+                                type="button" 
+                                onclick="clearAllFields()" 
+                                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md transition duration-200"
+                            >
+                                🗑️ Effacer Tout
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- GOOGLE ASSISTANT SECTION SUPPRIMÉE - DISPONIBLE UNIQUEMENT EN MODE VOCAL -->
 
         <!-- FHIR Download Section -->
         <div id="fhir-section" class="input-section hidden">
@@ -1482,7 +2102,7 @@
                     
                     <div class="flex space-x-4">
                         <button type="button" id="fetch-fhir-data" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            🔍 Récupérer les données FHIR
+                             Récupérer les données FHIR
                         </button>
                         <button type="button" id="clear-fhir" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                             Effacer
@@ -1501,7 +2121,7 @@
         <div id="scan-section" class="input-section hidden">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">📷 Scan d'image avec OCR</h2>
+                    <h2 class="text-xl font-semibold text-gray-800"> Scan d'image avec OCR</h2>
                 </div>
                 
                 <div class="p-6 space-y-6">
@@ -1527,7 +2147,7 @@
                         
                         <div class="flex space-x-4">
                             <button type="button" id="process-image" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                🔍 Extraire le texte (OCR)
+                                 Extraire le texte (OCR)
                             </button>
                             <button type="button" id="clear-image" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 Effacer
@@ -1541,7 +2161,7 @@
                         
                         <div class="flex space-x-4 mt-4">
                             <button type="button" id="process-ocr-text" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                🔍 Analyser avec l'IA
+                                 Analyser avec l'IA
                             </button>
                             <button type="button" id="clear-ocr" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 Effacer
@@ -1557,7 +2177,7 @@
             <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900">👨‍⚕️ Signature Médecin - PCMA</h3>
+                        <h3 class="text-2xl font-bold text-gray-900"> Signature Médecin - PCMA</h3>
                         <button onclick="closeDoctorSignoff()" class="text-gray-500 hover:text-gray-700">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -1570,13 +2190,13 @@
                 <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
                     <!-- Header -->
                     <div class="border-b border-gray-200 pb-4 mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">🏥 Medical Fitness Assessment - Doctor Sign-Off</h2>
+                        <h2 class="text-2xl font-bold text-gray-900"> Medical Fitness Assessment - Doctor Sign-Off</h2>
                         <p class="text-gray-600 mt-2">Final review and digital signature required for medical clearance</p>
                     </div>
 
                     <!-- Summary Block -->
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-3">📋 Assessment Summary</h3>
+                        <h3 class="text-lg font-semibold text-blue-900 mb-3"> Assessment Summary</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
                                 <span class="font-semibold text-gray-700">Player Name:</span>
@@ -1648,7 +2268,7 @@
                                         class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded transition duration-200"
                                         disabled
                                     >
-                                        ✅ Confirm
+                                         Confirm
                                     </button>
                                 </div>
                             </div>
@@ -1657,7 +2277,7 @@
 
                     <!-- Doctor Information -->
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                        <h3 class="text-lg font-semibold text-green-900 mb-3">👨‍⚕️ Doctor Information</h3>
+                        <h3 class="text-lg font-semibold text-green-900 mb-3"> Doctor Information</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
                                 <span class="font-semibold text-gray-700">Doctor Name:</span>
@@ -1708,7 +2328,7 @@
 </div>
 
 <script>
-console.log('🚀 SCRIPT TAG STARTING...');
+console.log(' SCRIPT TAG STARTING...');
 
 
 
@@ -1723,19 +2343,19 @@ window.generatePDF = async function() {
         const formElements = pdfForm.elements;
         
         // Add all form fields to FormData
-        console.log('📋 Collecting form data...');
-        console.log('📋 Form elements found:', formElements.length);
+        console.log(' Collecting form data...');
+        console.log(' Form elements found:', formElements.length);
         
         for (let element of formElements) {
-            console.log('📋 Element:', element.name, '=', element.value, 'type:', element.type);
+            console.log(' Element:', element.name, '=', element.value, 'type:', element.type);
             if (element.name) {
                 formData.append(element.name, element.value || '');
-                console.log('📋 Added field:', element.name, '=', element.value || '');
+                console.log(' Added field:', element.name, '=', element.value || '');
             } else {
-                console.log('📋 Skipped field without name:', element.id || element.type);
+                console.log(' Skipped field without name:', element.id || element.type);
             }
         }
-        console.log('📋 Total form fields collected:', formData.entries().length);
+        console.log(' Total form fields collected:', formData.entries().length);
         
         // Add required fields if they're missing (same as in saveSignedPCMA)
         if (!formData.has('athlete_id') || !formData.get('athlete_id')) {
@@ -1777,7 +2397,7 @@ window.generatePDF = async function() {
             formData.append('signature_image', window.signedPCMAData.signatureImage);
             formData.append('legal_declaration', 'confirmed');
             formData.append('signature_confirmed', 'true');
-            console.log('📋 Adding signature data to PDF:', window.signedPCMAData);
+            console.log(' Adding signature data to PDF:', window.signedPCMAData);
         } else {
             formData.append('is_signed', '0');
             formData.append('legal_declaration', 'not_confirmed');
@@ -1899,7 +2519,7 @@ window.generatePDF = async function() {
 window.printReport = function() {
     try {
         console.log('🖨️ Print function called');
-        console.log('📋 Signed data available:', window.signedPCMAData);
+        console.log(' Signed data available:', window.signedPCMAData);
         
         // Create a print-friendly version of the form
         const printWindow = window.open('', '_blank', 'width=800,height=600');
@@ -1936,7 +2556,7 @@ window.printReport = function() {
             </head>
             <body>
                 <div class="header">
-                    <h1>📋 Rapport d'Évaluation PCMA</h1>
+                    <h1> Rapport d'Évaluation PCMA</h1>
                     <p>Date: ${new Date().toLocaleDateString('fr-FR')}</p>
                 </div>
                 
@@ -1957,7 +2577,7 @@ window.printReport = function() {
                 </div>
                 
                 <div class="section">
-                    <h3>📊 Signes Vitaux</h3>
+                    <h3> Signes Vitaux</h3>
                     <div class="field">
                         <label>Tension Artérielle:</label>
                         <value>${formDataObj.blood_pressure || 'Non spécifié'}</value>
@@ -1973,7 +2593,7 @@ window.printReport = function() {
                 </div>
                 
                 <div class="section">
-                    <h3>🏥 Antécédents Médicaux</h3>
+                    <h3> Antécédents Médicaux</h3>
                     <div class="field">
                         <label>Antécédents Cardio-vasculaires:</label>
                         <value>${formDataObj.cardiovascular_history || 'Aucun'}</value>
@@ -1993,7 +2613,7 @@ window.printReport = function() {
                 </div>
                 
                 <div class="section">
-                    <h3>🔍 Examen Physique</h3>
+                    <h3> Examen Physique</h3>
                     <div class="field">
                         <label>Apparence Générale:</label>
                         <value>${formDataObj.general_appearance || 'Non spécifié'}</value>
@@ -2061,13 +2681,13 @@ window.printReport = function() {
                 </div>
                 
                 <div class="section">
-                    <h3>📝 Notes</h3>
+                    <h3> Notes</h3>
                     <p>${formDataObj.notes || 'Aucune note'}</p>
                 </div>
                 
                          ${window.signedPCMAData ? `
          <div class="section">
-             <h3>👨‍⚕️ Signature Médicale</h3>
+             <h3> Signature Médicale</h3>
              <div class="field">
                  <label>Signé par:</label>
                  <value>${window.signedPCMAData.signedBy}</value>
@@ -2108,7 +2728,7 @@ window.printReport = function() {
          </div>
          ` : `
          <div class="section">
-             <h3>👨‍⚕️ Signature Médicale</h3>
+             <h3> Signature Médicale</h3>
              <p style="color: #ef4444; font-style: italic;">⚠️ Signature médicale non effectuée</p>
              <p style="color: #ef4444; font-style: italic;">⚠️ Déclaration légale non confirmée</p>
              <p style="color: #ef4444; font-style: italic;">⚠️ Document non validé</p>
@@ -2156,11 +2776,11 @@ window.signedPCMAData = null;
 
 // Test function to check signature data
 window.testSignatureData = function() {
-    console.log('🔍 Testing signature data...');
+    console.log(' Testing signature data...');
     console.log('Current signedPCMAData:', window.signedPCMAData);
     
     if (window.signedPCMAData) {
-        alert('✅ Signature data is available!\n\n' + 
+        alert(' Signature data is available!\n\n' + 
               'Signed by: ' + window.signedPCMAData.signedBy + '\n' +
               'License: ' + window.signedPCMAData.licenseNumber + '\n' +
               'Date: ' + window.signedPCMAData.signedAt + '\n' +
@@ -2256,12 +2876,12 @@ window.openDoctorSignoff = function() {
 };
 
 window.closeDoctorSignoff = function() {
-    console.log('🔒 closeDoctorSignoff function called');
+    console.log(' closeDoctorSignoff function called');
     const modal = document.getElementById('doctor-signoff-modal');
     if (modal) {
-        console.log('🔒 Modal found, hiding it...');
+        console.log(' Modal found, hiding it...');
         modal.classList.add('hidden');
-        console.log('🔒 Modal hidden successfully');
+        console.log(' Modal hidden successfully');
     } else {
         console.error('❌ Modal element not found!');
     }
@@ -2289,13 +2909,13 @@ function initSignatureCanvas() {
 
 // Setup signoff event listeners
 function setupSignoffEventListeners(signoffData) {
-    console.log('🔧 Setting up signoff event listeners...');
+    console.log(' Setting up signoff event listeners...');
     const legalDeclaration = document.getElementById('legal-declaration');
     const clearSignature = document.getElementById('clear-signature');
     const confirmSignature = document.getElementById('confirm-signature');
     const confirmSignoff = document.getElementById('confirm-signoff');
     
-    console.log('🔧 Found elements:', {
+    console.log(' Found elements:', {
         legalDeclaration: !!legalDeclaration,
         clearSignature: !!clearSignature,
         confirmSignature: !!confirmSignature,
@@ -2303,7 +2923,7 @@ function setupSignoffEventListeners(signoffData) {
     });
     
     if (confirmSignoff) {
-        console.log('🔧 Confirm signoff button details:', {
+        console.log(' Confirm signoff button details:', {
             id: confirmSignoff.id,
             className: confirmSignoff.className,
             textContent: confirmSignoff.textContent
@@ -2336,10 +2956,10 @@ function setupSignoffEventListeners(signoffData) {
     });
     
     // Test if button gets enabled
-    console.log('🔧 Button initial disabled state:', confirmSignoff.disabled);
+    console.log(' Button initial disabled state:', confirmSignoff.disabled);
     
     // Enable button when signature is confirmed
-    console.log('🔧 Setting up signature confirmation...');
+    console.log(' Setting up signature confirmation...');
     
     // Signature canvas events
     if (signatureCanvas) {
@@ -2412,14 +3032,14 @@ function clearSignatureCanvas() {
 }
 
 function confirmSignatureCanvas() {
-    console.log('🔧 confirmSignatureCanvas called');
-    console.log('🔧 hasSignature:', hasSignature);
+    console.log(' confirmSignatureCanvas called');
+    console.log(' hasSignature:', hasSignature);
     if (hasSignature) {
         signatureConfirmed = true;
-        console.log('🔧 Signature confirmed, updating status...');
+        console.log(' Signature confirmed, updating status...');
         updateSignatureStatus();
     } else {
-        console.log('🔧 No signature to confirm');
+        console.log(' No signature to confirm');
     }
 }
 
@@ -2446,27 +3066,27 @@ function updateActionStatus() {
     const actionStatus = document.getElementById('action-status');
     const confirmSignoff = document.getElementById('confirm-signoff');
     
-    console.log('🔧 updateActionStatus called');
-    console.log('🔧 legalDeclaration.checked:', legalDeclaration.checked);
-    console.log('🔧 signatureConfirmed:', signatureConfirmed);
+    console.log(' updateActionStatus called');
+    console.log(' legalDeclaration.checked:', legalDeclaration.checked);
+    console.log(' signatureConfirmed:', signatureConfirmed);
     
     if (!legalDeclaration.checked) {
         actionStatus.textContent = 'Legal declaration required';
         confirmSignoff.disabled = true;
-        console.log('🔧 Button disabled: Legal declaration required');
+        console.log(' Button disabled: Legal declaration required');
     } else if (!signatureConfirmed) {
         actionStatus.textContent = 'Signature confirmation required';
         confirmSignoff.disabled = true;
-        console.log('🔧 Button disabled: Signature confirmation required');
+        console.log(' Button disabled: Signature confirmation required');
     } else {
         actionStatus.textContent = 'Ready to sign';
         confirmSignoff.disabled = false;
-        console.log('🔧 Button enabled: Ready to sign');
+        console.log(' Button enabled: Ready to sign');
     }
 }
 
 function handleSignoff(signoffData) {
-    console.log('🚀 handleSignoff function called with data:', signoffData);
+    console.log(' handleSignoff function called with data:', signoffData);
     const loadingSpinner = document.getElementById('loading-spinner');
     const confirmText = document.getElementById('confirm-signoff-text');
     const confirmBtn = document.getElementById('confirm-signoff');
@@ -2500,7 +3120,7 @@ function handleSignoff(signoffData) {
         
         // Store signed data globally
         window.signedPCMAData = signedData;
-        console.log('✅ Signature data stored:', window.signedPCMAData);
+        console.log(' Signature data stored:', window.signedPCMAData);
         
         // Save the signed PCMA to database with timeout
         console.log('🔄 Starting signature save process...');
@@ -2516,10 +3136,10 @@ function handleSignoff(signoffData) {
             
             if (success) {
                 // Show success message
-                alert('✅ Signature médicale validée!\n\nAssessment ID: ' + signedData.assessmentId + '\nSigned by: ' + signedData.signedBy + '\nTimestamp: ' + signedData.signedAt);
+                alert(' Signature médicale validée!\n\nAssessment ID: ' + signedData.assessmentId + '\nSigned by: ' + signedData.signedBy + '\nTimestamp: ' + signedData.signedAt);
                 
                 // Close modal
-                console.log('🔒 Closing modal...');
+                console.log(' Closing modal...');
                 window.closeDoctorSignoff();
                 
                 // Update the sign-off button to show it's completed
@@ -2529,7 +3149,7 @@ function handleSignoff(signoffData) {
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        ✅ Signature Validée
+                         Signature Validée
                     `;
                     signoffBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
                     signoffBtn.classList.add('bg-green-600', 'hover:bg-green-700');
@@ -2578,7 +3198,7 @@ function saveSignedPCMA(signedData) {
     if (clinicalNotesInput && !clinicalNotesInput.value) clinicalNotesInput.value = 'Notes cliniques standard';
     
     // Debug: Log the form values after setting defaults
-    console.log('🔧 Form values after setting defaults:', {
+    console.log(' Form values after setting defaults:', {
         athlete_id: athleteSelect ? athleteSelect.value : 'null',
         type: typeSelect ? typeSelect.value : 'null',
         assessor_id: assessorSelect ? assessorSelect.value : 'null',
@@ -2599,7 +3219,7 @@ function saveSignedPCMA(signedData) {
     formData.append('license_number', signedData.licenseNumber);
     formData.append('signature_image', signedData.signatureImage);
     
-            console.log('📋 FormData contents:');
+            console.log(' FormData contents:');
         for (let [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`);
         }
@@ -2688,7 +3308,7 @@ function saveSignedPCMA(signedData) {
         console.log('📡 Data type:', typeof data);
         console.log('📡 Data keys:', Object.keys(data));
         if (data.success) {
-            console.log('✅ PCMA saved successfully:', data);
+            console.log(' PCMA saved successfully:', data);
             // Store the PCMA ID for future reference
             window.savedPCMAId = data.pcma_id;
             return true; // Success
@@ -2859,7 +3479,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Test if Doctor Sign-Off button exists
     const doctorSignoffBtn = document.getElementById('doctor-signoff');
-    console.log('🔍 Doctor Sign-Off button found:', !!doctorSignoffBtn);
+    console.log(' Doctor Sign-Off button found:', !!doctorSignoffBtn);
     
     // Tab switching functionality
     const tabs = document.querySelectorAll('.input-method-tab');
@@ -2890,10 +3510,4063 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearNotesBtn = document.getElementById('clear-notes-btn');
     const clinicalNotes = document.getElementById('clinical_notes');
     const aiResults = document.getElementById('ai-results');
+
+    // Google Speech-to-Text Service Integration
+    console.log(' Initialisation du service Google Speech-to-Text...');
+    
+    // Charger le service SpeechRecognitionService
+    if (typeof SpeechRecognitionService !== 'undefined') {
+        console.log(' Module SpeechRecognitionService intégré dans Laravel !');
+        
+        // Initialiser le service et le rendre global
+        const speechService = new SpeechRecognitionService();
+        window.speechService = speechService; // Rendre accessible globalement
+        
+        // Configuration IMMÉDIATE des callbacks
+        console.log(' Configuration immédiate des callbacks...');
+        
+        window.speechService.onResult = function(result) {
+            console.log(' Résultat vocal reçu (callback immédiat):', result);
+            console.log(' Type de résultat:', typeof result);
+            console.log(' Contenu du résultat:', result);
+            
+            // Analyser le texte et extraire les données
+            const extractedData = analyzeVoiceText(result);
+            console.log(' Données extraites (callback immédiat):', extractedData);
+            
+            // Afficher les résultats dans la console vocale
+            displayVoiceResults(extractedData);
+            
+            // Remplir le formulaire principal
+            fillFormFields(extractedData);
+        };
+        
+        window.speechService.onError = function(error) {
+            console.error('❌ Erreur de reconnaissance vocale (callback immédiat):', error);
+            
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.className = 'text-center text-red-600 font-medium';
+            }
+        };
+        
+        console.log(' Callbacks configurés immédiatement après initialisation');
+        console.log(' Vérification callback onResult:', typeof window.speechService.onResult);
+        
+        // Éléments DOM
+        const elements = {
+            apiKeyInput: document.getElementById('google-api-key'),
+            loadApiKeyBtn: document.getElementById('load-api-key'),
+            initBtn: document.getElementById('init-service'),
+            testBtn: document.getElementById('test-service'),
+            startBtn: document.getElementById('start-speech'),
+            stopBtn: document.getElementById('stop-speech'),
+            status: document.getElementById('speech-status'),
+            serviceStatus: document.getElementById('service-status'),
+            speechText: document.getElementById('speech-text'),
+            recognizedText: document.getElementById('recognized-text'),
+            confidence: document.getElementById('confidence')
+        };
+
+        // Charger automatiquement la clé API depuis le serveur
+        async function loadApiKeyFromServer() {
+            try {
+                showServiceStatus('🔄 Chargement de la clé API...', 'info');
+                
+                const response = await fetch('/api/google-speech-key');
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur serveur: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.apiKey) {
+                    elements.apiKeyInput.value = data.apiKey;
+                    showServiceStatus(' Clé API chargée automatiquement !', 'success');
+                    
+                    // Activer les boutons
+                    elements.initBtn.disabled = false;
+                    elements.testBtn.disabled = false;
+                    
+                    // Initialiser automatiquement le service
+                    setTimeout(() => {
+                        initService();
+                    }, 1000);
+                    
+                } else {
+                    throw new Error('Format de réponse invalide');
+                }
+                
+            } catch (error) {
+                showServiceStatus('❌ Erreur chargement clé: ' + error.message, 'error');
+                console.error('❌ Erreur chargement clé:', error);
+            }
+        }
+
+        // Initialiser le service
+        async function initService() {
+            try {
+                showServiceStatus(' Initialisation du service...', 'info');
+                
+                // Vérifier que la clé API est présente
+                if (!elements.apiKeyInput.value) {
+                    throw new Error('Clé API manquante');
+                }
+                
+                // Configurer le service avec la clé API
+                speechService.configure({ apiKey: elements.apiKeyInput.value });
+                const success = speechService.testAPIKey();
+                
+                if (success) {
+                    showServiceStatus(' Service initialisé avec succès !', 'success');
+                    elements.startBtn.disabled = false;
+                    elements.stopBtn.disabled = false;
+                    elements.status.textContent = 'Service prêt - Cliquez pour commencer';
+                    
+                    // Afficher le statut du service
+                    const status = speechService.getStatus();
+                    console.log(' Statut du service:', status);
+                    
+                } else {
+                    throw new Error('Échec de l\'initialisation');
+                }
+                
+            } catch (error) {
+                showServiceStatus('❌ Erreur initialisation: ' + error.message, 'error');
+                console.error('❌ Erreur initialisation:', error);
+                
+                // Réactiver le bouton d'initialisation
+                elements.initBtn.disabled = false;
+            }
+        }
+
+        // Tester le service
+        function testService() {
+            try {
+                showServiceStatus(' Test du service...', 'info');
+                
+                const success = speechService.testAPIKey();
+                
+                if (success) {
+                    showServiceStatus(' Test réussi - Service opérationnel !', 'success');
+                } else {
+                    throw new Error('Test échoué');
+                }
+                
+            } catch (error) {
+                showServiceStatus('❌ Test échoué: ' + error.message, 'error');
+                console.error('❌ Test échoué:', error);
+            }
+        }
+
+        // Démarrer la reconnaissance
+        async function startSpeechRecognition() {
+            try {
+                elements.status.textContent = ' Reconnaissance en cours...';
+                elements.startBtn.disabled = true;
+                elements.stopBtn.disabled = false;
+                
+                const success = await speechService.startListening(
+                    (text, confidence) => {
+                        // Callback de succès
+                        elements.recognizedText.textContent = text;
+                        elements.confidence.textContent = `Confiance: ${(confidence * 100).toFixed(1)}%`;
+                        elements.speechText.classList.remove('hidden');
+                        
+                        // Traiter le texte reconnu
+                        processVoiceCommand(text);
+                    },
+                    (error) => {
+                        // Callback d'erreur
+                        console.error('❌ Erreur reconnaissance:', error);
+                        elements.status.textContent = '❌ Erreur: ' + error.message;
+                        elements.startBtn.disabled = false;
+                        elements.stopBtn.disabled = true;
+                    },
+                    (status, message) => {
+                        // Callback de statut
+                        elements.status.textContent = message;
+                    }
+                );
+                
+                if (!success) {
+                    throw new Error('Échec du démarrage de la reconnaissance');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur démarrage reconnaissance:', error);
+                elements.status.textContent = '❌ Erreur: ' + error.message;
+                elements.startBtn.disabled = false;
+                elements.stopBtn.disabled = true;
+            }
+        }
+
+        // Arrêter la reconnaissance
+        function stopSpeechRecognition() {
+            speechService.stopListening();
+            elements.status.textContent = ' Reconnaissance arrêtée';
+            elements.startBtn.disabled = false;
+            elements.stopBtn.disabled = true;
+        }
+
+        // Traiter les commandes vocales avec analyse intelligente
+        let isProcessingCommand = false; // Protection contre la récursion
+        
+        function processVoiceCommand(text) {
+            if (isProcessingCommand) {
+                console.log('⚠️ Commande déjà en cours de traitement, ignorée');
+                return;
+            }
+            
+            try {
+                isProcessingCommand = true;
+                console.log('🗣️ Commande vocale reconnue:', text);
+                
+                // Analyse intelligente du texte
+                const extractedData = analyzeVoiceText(text);
+                console.log(' Données extraites:', extractedData);
+                
+                //  NOUVEAU : Afficher les données extraites dans l'interface de l'Assistant
+                displayExtractedDataInAssistant(extractedData);
+                
+                // DEBUG: Vérifier que fillFormFields est bien définie
+                console.log(' Fonction fillFormFields disponible:', typeof fillFormFields);
+                
+                // Remplir automatiquement les champs
+                console.log(' Appel de fillFormFields avec:', extractedData);
+                fillFormFields(extractedData);
+                
+                // Mettre à jour le statut
+                elements.status.textContent = ' Commande analysée et formulaires remplis !';
+                
+                // Afficher un résumé
+                showExtractionSummary(extractedData);
+                
+                // Sauvegarder automatiquement les données
+                setTimeout(() => {
+                    autoSaveData(extractedData);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du traitement de la commande:', error);
+                elements.status.textContent = '❌ Erreur: ' + error.message;
+            } finally {
+                isProcessingCommand = false;
+            }
+        }
+
+        //  NOUVEAU : Afficher les données extraites dans l'interface de l'Assistant
+        function displayExtractedDataInAssistant(extractedData) {
+            console.log(' Affichage des données extraites dans l\'Assistant:', extractedData);
+            
+            // Éléments de l'interface
+            const extractedDataDisplay = document.getElementById('extracted-data-display');
+            const applyButton = document.getElementById('apply-extracted-data');
+            const extractedName = document.getElementById('extracted-name');
+            const extractedAge = document.getElementById('extracted-age');
+            const extractedPosition = document.getElementById('extracted-position');
+            const extractedClub = document.getElementById('extracted-club');
+            
+            if (extractedDataDisplay && applyButton && extractedName && extractedAge && extractedPosition && extractedClub) {
+                // Mettre à jour les valeurs affichées
+                extractedName.textContent = extractedData.player_name || '-';
+                extractedAge.textContent = extractedData.age || '-';
+                extractedPosition.textContent = extractedData.position || '-';
+                extractedClub.textContent = extractedData.club || '-';
+                
+                // Afficher le panneau des données extraites
+                extractedDataDisplay.classList.remove('hidden');
+                
+                // Afficher le bouton d'application
+                applyButton.classList.remove('hidden');
+                
+                // Ajouter l'event listener pour le bouton (une seule fois)
+                if (!applyButton.hasAttribute('data-listener-added')) {
+                    applyButton.setAttribute('data-listener-added', 'true');
+                    applyButton.addEventListener('click', () => {
+                        console.log(' Bouton "Appliquer les données" cliqué !');
+                        
+                        // Remplir les champs du formulaire principal
+                        fillFormFields(extractedData);
+                        
+                        // Mettre à jour le statut
+                        elements.status.textContent = ' Données appliquées au formulaire !';
+                        
+                        // Masquer le bouton après application
+                        applyButton.classList.add('hidden');
+                    });
+                }
+                
+                console.log(' Données extraites affichées dans l\'Assistant !');
+            } else {
+                console.error('❌ Éléments de l\'interface Assistant non trouvés');
+            }
+        }
+
+        // Analyse intelligente du texte vocal
+        function analyzeVoiceText(text) {
+            const data = {
+                player_name: null,
+                age: null,
+                position: null,
+                club: null,
+                confidence: 'high',
+                command: null, // Nouveau champ pour les commandes spéciales
+                
+                // 🆕 NOUVEAUX CHAMPS MÉDICAUX
+                blood_pressure: null,
+                heart_rate: null,
+                temperature: null,
+                respiratory_rate: null,
+                oxygen_saturation: null,
+                weight: null,
+                cardiovascular_history: null,
+                surgical_history: null,
+                diagnostic: null,
+                anamnesis: null,
+                recommendations: null
+            };
+
+            // Normaliser le texte
+            const normalizedText = text.toLowerCase()
+                .replace(/[.,!?]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            console.log(' Analyse du texte normalisé:', normalizedText);
+
+            //  DÉTECTION DE LA COMMANDE "ID FIFA CONNECT" (AMÉLIORÉE)
+            const fifaConnectPatterns = [
+                /id\s+fifa\s+connect\s*(\d+)?/i,           // ID FIFA CONNECT 001
+                /fifa\s+connect\s*(\d+)?/i,                 // FIFA CONNECT 001
+                /fifa\s+id\s*(\d+)?/i,                      // FIFA ID 001
+                /connect\s+id\s*(\d+)?/i,                   // CONNECT ID 001
+                /identifiant\s+fifa\s*(\d+)?/i,             // IDENTIFIANT FIFA 001
+                /fifa\s+connect\s+id\s*(\d+)?/i,            // FIFA CONNECT ID 001
+                /fifa\s+(\d+)/i,                            // FIFA 001
+                /connect\s+(\d+)/i                           // CONNECT 001
+            ];
+
+            for (const pattern of fifaConnectPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    console.log(' Commande "ID FIFA CONNECT" détectée !');
+                    data.command = 'fifa_connect_search';
+                    data.confidence = 'very_high';
+                    
+                    // Capturer le numéro FIFA si présent
+                    if (match[1]) {
+                        data.fifa_number = match[1];
+                        console.log(` Numéro FIFA capturé: ${match[1]}`);
+                    }
+                    
+                    // Retourner immédiatement pour traiter cette commande spéciale
+                    return data;
+                }
+            }
+
+            // Extraction du nom du joueur
+            const namePatterns = [
+                /(?:le joueur s'appelle|nom du joueur|joueur|s'appelle)\s+([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+joue|\s+a\s+\d+)/i,
+                /(?:nom|prénom)\s+([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+joue|\s+a\s+\d+)/i,
+                /je\s+m'appelle\s+([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+j'ai|\s+je\s+joue)/i,
+                /m'appelle\s+([a-zàâäéèêëïîôöùûüÿç]+(?:\s+j'ai|\s+je\s+joue))/i
+            ];
+
+            for (const pattern of namePatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    // Nettoyer le nom en supprimant les mots parasites
+                    let cleanName = match[1].trim();
+                    
+                    // Supprimer les mots courts qui ne sont pas des noms
+                    const nameWords = cleanName.split(' ').filter(word => 
+                        word.length > 2 && 
+                        !['il', 'a', 'est', 'le', 'la', 'de', 'du', 'et', 'ou'].includes(word.toLowerCase())
+                    );
+                    
+                    data.player_name = nameWords.map(word => 
+                        word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' ');
+                    break;
+                }
+            }
+
+            // Extraction de l'âge
+            const agePatterns = [
+                /(\d+)\s*(?:ans|années?|an)/i,
+                /(?:âge|age)\s*(\d+)/i,
+                /(\d+)\s*(?:ans?)/i
+            ];
+
+            for (const pattern of agePatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.age = parseInt(match[1]);
+                    break;
+                }
+            }
+
+            // Extraction de la position
+            const positionPatterns = [
+                /(?:joue|position|poste)\s+(attaquant|milieu|défenseur|gardien|avant|arrière|central|latéral|pivot|ailier|meneur|récupérateur)/i,
+                /(attaquant|milieu|défenseur|gardien|avant|arrière|central|latéral|pivot|ailier|meneur|récupérateur)/i
+            ];
+
+            for (const pattern of positionPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.position = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+                    break;
+                }
+            }
+
+            // Extraction du club (AMÉLIORÉE - sans mots parasites)
+            const clubPatterns = [
+                /(?:joue\s+(?:à|au|chez)\s+l')([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+est|\s+il\s+joue|$)/i,
+                /(?:joue\s+(?:à|au|chez)\s+le\s+)([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+est|\s+il\s+joue|$)/i,
+                /(?:joue\s+(?:à|au|chez)\s+la\s+)([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+est|\s+il\s+joue|$)/i,
+                /(?:joue\s+(?:à|au|chez)\s+)([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+est|\s+il\s+joue|$)/i,
+                /(?:club\s*:\s*)([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+est|\s+il\s+joue|$)/i,
+                /(?:équipe\s*:\s*)([a-zàâäéèêëïîôöùûüÿç]+(?:\s+[a-zàâäéèêëïîôöùûüÿç]+)*?)(?:\s+il\s+a|\s+il\s+est|\s+il\s+joue|$)/i
+            ];
+            
+            for (const pattern of clubPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    let clubName = match[1];
+                    
+                    // Nettoyer le nom du club (supprimer les mots parasites)
+                    clubName = clubName.trim();
+                    
+                    // Supprimer les mots parasites à la fin
+                    const parasiticWords = ['il', 'a', 'est', 'joue', 'ans', 'ans.', 'ans,', 'milieu', 'offensif', 'attaquant', 'défenseur', 'gardien'];
+                    const words = clubName.split(' ');
+                    
+                    // Supprimer les mots parasites à la fin
+                    while (words.length > 0 && parasiticWords.includes(words[words.length - 1].toLowerCase())) {
+                        words.pop();
+                    }
+                    
+                    clubName = words.join(' ');
+                    
+                    if (clubName.trim()) {
+                        // Capitaliser chaque mot
+                        clubName = clubName.split(' ').map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ');
+                        
+                        // Ajouter le préfixe approprié
+                        if (pattern.source.includes("l'")) {
+                            clubName = "l'" + clubName;
+                        } else if (pattern.source.includes("le ")) {
+                            clubName = "le " + clubName;
+                        } else if (pattern.source.includes("la ")) {
+                            clubName = "la " + clubName;
+                        }
+                        
+                        data.club = clubName;
+                        console.log(' Club extrait (nettoyé):', clubName, 'Pattern:', pattern.source);
+                        break;
+                    }
+                }
+            }
+
+            // 🆕 EXTRACTION DES CHAMPS MÉDICAUX
+            
+            // Tension artérielle
+            const bloodPressurePatterns = [
+                /(?:tension|pression|ta|bp)\s*(?:artérielle)?\s*:?\s*(\d+)\s*\/\s*(\d+)/i,
+                /(?:tension|pression|ta|bp)\s*(?:artérielle)?\s*:?\s*(\d+)\s*et\s*(\d+)/i,
+                /(\d+)\s*\/\s*(\d+)\s*(?:tension|pression|ta|bp)/i,
+                /(\d+)\s*et\s*(\d+)\s*(?:tension|pression|ta|bp)/i
+            ];
+            
+            for (const pattern of bloodPressurePatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.blood_pressure = `${match[1]}/${match[2]} mmHg`;
+                    break;
+                }
+            }
+
+            // Fréquence cardiaque
+            const heartRatePatterns = [
+                /(?:fréquence|pouls|fc|hr)\s*(?:cardiaque)?\s*:?\s*(\d+)\s*(?:bpm|battements?)/i,
+                /(\d+)\s*(?:bpm|battements?)\s*(?:fréquence|pouls|fc|hr)/i,
+                /(?:cœur|cardio)\s*:?\s*(\d+)\s*(?:bpm|battements?)/i
+            ];
+            
+            for (const pattern of heartRatePatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.heart_rate = parseInt(match[1]);
+                    break;
+                }
+            }
+
+            // Température
+            const temperaturePatterns = [
+                /(?:température|temp|t°)\s*:?\s*(\d+(?:[.,]\d+)?)\s*(?:°c|degrés?|celsius)/i,
+                /(\d+(?:[.,]\d+)?)\s*(?:°c|degrés?|celsius)\s*(?:température|temp|t°)/i,
+                /(?:fièvre|fievre)\s*:?\s*(\d+(?:[.,]\d+)?)\s*(?:°c|degrés?|celsius)/i
+            ];
+            
+            for (const pattern of temperaturePatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.temperature = parseFloat(match[1].replace(',', '.'));
+                    break;
+                }
+            }
+
+            // Fréquence respiratoire
+            const respiratoryPatterns = [
+                /(?:fréquence|fr)\s*(?:respiratoire)?\s*:?\s*(\d+)\s*(?:respirations?|cycles?)/i,
+                /(\d+)\s*(?:respirations?|cycles?)\s*(?:fréquence|fr)/i,
+                /(?:respiration|resp)\s*:?\s*(\d+)\s*(?:respirations?|cycles?)/i
+            ];
+            
+            for (const pattern of respiratoryPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.respiratory_rate = parseInt(match[1]);
+                    break;
+                }
+            }
+
+            // Saturation en oxygène
+            const oxygenPatterns = [
+                /(?:saturation|sat|spo2)\s*(?:oxygène|o2)?\s*:?\s*(\d+)\s*%/i,
+                /(\d+)\s*%\s*(?:saturation|sat|spo2)/i,
+                /(?:oxygène|o2)\s*:?\s*(\d+)\s*%/i
+            ];
+            
+            for (const pattern of oxygenPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.oxygen_saturation = parseInt(match[1]);
+                    break;
+                }
+            }
+
+            // Poids
+            const weightPatterns = [
+                /(?:poids|masse)\s*:?\s*(\d+(?:[.,]\d+)?)\s*(?:kg|kilos?|kilogrammes?)/i,
+                /(\d+(?:[.,]\d+)?)\s*(?:kg|kilos?|kilogrammes?)\s*(?:poids|masse)/i
+            ];
+            
+            for (const pattern of weightPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match) {
+                    data.weight = parseFloat(match[1].replace(',', '.'));
+                    break;
+                }
+            }
+
+            // Antécédents cardiovasculaires
+            const cardioPatterns = [
+                /(?:antécédents?|antecedents?|antécédent|antecedent)\s*(?:cardiaques?|cardiovasculaires?)\s*:?\s*([^.]*)/i,
+                /(?:cardiaque|cardiovasculaire)\s*:?\s*([^.]*)/i
+            ];
+            
+            for (const pattern of cardioPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match && match[1].trim()) {
+                    data.cardiovascular_history = match[1].trim();
+                    break;
+                }
+            }
+
+            // Antécédents chirurgicaux
+            const surgicalPatterns = [
+                /(?:antécédents?|antecedents?|antécédent|antecedent)\s*(?:chirurgicaux?|opératoires?)\s*:?\s*([^.]*)/i,
+                /(?:chirurgie|opération|operation)\s*:?\s*([^.]*)/i
+            ];
+            
+            for (const pattern of surgicalPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match && match[1].trim()) {
+                    data.surgical_history = match[1].trim();
+                    break;
+                }
+            }
+
+            // Diagnostic
+            const diagnosticPatterns = [
+                /(?:diagnostic|diagnostique|diagnose)\s*:?\s*([^.]*)/i,
+                /(?:diagnostiqué|diagnostiqué|diagnostique)\s*:?\s*([^.]*)/i
+            ];
+            
+            for (const pattern of diagnosticPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match && match[1].trim()) {
+                    data.diagnostic = match[1].trim();
+                    break;
+                }
+            }
+
+            // Anamnèse
+            const anamnesisPatterns = [
+                /(?:anamnèse|anamnese|histoire)\s*(?:médicale|medicale)?\s*:?\s*([^.]*)/i,
+                /(?:symptômes|symptomes)\s*:?\s*([^.]*)/i
+            ];
+            
+            for (const pattern of anamnesisPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match && match[1].trim()) {
+                    data.anamnesis = match[1].trim();
+                    break;
+                }
+            }
+
+            // Recommandations
+            const recommendationsPatterns = [
+                /(?:recommandations?|conseils?|traitement)\s*:?\s*([^.]*)/i,
+                /(?:prescrire|prescription)\s*:?\s*([^.]*)/i
+            ];
+            
+            for (const pattern of recommendationsPatterns) {
+                const match = normalizedText.match(pattern);
+                if (match && match[1].trim()) {
+                    data.recommendations = match[1].trim();
+                    break;
+                }
+            }
+
+
+            // Vérifier la qualité de l'extraction
+            const extractedCount = Object.values(data).filter(val => val !== null).length - 1; // -1 pour confidence
+            if (extractedCount >= 3) {
+                data.confidence = 'high';
+            } else if (extractedCount >= 2) {
+                data.confidence = 'medium';
+            } else {
+                data.confidence = 'low';
+            }
+
+            return data;
+        }
+
+        // Remplir automatiquement les champs du formulaire
+        function fillFormFields(extractedData) {
+            console.log(' Remplissage automatique des champs avec:', extractedData);
+            
+            try {
+                //  GESTION DE LA COMMANDE "ID FIFA CONNECT"
+                if (extractedData.command === 'fifa_connect_search') {
+                    console.log(' Traitement de la commande ID FIFA CONNECT...');
+                    
+                    // Afficher le statut de recherche
+                    const voiceStatus = document.getElementById('voice-status');
+                    if (voiceStatus) {
+                        voiceStatus.textContent = ' Recherche automatique en cours...';
+                        voiceStatus.className = 'text-center text-blue-600 font-medium';
+                    }
+                    
+                    // Lancer la recherche automatique dans la base de données
+                    // Cette fonction va chercher un joueur existant et remplir tous les champs
+                    searchPlayerByFifaConnect();
+                    return; // Sortir de la fonction pour ne pas traiter les autres données
+                }
+                
+                // Remplir le nom du joueur (champs vocaux ET formulaire principal)
+                if (extractedData.player_name) {
+                    // Champ vocal
+                    const voiceNameField = document.getElementById('voice_player_name');
+                    if (voiceNameField) {
+                        voiceNameField.value = extractedData.player_name;
+                        voiceNameField.classList.add('bg-green-50');
+                        console.log(' Nom du joueur (voix) rempli:', extractedData.player_name);
+                        
+                        // Forcer la mise à jour visuelle
+                        voiceNameField.dispatchEvent(new Event('input', { bubbles: true }));
+                        voiceNameField.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Champ formulaire principal
+                    const mainNameField = document.getElementById('voice_player_name_main');
+                    if (mainNameField) {
+                        mainNameField.value = extractedData.player_name;
+                        mainNameField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Nom du joueur (principal) rempli:', extractedData.player_name);
+                        
+                        // Forcer la mise à jour visuelle
+                        mainNameField.dispatchEvent(new Event('input', { bubbles: true }));
+                        mainNameField.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Remplir le VRAI champ du formulaire Laravel
+                    const realNameField = document.querySelector('input[name="player_name"], input[name="name"], #player_name, #name');
+                    if (realNameField) {
+                        realNameField.value = extractedData.player_name;
+                        realNameField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Nom du joueur (vrai formulaire) rempli:', extractedData.player_name);
+                        
+                        // Forcer la mise à jour visuelle
+                        realNameField.dispatchEvent(new Event('input', { bubbles: true }));
+                        realNameField.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        console.log('⚠️ Champ nom du formulaire Laravel non trouvé');
+                    }
+                    
+                    //  NOUVEAU : Rechercher le joueur dans la base de données
+                    searchPlayerInDatabase(extractedData.player_name);
+                }
+
+                // Remplir l'âge (champs vocaux ET formulaire principal)
+                if (extractedData.age) {
+                    // Champ vocal
+                    const voiceAgeField = document.getElementById('voice_age');
+                    if (voiceAgeField) {
+                        voiceAgeField.value = extractedData.age;
+                        voiceAgeField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Âge (voix) rempli:', extractedData.age);
+                        
+                        // Forcer la mise à jour visuelle
+                        voiceAgeField.dispatchEvent(new Event('input', { bubbles: true }));
+                        voiceAgeField.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Champ formulaire principal
+                    const mainAgeField = document.getElementById('voice_age_main');
+                    if (mainAgeField) {
+                        mainAgeField.value = extractedData.age;
+                        mainAgeField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Âge (principal) rempli:', extractedData.age);
+                        
+                        // Forcer la mise à jour visuelle
+                        mainAgeField.dispatchEvent(new Event('input', { bubbles: true }));
+                        mainAgeField.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Remplir le VRAI champ du formulaire Laravel
+                    const realAgeField = document.querySelector('input[name="age"], input[name="player_age"], #age, #player_age');
+                    if (realAgeField) {
+                        realAgeField.value = extractedData.age;
+                        realAgeField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Âge (vrai formulaire) rempli:', extractedData.age);
+                        
+                        // Forcer la mise à jour visuelle
+                        realAgeField.dispatchEvent(new Event('input', { bubbles: true }));
+                        realAgeField.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        console.log('⚠️ Champ âge du formulaire Laravel non trouvé');
+                    }
+                }
+
+                // Remplir la position (champs vocaux ET formulaire principal)
+                if (extractedData.position) {
+                    // Champ vocal
+                    const voicePositionField = document.getElementById('voice_position');
+                    if (voicePositionField) {
+                        if (voicePositionField.tagName === 'SELECT') {
+                            const options = Array.from(voicePositionField.options);
+                            const matchingOption = options.find(option => 
+                                option.text.toLowerCase().includes(extractedData.position.toLowerCase()) ||
+                                extractedData.position.toLowerCase().includes(option.text.toLowerCase())
+                            );
+                            if (matchingOption) {
+                                voicePositionField.value = matchingOption.value;
+                                voicePositionField.disabled = false;
+                                console.log(' Position (voix) sélectionnée:', matchingOption.text);
+                                
+                                // Forcer la mise à jour visuelle
+                                voicePositionField.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
+                        voicePositionField.classList.add('bg-green-50', 'border-green-500');
+                    }
+                    
+                    // Champ formulaire principal
+                    const mainPositionField = document.getElementById('voice_position_main');
+                    if (mainPositionField) {
+                        if (mainPositionField.tagName === 'SELECT') {
+                            const options = Array.from(mainPositionField.options);
+                            const matchingOption = options.find(option => 
+                                option.text.toLowerCase().includes(extractedData.position.toLowerCase()) ||
+                                extractedData.position.toLowerCase().includes(option.text.toLowerCase())
+                            );
+                            if (matchingOption) {
+                                mainPositionField.value = matchingOption.value;
+                                console.log(' Position (principal) remplie:', matchingOption.text);
+                                
+                                // Forcer la mise à jour visuelle
+                                mainPositionField.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
+                        mainPositionField.classList.add('bg-green-50', 'border-green-500');
+                    }
+                    
+                    // Remplir le VRAI champ du formulaire Laravel
+                    const realPositionField = document.querySelector('select[name="position"], select[name="player_position"], #position, #player_position');
+                    if (realPositionField) {
+                        const options = Array.from(realPositionField.options);
+                        const matchingOption = options.find(option => 
+                            option.text.toLowerCase().includes(extractedData.position.toLowerCase()) ||
+                            extractedData.position.toLowerCase().includes(option.text.toLowerCase())
+                        );
+                        if (matchingOption) {
+                            realPositionField.value = matchingOption.value;
+                            realPositionField.classList.add('bg-green-50', 'border-green-500');
+                            console.log(' Position (vrai formulaire) remplie:', matchingOption.text);
+                            
+                            // Forcer la mise à jour visuelle
+                            realPositionField.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    } else {
+                        console.log('⚠️ Champ position du formulaire Laravel non trouvé');
+                    }
+                }
+
+                // Remplir le club (champs vocaux ET formulaire principal)
+                if (extractedData.club) {
+                    // Champ vocal
+                    const voiceClubField = document.getElementById('voice_club');
+                    if (voiceClubField) {
+                        voiceClubField.value = extractedData.club;
+                        voiceClubField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Club (voix) rempli:', extractedData.club);
+                        
+                        // Forcer la mise à jour visuelle
+                        voiceClubField.dispatchEvent(new Event('input', { bubbles: true }));
+                        voiceClubField.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Champ formulaire principal
+                    const mainClubField = document.getElementById('voice_club_main');
+                    if (mainClubField) {
+                        mainClubField.value = extractedData.club;
+                        mainClubField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Club (principal) rempli:', extractedData.club);
+                        
+                        // Forcer la mise à jour visuelle
+                        mainClubField.dispatchEvent(new Event('input', { bubbles: true }));
+                        mainClubField.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Remplir le VRAI champ du formulaire Laravel
+                    const realClubField = document.querySelector('input[name="club"], input[name="team"], input[name="player_club"], #club, #team, #player_club');
+                    if (realClubField) {
+                        realClubField.value = extractedData.club;
+                        realClubField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Club (vrai formulaire) rempli:', extractedData.club);
+                        
+                        // Forcer la mise à jour visuelle
+                        realClubField.dispatchEvent(new Event('input', { bubbles: true }));
+                        realClubField.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        console.log('⚠️ Champ club du formulaire Laravel non trouvé');
+                    }
+                }
+
+                // 🆕 REMPLISSAGE DES CHAMPS MÉDICAUX
+                
+                // Tension artérielle
+                if (extractedData.blood_pressure) {
+                    const bloodPressureField = document.querySelector('input[name="blood_pressure"], #blood_pressure, #voice_blood_pressure');
+                    if (bloodPressureField) {
+                        bloodPressureField.value = extractedData.blood_pressure;
+                        bloodPressureField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Tension artérielle remplie:', extractedData.blood_pressure);
+                        bloodPressureField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Fréquence cardiaque
+                if (extractedData.heart_rate) {
+                    const heartRateField = document.querySelector('input[name="heart_rate"], #heart_rate, #voice_heart_rate');
+                    if (heartRateField) {
+                        heartRateField.value = extractedData.heart_rate;
+                        heartRateField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Fréquence cardiaque remplie:', extractedData.heart_rate);
+                        heartRateField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Température
+                if (extractedData.temperature) {
+                    const temperatureField = document.querySelector('input[name="temperature"], #temperature, #voice_temperature');
+                    if (temperatureField) {
+                        temperatureField.value = extractedData.temperature;
+                        temperatureField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Température remplie:', extractedData.temperature);
+                        temperatureField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Fréquence respiratoire
+                if (extractedData.respiratory_rate) {
+                    const respiratoryField = document.querySelector('input[name="respiratory_rate"], #respiratory_rate, #voice_respiratory_rate');
+                    if (respiratoryField) {
+                        respiratoryField.value = extractedData.respiratory_rate;
+                        respiratoryField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Fréquence respiratoire remplie:', extractedData.respiratory_rate);
+                        respiratoryField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Saturation en oxygène
+                if (extractedData.oxygen_saturation) {
+                    const oxygenField = document.querySelector('input[name="oxygen_saturation"], #oxygen_saturation, #voice_oxygen_saturation');
+                    if (oxygenField) {
+                        oxygenField.value = extractedData.oxygen_saturation;
+                        oxygenField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Saturation en oxygène remplie:', extractedData.oxygen_saturation);
+                        oxygenField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Poids
+                if (extractedData.weight) {
+                    const weightField = document.querySelector('input[name="weight"], #weight, #voice_weight');
+                    if (weightField) {
+                        weightField.value = extractedData.weight;
+                        weightField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Poids rempli:', extractedData.weight);
+                        weightField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Antécédents cardiovasculaires
+                if (extractedData.cardiovascular_history) {
+                    const cardioField = document.querySelector('textarea[name="cardiovascular_history"], #cardiovascular_history, #voice_cardiovascular_history');
+                    if (cardioField) {
+                        cardioField.value = extractedData.cardiovascular_history;
+                        cardioField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Antécédents cardiovasculaires remplis:', extractedData.cardiovascular_history);
+                        cardioField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Antécédents chirurgicaux
+                if (extractedData.surgical_history) {
+                    const surgicalField = document.querySelector('textarea[name="surgical_history"], #surgical_history, #voice_surgical_history');
+                    if (surgicalField) {
+                        surgicalField.value = extractedData.surgical_history;
+                        surgicalField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Antécédents chirurgicaux remplis:', extractedData.surgical_history);
+                        surgicalField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Diagnostic
+                if (extractedData.diagnostic) {
+                    const diagnosticField = document.querySelector('textarea[name="diagnostic"], #diagnostic, #voice_diagnostic');
+                    if (diagnosticField) {
+                        diagnosticField.value = extractedData.diagnostic;
+                        diagnosticField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Diagnostic rempli:', extractedData.diagnostic);
+                        diagnosticField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Anamnèse
+                if (extractedData.anamnesis) {
+                    const anamnesisField = document.querySelector('textarea[name="anamnesis"], #anamnesis, #voice_anamnesis');
+                    if (anamnesisField) {
+                        anamnesisField.value = extractedData.anamnesis;
+                        anamnesisField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Anamnèse remplie:', extractedData.anamnesis);
+                        anamnesisField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Recommandations
+                if (extractedData.recommendations) {
+                    const recommendationsField = document.querySelector('textarea[name="recommendations"], #recommendations, #voice_recommendations');
+                    if (recommendationsField) {
+                        recommendationsField.value = extractedData.recommendations;
+                        recommendationsField.classList.add('bg-green-50', 'border-green-500');
+                        console.log(' Recommandations remplies:', extractedData.recommendations);
+                        recommendationsField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+
+                // Ajouter une note automatique
+                addAutomaticNote(extractedData);
+
+                console.log(' Remplissage automatique terminé avec succès !');
+                
+                // Forcer le rafraîchissement de l'affichage
+                setTimeout(() => {
+                    console.log('🔄 Vérification finale des valeurs des champs...');
+                    console.log(' Nom (voix):', document.getElementById('voice_player_name')?.value);
+                    console.log(' Nom (principal):', document.getElementById('voice_player_name_main')?.value);
+                    console.log(' Âge (voix):', document.getElementById('voice_age')?.value);
+                    console.log(' Âge (principal):', document.getElementById('voice_age_main')?.value);
+                    console.log(' Position (voix):', document.getElementById('voice_position')?.value);
+                    console.log(' Position (principal):', document.getElementById('voice_position_main')?.value);
+                    console.log(' Club (voix):', document.getElementById('voice_club')?.value);
+                    console.log(' Club (principal):', document.getElementById('voice_club_main')?.value);
+                }, 100);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du remplissage automatique:', error);
+            }
+        }
+
+        //  NOUVELLE FONCTION : Recherche automatique par ID FIFA CONNECT
+        async function searchPlayerByFifaConnect() {
+            console.log(' Lancement de la recherche automatique par ID FIFA CONNECT...');
+            
+            try {
+                // Afficher le statut de recherche
+                const voiceStatus = document.getElementById('voice-status');
+                if (voiceStatus) {
+                    voiceStatus.textContent = ' Recherche en cours...';
+                    voiceStatus.className = 'text-center text-blue-600 font-medium';
+                }
+                
+                // Recherche réelle dans la base de données via l'API Laravel
+                console.log(' Recherche réelle dans la base de données...');
+                
+                // Chercher un joueur par défaut pour la démo (Ali Jebali)
+                const searchResponse = await fetch('/api/athletes/search?name=Ali%20Jebali', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!searchResponse.ok) {
+                    throw new Error(`Erreur API: ${searchResponse.status}`);
+                }
+                
+                const searchResult = await searchResponse.json();
+                
+                if (!searchResult.success) {
+                    throw new Error('Joueur non trouvé dans la base de données');
+                }
+                
+                // Données réelles du joueur trouvé
+                const playerData = searchResult.player;
+                
+                console.log(' Joueur trouvé dans la base:', playerData);
+                
+                // Afficher les informations du joueur
+                displayPlayerInfo(playerData);
+                
+                // Mettre à jour le statut
+                if (voiceStatus) {
+                    voiceStatus.textContent = ' Joueur trouvé ! Données remplies automatiquement';
+                    voiceStatus.className = 'text-center text-green-600 font-medium';
+                }
+                
+                // Remplir automatiquement tous les champs d'identité
+                fillFormFieldsWithPlayerData(playerData);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la recherche automatique:', error);
+                
+                // Afficher l'erreur
+                if (voiceStatus) {
+                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.className = 'text-center text-red-600 font-medium';
+                }
+                
+                // Afficher un message d'erreur
+                displayPlayerNotFound('Erreur lors de la recherche automatique');
+            }
+        }
+
+        //  NOUVELLE FONCTION : Validation intelligente des données vocales
+        function validateVoiceDataWithDatabase(voiceData, databaseData) {
+            console.log(' Validation intelligente des données vocales avec la base...');
+            console.log(' Données vocales:', voiceData);
+            console.log('💾 Données base:', databaseData);
+            
+            const inconsistencies = [];
+            
+            // Comparer l'âge
+            if (voiceData.age && databaseData.age && voiceData.age !== databaseData.age) {
+                inconsistencies.push({
+                    field: 'âge',
+                    voice: voiceData.age,
+                    database: databaseData.age,
+                    type: 'age_mismatch'
+                });
+            }
+            
+            // Comparer la position
+            if (voiceData.position && databaseData.position) {
+                const voicePos = voiceData.position.toLowerCase();
+                const dbPos = databaseData.position.toLowerCase();
+                
+                // Vérifier si les positions sont similaires
+                const positionSimilarity = checkPositionSimilarity(voicePos, dbPos);
+                if (!positionSimilarity.isSimilar) {
+                    inconsistencies.push({
+                        field: 'position',
+                        voice: voiceData.position,
+                        database: databaseData.position,
+                        type: 'position_mismatch',
+                        similarity: positionSimilarity.similarity
+                    });
+                }
+            }
+            
+            // Comparer le club
+            if (voiceData.club && databaseData.club) {
+                const voiceClub = voiceData.club.toLowerCase();
+                const dbClub = databaseData.club.toLowerCase();
+                
+                // Vérifier si les clubs sont similaires
+                const clubSimilarity = checkClubSimilarity(voiceClub, dbClub);
+                if (!clubSimilarity.isSimilar) {
+                    inconsistencies.push({
+                        field: 'club',
+                        voice: voiceData.club,
+                        database: databaseData.club,
+                        type: 'club_mismatch',
+                        similarity: clubSimilarity.similarity
+                    });
+                }
+            }
+            
+            console.log(' Incohérences détectées:', inconsistencies);
+            
+            // Si des incohérences sont trouvées, afficher le popup de confirmation
+            if (inconsistencies.length > 0) {
+                console.log('⚠️ Incohérences détectées - Affichage du popup de confirmation');
+                showConfirmationPopup(inconsistencies, voiceData, databaseData);
+                return false; // Validation échouée
+            }
+            
+            console.log(' Aucune incohérence détectée - Validation réussie');
+            return true; // Validation réussie
+        }
+        
+        // Fonction pour vérifier la similarité des positions
+        function checkPositionSimilarity(voicePos, dbPos) {
+            const positionMappings = {
+                'attaquant': ['attaquant', 'avant', 'pivot', 'ailier', 'meneur'],
+                'milieu': ['milieu', 'milieu offensif', 'milieu défensif', 'récupérateur', 'meneur'],
+                'défenseur': ['défenseur', 'arrière', 'central', 'latéral'],
+                'gardien': ['gardien', 'portier']
+            };
+            
+            // Vérifier si les positions sont dans le même groupe
+            for (const [group, positions] of Object.entries(positionMappings)) {
+                if (positions.includes(voicePos) && positions.includes(dbPos)) {
+                    return { isSimilar: true, similarity: 'high', group: group };
+                }
+            }
+            
+            // Vérifier la similarité textuelle
+            const similarity = calculateTextSimilarity(voicePos, dbPos);
+            return { 
+                isSimilar: similarity > 0.7, 
+                similarity: similarity > 0.7 ? 'medium' : 'low',
+                score: similarity 
+            };
+        }
+        
+        // Fonction pour vérifier la similarité des clubs
+        function checkClubSimilarity(voiceClub, dbClub) {
+            // Nettoyer les noms de clubs
+            const cleanVoiceClub = voiceClub.replace(/^(le |la |l')/i, '').trim();
+            const cleanDbClub = dbClub.replace(/^(le |la |l')/i, '').trim();
+            
+            // Vérifier la similarité textuelle
+            const similarity = calculateTextSimilarity(cleanVoiceClub, cleanDbClub);
+            
+            return { 
+                isSimilar: similarity > 0.6, 
+                similarity: similarity > 0.8 ? 'high' : similarity > 0.6 ? 'medium' : 'low',
+                score: similarity 
+            };
+        }
+        
+        // Fonction pour calculer la similarité textuelle (algorithme simple)
+        function calculateTextSimilarity(str1, str2) {
+            if (str1 === str2) return 1.0;
+            
+            const words1 = str1.split(' ').filter(w => w.length > 2);
+            const words2 = str2.split(' ').filter(w => w.length > 2);
+            
+            if (words1.length === 0 || words2.length === 0) return 0.0;
+            
+            let commonWords = 0;
+            for (const word1 of words1) {
+                for (const word2 of words2) {
+                    if (word1 === word2 || word1.includes(word2) || word2.includes(word1)) {
+                        commonWords++;
+                        break;
+                    }
+                }
+            }
+            
+            return commonWords / Math.max(words1.length, words2.length);
+        }
+
+        //  FONCTIONS DE GESTION DU MODAL DE CONFIRMATION
+        function showConfirmationPopup(inconsistencies, voiceData, databaseData) {
+            console.log(' Affichage du popup de confirmation...');
+            
+            // Stocker les données pour la confirmation
+            window.confirmationData = {
+                inconsistencies: inconsistencies,
+                voiceData: voiceData,
+                databaseData: databaseData
+            };
+            
+            // Remplir la liste des incohérences
+            const inconsistenciesList = document.getElementById('inconsistencies-list');
+            if (inconsistenciesList) {
+                inconsistenciesList.innerHTML = '';
+                
+                inconsistencies.forEach(inconsistency => {
+                    const inconsistencyItem = document.createElement('div');
+                    inconsistencyItem.className = 'bg-red-50 border border-red-200 rounded-lg p-3';
+                    
+                    let similarityText = '';
+                    if (inconsistency.similarity) {
+                        similarityText = ` (Similarité: ${Math.round(inconsistency.similarity.score * 100)}%)`;
+                    }
+                    
+                    inconsistencyItem.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="font-medium text-red-800">${inconsistency.field}</div>
+                                <div class="text-sm text-red-600">
+                                     Vocal: <strong>${inconsistency.voice}</strong> | 
+                                    💾 Base: <strong>${inconsistency.database}</strong>${similarityText}
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    ⚠️ Incohérence
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    inconsistenciesList.appendChild(inconsistencyItem);
+                });
+            }
+            
+            // Afficher le modal
+            const modal = document.getElementById('confirmation-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                console.log(' Modal de confirmation affiché');
+            }
+        }
+        
+        function closeConfirmationModal() {
+            console.log(' Fermeture du modal de confirmation...');
+            
+            const modal = document.getElementById('confirmation-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                
+                // Vider les champs de confirmation
+                const confirmationId = document.getElementById('confirmation-id');
+                const confirmationSequence = document.getElementById('confirmation-sequence');
+                if (confirmationId) confirmationId.value = '';
+                if (confirmationSequence) confirmationSequence.value = '';
+                
+                console.log(' Modal de confirmation fermé');
+            }
+        }
+        
+        function confirmPlayerIdentity() {
+            console.log(' Confirmation de l\'identité du joueur...');
+            
+            const confirmationId = document.getElementById('confirmation-id');
+            const confirmationSequence = document.getElementById('confirmation-sequence');
+            
+            if (!confirmationData) {
+                console.error('❌ Données de confirmation non disponibles');
+                return;
+            }
+            
+            const idValue = confirmationId ? confirmationId.value.trim() : '';
+            const sequenceValue = confirmationSequence ? confirmationSequence.value.trim() : '';
+            
+            if (!idValue && !sequenceValue) {
+                alert('⚠️ Veuillez remplir au moins un champ de confirmation');
+                return;
+            }
+            
+            console.log(' Confirmation reçue:', { id: idValue, sequence: sequenceValue });
+            
+            // Simuler la validation (ici on pourrait appeler l'API Laravel)
+            setTimeout(() => {
+                console.log(' Identité confirmée avec succès !');
+                
+                // Fermer le modal
+                closeConfirmationModal();
+                
+                // Mettre à jour le statut
+                const voiceStatus = document.getElementById('voice-status');
+                if (voiceStatus) {
+                    voiceStatus.textContent = ' Identité confirmée - Données validées';
+                    voiceStatus.className = 'text-center text-green-600 font-medium';
+                }
+                
+                // Remplir les champs avec les données confirmées de la base
+                if (confirmationData.databaseData) {
+                    fillFormFieldsWithPlayerData(confirmationData.databaseData);
+                }
+                
+                // Nettoyer les données de confirmation
+                window.confirmationData = null;
+                
+            }, 1000);
+        }
+
+        // Ajouter une note automatique basée sur l'extraction (RÉACTIVÉE)
+        function addAutomaticNote(extractedData) {
+            console.log(' Note automatique RÉACTIVÉE avec:', extractedData);
+            
+            const notesField = document.getElementById('clinical_notes') || document.querySelector('textarea[name="clinical_notes"]');
+            if (notesField) {
+                // 🧹 EFFACER les anciennes notes cliniques
+                notesField.value = '';
+                console.log('🧹 Anciennes notes cliniques effacées');
+                
+                const timestamp = new Date().toLocaleString('fr-FR');
+                let note = `[${timestamp}] Données extraites par reconnaissance vocale:\n\n`;
+                
+                if (extractedData.player_name) note += `👤 PATIENT: ${extractedData.player_name}\n`;
+                if (extractedData.age) note += `📅 ÂGE: ${extractedData.age} ans\n`;
+                if (extractedData.position) note += `⚽ POSITION: ${extractedData.position}\n`;
+                if (extractedData.club) note += `🏆 CLUB: ${extractedData.club}\n`;
+                if (extractedData.fifa_number) note += `🆔 FIFA ID: ${extractedData.fifa_number}\n`;
+                if (extractedData.command) note += ` COMMANDE: ${extractedData.command}\n`;
+                
+                //  ÉCRIRE les nouvelles données (remplace complètement)
+                notesField.value = note;
+                notesField.classList.add('bg-blue-50', 'border-blue-500');
+                
+                console.log(' Nouvelles notes cliniques écrites !');
+                console.log(' Contenu écrit:', note);
+                
+                // Mise en forme visuelle
+                notesField.style.borderColor = '#10B981';
+                notesField.style.backgroundColor = '#F0FDF4';
+                
+            } else {
+                console.log('❌ Champ notes cliniques non trouvé !');
+            }
+        }
+
+        // Sauvegarde automatique des données
+        function autoSaveData(extractedData) {
+            console.log('💾 Sauvegarde automatique des données...');
+            
+            try {
+                // Préparer les données pour la sauvegarde
+                const formData = new FormData();
+                
+                // Ajouter les données extraites
+                if (extractedData.player_name) formData.append('player_name', extractedData.player_name);
+                if (extractedData.age) formData.append('age', extractedData.age);
+                if (extractedData.position) formData.append('position', extractedData.position);
+                if (extractedData.club) formData.append('club', extractedData.club);
+                
+                // Ajouter un timestamp
+                formData.append('voice_extraction_timestamp', new Date().toISOString());
+                formData.append('voice_extraction_confidence', extractedData.confidence);
+                
+                // Ajouter les notes cliniques si disponibles
+                const notesField = document.getElementById('clinical_notes');
+                if (notesField && notesField.value) {
+                    formData.append('clinical_notes', notesField.value);
+                }
+                
+                // Envoyer les données au serveur
+                fetch('/api/pcma/auto-save', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(Object.fromEntries(formData))
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(' Données sauvegardées automatiquement:', data);
+                        showSaveStatus(' Données sauvegardées automatiquement !', 'success');
+                        
+                        // Mettre à jour l'interface
+                        updateSaveStatus(data);
+                    } else {
+                        throw new Error(data.message || 'Erreur de sauvegarde');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Erreur de sauvegarde automatique:', error);
+                    showSaveStatus('❌ Erreur de sauvegarde: ' + error.message, 'error');
+                });
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la sauvegarde automatique:', error);
+                showSaveStatus('❌ Erreur de sauvegarde: ' + error.message, 'error');
+            }
+        }
+
+        // Afficher le statut de sauvegarde
+        function showSaveStatus(message, type) {
+            const statusElement = document.getElementById('save-status') || createSaveStatusElement();
+            
+            statusElement.textContent = message;
+            statusElement.className = `text-sm p-2 rounded-md mb-4 ${
+                type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' :
+                type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' :
+                'bg-blue-100 text-blue-800 border border-blue-200'
+            }`;
+            statusElement.classList.remove('hidden');
+            
+            // Masquer après 5 secondes
+            setTimeout(() => {
+                statusElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Créer l'élément de statut de sauvegarde s'il n'existe pas
+        function createSaveStatusElement() {
+            const statusElement = document.createElement('div');
+            statusElement.id = 'save-status';
+            statusElement.className = 'text-sm p-2 rounded-md mb-4 hidden';
+            
+            // Insérer après la section Google Assistant
+            const googleSection = document.querySelector('#voice-section');
+            if (googleSection) {
+                googleSection.appendChild(statusElement);
+            }
+            
+            return statusElement;
+        }
+
+        // Afficher un résumé de l'extraction
+        function showExtractionSummary(extractedData) {
+            console.log(' Affichage du résumé d\'extraction:', extractedData);
+            
+            // Créer ou mettre à jour l'élément de résumé
+            let summaryElement = document.getElementById('extraction-summary');
+            if (!summaryElement) {
+                summaryElement = document.createElement('div');
+                summaryElement.id = 'extraction-summary';
+                summaryElement.className = 'bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-md';
+                
+                // Insérer après la section Google Assistant
+                const googleSection = document.querySelector('#voice-section');
+                if (googleSection) {
+                    googleSection.appendChild(summaryElement);
+                }
+            }
+            
+            // Construire le contenu du résumé
+            const summaryContent = `
+                <h4 class="font-medium text-blue-800 mb-2"> Résumé de l'Extraction Vocale</h4>
+                <div class="grid grid-cols-2 gap-2 text-sm text-blue-700">
+                    ${extractedData.player_name ? `<div><strong>Nom:</strong> ${extractedData.player_name}</div>` : ''}
+                    ${extractedData.age ? `<div><strong>Âge:</strong> ${extractedData.age} ans</div>` : ''}
+                    ${extractedData.position ? `<div><strong>Position:</strong> ${extractedData.position}</div>` : ''}
+                    ${extractedData.club ? `<div><strong>Club:</strong> ${extractedData.club}</div>` : ''}
+                </div>
+                <div class="mt-2 text-xs text-blue-600">
+                    <strong>Confiance:</strong> ${extractedData.confidence === 'high' ? 'Élevée' : extractedData.confidence === 'medium' ? 'Moyenne' : 'Faible'}
+                </div>
+            `;
+            
+            summaryElement.innerHTML = summaryContent;
+            summaryElement.classList.remove('hidden');
+            
+            // Masquer après 10 secondes
+            setTimeout(() => {
+                summaryElement.classList.add('hidden');
+            }, 10000);
+        }
+
+        // Mettre à jour le statut de sauvegarde
+        function updateSaveStatus(data) {
+            // Mettre à jour l'interface avec les informations de sauvegarde
+            if (data.pcma_id) {
+                const idField = document.getElementById('pcma_id') || document.querySelector('input[name="pcma_id"]');
+                if (idField) {
+                    idField.value = data.pcma_id;
+                    idField.classList.add('bg-green-50', 'border-green-500');
+                }
+            }
+            
+            // Afficher un message de confirmation
+            elements.status.textContent = ` PCMA sauvegardé avec l'ID: ${data.pcma_id || 'N/A'}`;
+        }
+
+        // Afficher le statut du service
+        function showServiceStatus(message, type) {
+            elements.serviceStatus.textContent = message;
+            elements.serviceStatus.className = `text-sm ${type === 'error' ? 'text-red-600' : type === 'success' ? 'text-green-600' : 'text-blue-600'}`;
+            elements.serviceStatus.classList.remove('hidden');
+        }
+
+        // Event listeners
+        elements.loadApiKeyBtn.addEventListener('click', loadApiKeyFromServer);
+        elements.initBtn.addEventListener('click', initService);
+        elements.testBtn.addEventListener('click', testService);
+        elements.startBtn.addEventListener('click', startSpeechRecognition);
+        elements.stopBtn.addEventListener('click', stopSpeechRecognition);
+
+        // Charger automatiquement la clé API au démarrage
+        setTimeout(() => {
+            loadApiKeyFromServer();
+        }, 1000);
+        
+        // Test manuel des champs DÉSACTIVÉ (était automatique après 3 secondes)
+        // setTimeout(() => {
+        //     console.log(' TEST MANUEL DES CHAMPS...');
+        //     testManualFieldFilling();
+        // }, 3000);
+        
+        // Fonction pour effacer les champs vocaux ET du formulaire principal
+        window.clearVoiceFields = function() {
+            console.log('🧹 Effacement des champs vocaux ET du formulaire principal...');
+            
+            // Champs vocaux
+            const voiceFields = [
+                'voice_player_name',
+                'voice_age', 
+                'voice_position',
+                'voice_club'
+            ];
+            
+            // Champs du formulaire principal
+            const mainFields = [
+                'voice_player_name_main',
+                'voice_age_main', 
+                'voice_position_main',
+                'voice_club_main',
+                'voice_type',
+                'voice_assessor_id',
+                'voice_assessment_date',
+                'voice_status',
+                'voice_notes',
+                'voice_blood_pressure',
+                'voice_heart_rate',
+                'voice_temperature',
+                'voice_respiratory_rate',
+                'voice_oxygen_saturation',
+                'voice_weight',
+                'voice_cardiovascular_history',
+                'voice_surgical_history'
+            ];
+            
+            // Effacer les champs vocaux
+            voiceFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.tagName === 'SELECT') {
+                        field.value = '';
+                        field.disabled = true;
+                    } else {
+                        field.value = '';
+                    }
+                    field.classList.remove('bg-green-50', 'border-green-500');
+                    field.classList.add('border-gray-300');
+                }
+            });
+            
+            // Effacer les champs du formulaire principal
+            mainFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.tagName === 'SELECT') {
+                        field.value = '';
+                    } else {
+                        field.value = '';
+                    }
+                    field.classList.remove('bg-green-50', 'border-green-500');
+                    field.classList.add('border-gray-300');
+                }
+            });
+            
+            // Masquer le résumé d'extraction
+            const summaryElement = document.getElementById('extraction-summary');
+            if (summaryElement) {
+                summaryElement.classList.add('hidden');
+            }
+            
+            console.log(' Champs vocaux ET du formulaire principal effacés avec succès !');
+        };
+
+        // Fonction pour effacer tous les champs (vocaux + formulaire principal)
+        window.clearAllFields = function() {
+            console.log('🧹 Effacement de tous les champs...');
+            
+            // Champs vocaux
+            const voiceFields = [
+                'voice_player_name',
+                'voice_age', 
+                'voice_position',
+                'voice_club'
+            ];
+            
+            // Champs du formulaire principal
+            const mainFields = [
+                'voice_player_name_main',
+                'voice_age_main', 
+                'voice_position_main',
+                'voice_club_main',
+                'voice_type',
+                'voice_assessor_id',
+                'voice_assessment_date',
+                'voice_status',
+                'voice_notes',
+                'voice_blood_pressure',
+                'voice_heart_rate',
+                'voice_temperature',
+                'voice_respiratory_rate',
+                'voice_oxygen_saturation',
+                'voice_weight',
+                'voice_cardiovascular_history',
+                'voice_surgical_history'
+            ];
+            
+            // Effacer les champs vocaux
+            voiceFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.tagName === 'SELECT') {
+                        field.value = '';
+                        field.disabled = true;
+                    } else {
+                        field.value = '';
+                    }
+                    field.classList.remove('bg-green-50', 'border-green-500');
+                    field.classList.add('border-gray-300');
+                }
+            });
+            
+            // Effacer les champs du formulaire principal
+            mainFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.tagName === 'SELECT') {
+                        field.value = '';
+                    } else if (field.tagName === 'TEXTAREA') {
+                        field.value = '';
+                    } else {
+                        field.value = '';
+                    }
+                    field.classList.remove('bg-green-50', 'border-green-500');
+                    field.classList.add('border-gray-300');
+                }
+            });
+            
+            // Masquer le résumé d'extraction
+            const summaryElement = document.getElementById('extraction-summary');
+            if (summaryElement) {
+                summaryElement.classList.add('hidden');
+            }
+            
+            console.log(' Tous les champs effacés avec succès !');
+        };
+
+        // Test de l'analyse vocale
+        function testVoiceAnalysis() {
+            console.log(' Test de l\'analyse vocale...');
+            
+            const testTexts = [
+                "Je m'appelle Ahmed, j'ai 28 ans, je suis milieu et je joue au Real Madrid",
+                "Le joueur s'appelle Mohamed, il a 25 ans, il est attaquant et il joue au PSG",
+                "Nom du joueur: Karim, âge 30 ans, position défenseur, club: Manchester United"
+            ];
+            
+            testTexts.forEach((text, index) => {
+                console.log(`\n Test ${index + 1}: "${text}"`);
+                const result = analyzeVoiceText(text);
+                console.log(' Résultat:', result);
+            });
+        }
+        
+        //  NOUVELLE FONCTION : Test des champs FIFA ID
+        window.testFifaFields = function() {
+            console.log(' Test des champs FIFA ID...');
+            
+            const fifaFields = [
+                'input[name="fifa_id"]',
+                'input[name="fifa_connect_id"]',
+                '#fifa_id',
+                '#fifa_connect_id',
+                '#voice_fifa_connect_id',
+                '#voice_fifa_id'
+            ];
+            
+            console.log(' Vérification de tous les champs FIFA ID:');
+            fifaFields.forEach(selector => {
+                const field = document.querySelector(selector);
+                console.log(`   ${selector}: ${field ? ' TROUVÉ' : '❌ NON TROUVÉ'}`);
+                if (field) {
+                    console.log(`      - Type: ${field.type}`);
+                    console.log(`      - ID: ${field.id}`);
+                    console.log(`      - Name: ${field.name}`);
+                    console.log(`      - Value: "${field.value}"`);
+                    console.log(`      - Visible: ${field.offsetParent !== null ? 'OUI' : 'NON'}`);
+                    console.log(`      - Classes: ${field.className}`);
+                    console.log(`      - Parent: ${field.parentElement ? field.parentElement.tagName : 'N/A'}`);
+                    
+                    //  NOUVEAU : Vérification CSS détaillée
+                    const styles = window.getComputedStyle(field);
+                    console.log(`      - CSS Display: ${styles.display}`);
+                    console.log(`      - CSS Visibility: ${styles.visibility}`);
+                    console.log(`      - CSS Position: ${styles.position}`);
+                    console.log(`      - CSS Opacity: ${styles.opacity}`);
+                    console.log(`      - CSS Width: ${styles.width}`);
+                    console.log(`      - CSS Height: ${styles.height}`);
+                    
+                    // Vérifier si le parent est visible
+                    let parent = field.parentElement;
+                    let level = 0;
+                    while (parent && level < 3) {
+                        const parentStyles = window.getComputedStyle(parent);
+                        console.log(`      - Parent ${level + 1} (${parent.tagName}): Display=${parentStyles.display}, Visible=${parentStyles.visibility}`);
+                        if (parent.id) console.log(`        ID: ${parent.id}`);
+                        if (parent.className) console.log(`        Classes: ${parent.className}`);
+                        parent = parent.parentElement;
+                        level++;
+                    }
+                }
+            });
+            
+            // Test de mise à jour manuelle
+            console.log(' Test de mise à jour manuelle...');
+            const testPlayer = {
+                id: 88,
+                name: 'Ali Jebali',
+                fifa_connect_id: 'TUN_001',
+                position: 'Milieu offensif',
+                age: 24,
+                nationality: 'Tunisie'
+            };
+            
+            console.log(' Appel de updateFormFieldsWithPlayerData avec:', testPlayer);
+            updateFormFieldsWithPlayerData(testPlayer);
+            
+            // Vérification après mise à jour
+            setTimeout(() => {
+                console.log(' Vérification après mise à jour:');
+                fifaFields.forEach(selector => {
+                    const field = document.querySelector(selector);
+                    if (field) {
+                        console.log(`   ${selector}: Value = "${field.value}"`);
+                    }
+                });
+            }, 1000);
+        };
+        
+        //  NOUVELLE FONCTION : Forcer la visibilité des champs vocaux FIFA ID
+        window.forceFifaFieldsVisibility = function() {
+            console.log(' Forçage de la visibilité des champs FIFA ID vocaux...');
+            
+            const voiceFifaFields = [
+                '#voice_fifa_connect_id',
+                '#voice_fifa_id'
+            ];
+            
+            voiceFifaFields.forEach(selector => {
+                const field = document.querySelector(selector);
+                if (field) {
+                    // Forcer la visibilité
+                    field.style.display = 'block';
+                    field.style.visibility = 'visible';
+                    field.style.opacity = '1';
+                    field.style.width = '100%';
+                    field.style.height = 'auto';
+                    
+                    // Ajouter des classes visibles
+                    field.classList.add('block', 'visible');
+                    field.classList.remove('hidden', 'invisible');
+                    
+                    console.log(` Visibilité forcée pour ${selector}`);
+                    
+                    // Vérifier la visibilité après
+                    const styles = window.getComputedStyle(field);
+                    console.log(`   ${selector} - Display: ${styles.display}, Visible: ${styles.visibility}`);
+                }
+            });
+        };
+        
+        //  NOUVELLE FONCTION : Rechercher le joueur dans la base de données
+        async function searchPlayerInDatabase(playerName) {
+            if (!playerName || playerName.trim() === '') {
+                console.log('⚠️ Nom du joueur vide - recherche annulée');
+                return;
+            }
+            
+            console.log(` Recherche du joueur "${playerName}" dans la base de données...`);
+            
+            try {
+                // Appel à l'API Laravel pour rechercher le joueur
+                const response = await fetch(`/api/athletes/search?name=${encodeURIComponent(playerName)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.player) {
+                    // Joueur trouvé !
+                    displayPlayerInfo(data.player);
+                } else {
+                    // Joueur non trouvé
+                    displayPlayerNotFound(playerName);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la recherche du joueur:', error);
+                displayPlayerNotFound(playerName);
+            }
+        }
+        
+        // 🔄 NOUVELLE FONCTION : Mettre à jour les champs du formulaire principal avec les données du joueur
+        function updateFormFieldsWithPlayerData(player) {
+            console.log('🔄 Mise à jour des champs du formulaire avec les données du joueur:', player);
+            console.log(' Données FIFA:', { fifa_connect_id: player.fifa_connect_id, id: player.id });
+            
+            try {
+                // 1. Mettre à jour le champ ID FIFA Connect (champs vocaux ET formulaire principal)
+                const fifaIdFields = [
+                    'input[name="fifa_id"]',
+                    'input[name="fifa_connect_id"]',
+                    '#fifa_id',
+                    '#fifa_connect_id',
+                    'input[name="player_fifa_id"]'
+                ];
+                
+                // Ajouter les champs vocaux
+                const voiceFifaFields = [
+                    '#voice_fifa_connect_id',
+                    '#voice_fifa_id'
+                ];
+                
+                console.log(' Recherche des champs FIFA ID...');
+                console.log(' Champs principaux à vérifier:', fifaIdFields);
+                console.log(' Champs vocaux à vérifier:', voiceFifaFields);
+                
+                let fifaIdUpdated = false;
+                
+                // Mettre à jour les champs vocaux d'abord
+                console.log('🔄 Mise à jour des champs vocaux FIFA ID...');
+                for (const selector of voiceFifaFields) {
+                    const field = document.querySelector(selector);
+                    console.log(` Champ ${selector}:`, field ? 'TROUVÉ' : 'NON TROUVÉ');
+                    if (field && player.fifa_connect_id) {
+                        field.value = player.fifa_connect_id;
+                        field.classList.add('bg-green-50', 'border-green-500');
+                        field.dispatchEvent(new Event('input', { bubbles: true }));
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                        fifaIdUpdated = true;
+                        console.log(` ID FIFA Connect (voix) mis à jour dans ${selector}:`, player.fifa_connect_id);
+                    }
+                }
+                
+                // Mettre à jour les champs du formulaire principal
+                console.log('🔄 Mise à jour des champs principaux FIFA ID...');
+                for (const selector of fifaIdFields) {
+                    const field = document.querySelector(selector);
+                    console.log(` Champ ${selector}:`, field ? 'TROUVÉ' : 'NON TROUVÉ');
+                    if (field && player.fifa_connect_id) {
+                        field.value = player.fifa_connect_id;
+                        field.classList.add('bg-green-50', 'border-green-500');
+                        field.dispatchEvent(new Event('input', { bubbles: true }));
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                        fifaIdUpdated = true;
+                        console.log(` ID FIFA Connect (principal) mis à jour dans ${selector}:`, player.fifa_connect_id);
+                        break;
+                    }
+                }
+                
+                // 2. Mettre à jour le champ Athlète (si c'est un select)
+                const athleteFields = [
+                    'select[name="athlete_id"]',
+                    'select[name="player_id"]',
+                    '#athlete_id',
+                    '#player_id'
+                ];
+                
+                let athleteUpdated = false;
+                for (const selector of athleteFields) {
+                    const field = document.querySelector(selector);
+                    if (field && field.tagName === 'SELECT' && player.id) {
+                        // Chercher l'option correspondant au joueur
+                        const options = Array.from(field.options);
+                        const matchingOption = options.find(option => 
+                            option.text.includes(player.name) || 
+                            option.value === player.id.toString()
+                        );
+                        
+                        if (matchingOption) {
+                            field.value = matchingOption.value;
+                            field.classList.add('bg-green-50', 'border-green-500');
+                            field.dispatchEvent(new Event('change', { bubbles: true }));
+                            athleteUpdated = true;
+                            console.log(' Champ Athlète mis à jour avec:', matchingOption.text);
+                            break;
+                        }
+                    }
+                }
+                
+                // 3. Mettre à jour d'autres champs si disponibles
+                if (player.position) {
+                    const positionFields = [
+                        'select[name="position"]',
+                        'input[name="position"]',
+                        '#position'
+                    ];
+                    
+                    for (const selector of positionFields) {
+                        const field = document.querySelector(selector);
+                        if (field) {
+                            if (field.tagName === 'SELECT') {
+                                const options = Array.from(field.options);
+                                const matchingOption = options.find(option => 
+                                    option.text.toLowerCase().includes(player.position.toLowerCase())
+                                );
+                                if (matchingOption) {
+                                    field.value = matchingOption.value;
+                                    field.classList.add('bg-green-50', 'border-green-500');
+                                    field.dispatchEvent(new Event('change', { bubbles: true }));
+                                    console.log(' Position mise à jour:', matchingOption.text);
+                                    break;
+                                }
+                            } else {
+                                field.value = player.position;
+                                field.classList.add('bg-green-50', 'border-green-500');
+                                field.dispatchEvent(new Event('input', { bubbles: true }));
+                                console.log(' Position mise à jour:', player.position);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // 4. Mettre à jour l'âge si disponible
+                if (player.age) {
+                    const ageFields = [
+                        'input[name="age"]',
+                        'input[name="player_age"]',
+                        '#age',
+                        '#player_age'
+                    ];
+                    
+                    for (const selector of ageFields) {
+                        const field = document.querySelector(selector);
+                        if (field) {
+                            field.value = player.age;
+                            field.classList.add('bg-green-50', 'border-green-500');
+                            field.dispatchEvent(new Event('input', { bubbles: true }));
+                            console.log(' Âge mis à jour:', player.age);
+                            break;
+                        }
+                    }
+                }
+                
+                // 5. Mettre à jour la nationalité si disponible
+                if (player.nationality) {
+                    const nationalityFields = [
+                        'select[name="nationality"]',
+                        'input[name="nationality"]',
+                        '#nationality'
+                    ];
+                    
+                    for (const selector of nationalityFields) {
+                        const field = document.querySelector(selector);
+                        if (field) {
+                            if (field.tagName === 'SELECT') {
+                                const options = Array.from(field.options);
+                                const matchingOption = options.find(option => 
+                                    option.text.toLowerCase().includes(player.nationality.toLowerCase())
+                                );
+                                if (matchingOption) {
+                                    field.value = matchingOption.value;
+                                    field.classList.add('bg-green-50', 'border-green-500');
+                                    field.dispatchEvent(new Event('change', { bubbles: true }));
+                                    console.log(' Nationalité mise à jour:', matchingOption.text);
+                                    break;
+                                }
+                            } else {
+                                field.value = player.nationality;
+                                field.classList.add('bg-green-50', 'border-green-500');
+                                field.dispatchEvent(new Event('input', { bubbles: true }));
+                                console.log(' Nationalité mise à jour:', player.nationality);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Résumé des mises à jour
+                console.log(' Résumé des mises à jour:');
+                console.log(`   - ID FIFA Connect: ${fifaIdUpdated ? '' : '❌'}`);
+                console.log(`   - Athlète: ${athleteUpdated ? '' : '❌'}`);
+                console.log(`   - Position: ${player.position ? '' : '❌'}`);
+                console.log(`   - Âge: ${player.age ? '' : '❌'}`);
+                console.log(`   - Nationalité: ${player.nationality ? '' : '❌'}`);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la mise à jour des champs:', error);
+            }
+        }
+        
+        //  Afficher les informations du joueur trouvé
+        function displayPlayerInfo(player) {
+            console.log(' Joueur trouvé dans la base:', player);
+            console.log(' Appel de updateFormFieldsWithPlayerData...');
+            
+            // 🔄 NOUVEAU : Mettre à jour les champs du formulaire principal
+            updateFormFieldsWithPlayerData(player);
+            
+            // Créer ou mettre à jour le panneau d'information
+            let infoPanel = document.getElementById('player-info-panel');
+            if (!infoPanel) {
+                infoPanel = document.createElement('div');
+                infoPanel.id = 'player-info-panel';
+                infoPanel.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4';
+                
+                // Insérer après le titre de la section vocale
+                const vocalTitle = document.querySelector('h3');
+                if (vocalTitle && vocalTitle.textContent.includes('Enregistrement vocal')) {
+                    vocalTitle.parentNode.insertBefore(infoPanel, vocalTitle.nextSibling);
+                } else {
+                    // Fallback : insérer dans le panel de debug
+                    const debugPanel = document.querySelector('.bg-gray-100');
+                    if (debugPanel) {
+                        debugPanel.appendChild(infoPanel);
+                    }
+                }
+            }
+            
+            infoPanel.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">${player.name.charAt(0)}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold text-blue-900">${player.name}</h4>
+                        <div class="text-sm text-blue-700">
+                            <p><strong>ID FIFA Connect:</strong> <span class="font-mono bg-blue-100 px-2 py-1 rounded">${player.fifa_connect_id || 'N/A'}</span></p>
+                            <p><strong>Club:</strong> ${player.club || 'N/A'}</p>
+                            <p><strong>Position:</strong> ${player.position || 'N/A'}</p>
+                            <p><strong>Âge:</strong> ${player.age || 'N/A'}</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                             Trouvé dans la base
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter une classe pour l'animation
+            infoPanel.classList.add('animate-pulse');
+            setTimeout(() => infoPanel.classList.remove('animate-pulse'), 2000);
+        }
+        
+        // ❌ Afficher que le joueur n'a pas été trouvé
+        function displayPlayerNotFound(playerName) {
+            console.log(`❌ Joueur "${playerName}" non trouvé dans la base`);
+            
+            // Créer ou mettre à jour le panneau d'information
+            let infoPanel = document.getElementById('player-info-panel');
+            if (!infoPanel) {
+                infoPanel = document.createElement('div');
+                infoPanel.id = 'player-info-panel';
+                infoPanel.className = 'bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4';
+                
+                // Insérer après le titre de la section vocale
+                const vocalTitle = document.querySelector('h3');
+                if (vocalTitle && vocalTitle.textContent.includes('Enregistrement vocal')) {
+                    vocalTitle.parentNode.insertBefore(infoPanel, vocalTitle.nextSibling);
+                } else {
+                    // Fallback : insérer dans le panel de debug
+                    const debugPanel = document.querySelector('.bg-gray-100');
+                    if (debugPanel) {
+                        debugPanel.appendChild(infoPanel);
+                    }
+                }
+            }
+            
+            infoPanel.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">?</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-semibold text-yellow-900">Joueur non trouvé</h4>
+                        <div class="text-sm text-yellow-700">
+                            <p><strong>Nom recherché:</strong> ${playerName}</strong></p>
+                            <p><strong>Statut:</strong> Ce joueur n'existe pas encore dans la base de données</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            ⚠️ Nouveau joueur
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter une classe pour l'animation
+            infoPanel.classList.add('animate-pulse');
+            setTimeout(() => infoPanel.classList.remove('animate-pulse'), 2000);
+        }
+        
+        // Fonction de test manuel SUPPRIMÉE (causait des données de test automatiques)
+        // function testManualFieldFilling() { ... }
+    
+    // ========================================
+    //  GESTION DES MODES DE COLLECTE
+    // ========================================
+    
+    // Initialisation des modes de collecte
+    function initModesCollecte() {
+        console.log(' Initialisation des modes de collecte...');
+        
+        const modeManuel = document.getElementById('mode-manuel');
+        const modeVocal = document.getElementById('mode-vocal');
+        
+        if (!modeManuel || !modeVocal) {
+            console.error('❌ Éléments des modes de collecte non trouvés');
+            return;
+        }
+        
+        // Mode Manuel par défaut (actif)
+        setModeManuel();
+        
+        // Event listeners pour les modes
+        modeManuel.addEventListener('click', setModeManuel);
+        modeVocal.addEventListener('click', setModeVocal);
+        
+        console.log(' Modes de collecte initialisés');
+    }
+    
+    // Activer le mode Manuel
+    function setModeManuel() {
+        console.log(' Activation du mode Manuel');
+        
+        const modeManuel = document.getElementById('mode-manuel');
+        const modeVocal = document.getElementById('mode-vocal');
+        
+        if (!modeManuel || !modeVocal) {
+            console.error('❌ Éléments des modes non trouvés');
+            return;
+        }
+        
+        // Mise à jour des boutons
+        modeManuel.classList.remove('bg-gray-100', 'text-gray-700');
+        modeManuel.classList.add('bg-blue-600', 'text-white');
+        
+        modeVocal.classList.remove('bg-blue-600', 'text-white');
+        modeVocal.classList.add('bg-gray-100', 'text-gray-700');
+        
+        // Arrêter l'enregistrement vocal si actif
+        if (window.speechService && window.speechService.isRecording) {
+            window.speechService.stopListening();
+        }
+        
+        console.log(' Mode Manuel activé');
+    }
+    
+    // Activer le mode Vocal
+    function setModeVocal() {
+        console.log(' Activation du mode Vocal');
+        
+        const modeManuel = document.getElementById('mode-manuel');
+        const modeVocal = document.getElementById('mode-vocal');
+        
+        if (!modeManuel || !modeVocal) {
+            console.error('❌ Éléments des modes non trouvés');
+            return;
+        }
+        
+        // Mise à jour des boutons
+        modeVocal.classList.remove('bg-gray-100', 'text-gray-700');
+        modeVocal.classList.add('bg-blue-600', 'text-white');
+        
+        modeManuel.classList.remove('bg-blue-600', 'text-white');
+        modeManuel.classList.add('bg-gray-100', 'text-gray-700');
+        
+        console.log(' Mode Vocal activé');
+    }
+    
+    // ========================================
+    //  GESTION DE LA CONSOLE VOCALE
+    // ========================================
+    
+            //  NOUVELLE FONCTION : Mise à jour de l'affichage vocal en temps réel
+        function updateVoiceDisplay(text, confidence) {
+            console.log('🔄 Mise à jour de l\'affichage vocal:', text);
+            
+            // Mettre à jour la transcription finale
+            const finalTranscript = document.getElementById('voice-final-transcript');
+            if (finalTranscript) {
+                finalTranscript.textContent = text;
+                finalTranscript.style.backgroundColor = '#F0FDF4';
+                finalTranscript.style.borderColor = '#10B981';
+            }
+            
+            // Mettre à jour la confiance
+            const confidenceElement = document.getElementById('voice-confidence');
+            if (confidenceElement) {
+                confidenceElement.textContent = `${Math.round(confidence * 100)}%`;
+                confidenceElement.style.backgroundColor = confidence > 0.8 ? '#F0FDF4' : '#FEF3C7';
+                confidenceElement.style.color = confidence > 0.8 ? '#065F46' : '#92400E';
+            }
+            
+            // Mettre à jour le statut
+            const liveStatus = document.getElementById('voice-live-status');
+            if (liveStatus) {
+                liveStatus.textContent = 'Transcription reçue';
+                liveStatus.style.backgroundColor = '#F0FDF4';
+                liveStatus.style.color = '#065F46';
+            }
+            
+            // Mettre à jour l'analyse NLP
+            const nlpAnalysis = document.getElementById('voice-nlp-analysis');
+            if (nlpAnalysis) {
+                nlpAnalysis.textContent = 'Analyse en cours...';
+                nlpAnalysis.style.backgroundColor = '#FEF3C7';
+                nlpAnalysis.style.color = '#92400E';
+            }
+            
+            console.log(' Affichage vocal mis à jour');
+        }
+
+        //  CORRECTION : Initialisation de la console vocale avec service Google
+        function initConsoleVocale() {
+            console.log(' Initialisation de la console vocale avec service Google...');
+            
+            const startBtn = document.getElementById('start-recording-btn');
+            const stopBtn = document.getElementById('stop-recording-btn');
+            const voiceStatus = document.getElementById('voice-status');
+            const voiceResults = document.getElementById('voice-results');
+            
+            if (!startBtn || !stopBtn || !voiceStatus || !voiceResults) {
+                console.error('❌ Éléments de la console vocale non trouvés');
+                return;
+            }
+            
+            //  CORRECTION : Utiliser le service Google SpeechRecognitionService
+            if (!window.speechService) {
+                console.error('❌ Service Google vocal non disponible');
+                if (voiceStatus) {
+                    voiceStatus.textContent = '❌ Service Google vocal non initialisé';
+                    voiceStatus.className = 'text-center text-red-600 font-medium';
+                }
+                return;
+            }
+            
+            console.log(' Service Google vocal disponible');
+            
+            //  CORRECTION : Configuration des callbacks Google
+            window.speechService.onResult = function(text, confidence) {
+                console.log(' Résultat Google reçu:', text, 'Confiance:', confidence);
+                
+                // Mettre à jour l'affichage en temps réel
+                updateVoiceDisplay(text, confidence);
+                
+                // Analyser le texte et extraire les données
+                const extractedData = analyzeVoiceText(text);
+                console.log(' Données extraites Google:', extractedData);
+                
+                // Afficher les résultats dans la console vocale
+                displayVoiceResults(extractedData);
+                
+                // Remplir le formulaire principal
+                fillFormFields(extractedData);
+                
+                // Écrire dans les notes cliniques
+                if (extractedData && (extractedData.player_name || extractedData.age || extractedData.position || extractedData.club)) {
+                    addAutomaticNote(extractedData);
+                }
+            };
+            
+            window.speechService.onError = function(error) {
+                console.error('❌ Erreur Google vocal:', error);
+                
+                if (voiceStatus) {
+                    voiceStatus.textContent = `❌ Erreur Google: ${error.message}`;
+                    voiceStatus.className = 'text-center text-red-600 font-medium';
+                }
+            };
+            
+            // Event listeners pour les boutons d'enregistrement
+            startBtn.addEventListener('click', startVoiceRecording);
+            stopBtn.addEventListener('click', stopVoiceRecording);
+            
+            console.log(' Console vocale Google initialisée');
+        }
+    
+    //  CORRECTION : Démarrer l'enregistrement vocal avec service Google
+    function startVoiceRecording() {
+        console.log(' Démarrage de l\'enregistrement vocal Google...');
+        
+        if (!window.speechService) {
+            console.error('❌ Service Google vocal non disponible');
+            
+            // Afficher l'erreur à l'utilisateur
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = '❌ Service Google vocal non initialisé';
+                voiceStatus.className = 'text-center text-red-600 font-medium';
+            }
+            return;
+        }
+        
+        const startBtn = document.getElementById('start-recording-btn');
+        const stopBtn = document.getElementById('stop-recording-btn');
+        const voiceStatus = document.getElementById('voice-status');
+        
+        // Mise à jour de l'interface
+        startBtn.classList.add('hidden');
+        stopBtn.classList.remove('hidden');
+        voiceStatus.textContent = ' Enregistrement Google en cours...';
+        voiceStatus.className = 'text-center text-red-600 font-medium';
+        
+        //  CORRECTION : Utiliser la méthode Google correcte
+        try {
+            window.speechService.startListening(
+                // Callback de résultat (déjà configuré dans initConsoleVocale)
+                null,
+                // Callback d'erreur (déjà configuré dans initConsoleVocale)
+                null,
+                // Callback de statut
+                function(status, message) {
+                    console.log(' Statut Google:', status, message);
+                    if (voiceStatus) {
+                        voiceStatus.textContent = ` ${message}`;
+                    }
+                }
+            );
+            console.log(' Enregistrement vocal Google démarré');
+        } catch (error) {
+            console.error('❌ Erreur lors du démarrage Google:', error);
+            if (voiceStatus) {
+                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.className = 'text-center text-red-600 font-medium';
+            }
+            // Remettre le bouton start
+            startBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+        }
+    }
+    
+    //  CORRECTION : Arrêter l'enregistrement vocal avec service Google
+    function stopVoiceRecording() {
+        console.log(' Arrêt de l\'enregistrement vocal Google...');
+        
+        if (!window.speechService) {
+            console.error('❌ Service Google vocal non disponible');
+            return;
+        }
+        
+        const startBtn = document.getElementById('start-recording-btn');
+        const stopBtn = document.getElementById('stop-recording-btn');
+        const voiceStatus = document.getElementById('voice-status');
+        
+        // Mise à jour de l'interface
+        stopBtn.classList.add('hidden');
+        startBtn.classList.remove('hidden');
+        voiceStatus.textContent = '⏸️ Enregistrement Google arrêté';
+        voiceStatus.className = 'text-center text-orange-600 font-medium';
+        
+        //  CORRECTION : Utiliser la méthode Google correcte
+        try {
+            window.speechService.stopListening();
+            console.log(' Enregistrement vocal Google arrêté');
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'arrêt Google:', error);
+            if (voiceStatus) {
+                voiceStatus.textContent = `❌ Erreur arrêt: ${error.message}`;
+                voiceStatus.className = 'text-center text-red-600 font-medium';
+            }
+        }
+    }
+    
+    // ========================================
+    //  FONCTIONS MANQUANTES - CORRECTIONS
+    // ========================================
+    
+    // Fonction pour remplir les champs avec les données d'un joueur
+    function fillFormFieldsWithPlayerData(playerData) {
+        console.log(' Remplissage des champs avec les données du joueur:', playerData);
+        
+        try {
+            // Remplir les champs vocaux
+            const voicePlayerName = document.getElementById('voice_player_name');
+            const voiceAge = document.getElementById('voice_age');
+            const voicePosition = document.getElementById('voice_position');
+            const voiceClub = document.getElementById('voice_club');
+            
+            if (voicePlayerName && playerData.name) voicePlayerName.value = playerData.name;
+            if (voiceAge && playerData.age) voiceAge.value = playerData.age;
+            if (voicePosition && playerData.position) voicePosition.value = playerData.position;
+            if (voiceClub && playerData.club) voiceClub.value = playerData.club;
+            
+            // Remplir les champs du formulaire principal
+            const mainPlayerName = document.getElementById('voice_player_name_main');
+            const mainAge = document.getElementById('voice_age_main');
+            const mainPosition = document.getElementById('voice_position_main');
+            const mainClub = document.getElementById('voice_club_main');
+            
+            if (mainPlayerName && playerData.name) mainPlayerName.value = playerData.name;
+            if (mainAge && playerData.age) mainAge.value = playerData.age;
+            if (mainPosition && playerData.position) mainPosition.value = playerData.position;
+            if (mainClub && playerData.club) mainClub.value = playerData.club;
+            
+            // Remplir les champs de résultats vocaux
+            const voicePlayerNameResult = document.getElementById('voice_player_name_result');
+            const voiceAgeResult = document.getElementById('voice_age_result');
+            const voicePositionResult = document.getElementById('voice_position_result');
+            const voiceClubResult = document.getElementById('voice_club_result');
+            
+            if (voicePlayerNameResult && playerData.name) voicePlayerNameResult.value = playerData.name;
+            if (voiceAgeResult && playerData.age) voiceAgeResult.value = playerData.age;
+            if (voicePositionResult && playerData.position) voicePositionResult.value = playerData.position;
+            if (voiceClubResult && playerData.club) voiceClubResult.value = playerData.club;
+            
+            console.log(' Champs remplis avec succès avec les données du joueur');
+            
+            // Mettre à jour le statut vocal
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = ' Données du joueur remplies automatiquement';
+                voiceStatus.className = 'text-center text-green-600 font-medium';
+            }
+            
+        } catch (error) {
+            console.error('❌ Erreur lors du remplissage des champs:', error);
+            
+            // Mettre à jour le statut vocal en cas d'erreur
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.className = 'text-center text-red-600 font-medium';
+            }
+        }
+    }
+    
+    // Afficher les résultats vocaux
+    function displayVoiceResults(data) {
+        console.log(' Affichage des résultats vocaux:', data);
+        
+        const voiceResults = document.getElementById('voice-results');
+        const voicePlayerName = document.getElementById('voice_player_name_result');
+        const voiceAge = document.getElementById('voice_age_result');
+        const voicePosition = document.getElementById('voice_position_result');
+        const voiceClub = document.getElementById('voice_club_result');
+        
+        if (!voiceResults || !voicePlayerName || !voiceAge || !voicePosition || !voiceClub) {
+            console.error('❌ Éléments d\'affichage des résultats non trouvés');
+            return;
+        }
+        
+        // Remplir les champs vocaux
+        if (data.player_name) voicePlayerName.value = data.player_name;
+        if (data.age) voiceAge.value = data.age;
+        if (data.position) voicePosition.value = data.position;
+        if (data.club) voiceClub.value = data.club;
+        
+        // Afficher la section des résultats
+        voiceResults.classList.remove('hidden');
+        
+        // Mettre à jour le statut
+        const voiceStatus = document.getElementById('voice-status');
+        voiceStatus.textContent = ' Données extraites avec succès !';
+        voiceStatus.className = 'text-center text-green-600 font-medium';
+        
+        console.log(' Résultats vocaux affichés');
+    }
+    
+    // ========================================
+    //  INITIALISATION COMPLÈTE
+    // ========================================
+    
+    // ========================================
+    //  SOLUTION ALTERNATIVE : INTÉGRATION DIRECTE
+    // ========================================
+    
+    //  NOUVEAU : Service vocal robuste avec intégration directe
+    let serviceVocal = null;
+    let nlpMedical = null;
+    
+    // Fonction qui s'intègre directement avec le service vocal
+    function integrateWithSpeechService() {
+        console.log(' Intégration directe avec le service vocal robuste...');
+        
+        //  NOUVEAU : Initialiser le service vocal robuste
+        if (typeof ServiceVocal !== 'undefined') {
+            serviceVocal = new ServiceVocal();
+            serviceVocal.initialize().then(() => {
+                console.log(' ServiceVocal initialisé avec succès');
+                setupServiceVocalCallbacks();
+            }).catch(error => {
+                console.error('❌ Erreur lors de l\'initialisation de ServiceVocal:', error);
+            });
+        } else {
+            console.warn('⚠️ ServiceVocal non disponible, utilisation du service existant');
+            integrateWithExistingSpeechService();
+        }
+        
+        //  NOUVEAU : Initialiser le NLP médical
+        if (typeof NLPMedicalPCMA !== 'undefined') {
+            nlpMedical = new NLPMedicalPCMA();
+            console.log(' NLPMedicalPCMA initialisé avec succès');
+        } else {
+            console.warn('⚠️ NLPMedicalPCMA non disponible');
+        }
+    }
+    
+    //  NOUVEAU : Configuration des callbacks du service vocal robuste
+    function setupServiceVocalCallbacks() {
+        if (!serviceVocal) return;
+        
+        // Callback de transcription en temps réel
+        serviceVocal.onTranscript((data) => {
+            console.log(' Transcription reçue par ServiceVocal:', data);
+            
+            //  NOUVEAU : Mettre à jour l'affichage en temps réel
+            updateLiveVoiceDisplay(data);
+            
+            try {
+                //  NOUVEAU : Utiliser le NLP médical pour l'analyse
+                let extractedData;
+                if (nlpMedical) {
+                    extractedData = nlpMedical.analyzeTranscript(data.transcript, data.confidence);
+                } else {
+                    extractedData = analyzeVoiceText(data.transcript);
+                }
+                
+                if (extractedData) {
+                    console.log(' Données extraites par ServiceVocal + NLP:', extractedData);
+                    
+                    //  NOUVEAU : Mettre à jour l'analyse NLP et les données extraites
+                    updateNLPAnalysis(extractedData);
+                    
+                    // Afficher les résultats dans la console vocale
+                    displayVoiceResults(extractedData);
+                    
+                    // Remplir le formulaire principal
+                    fillFormFields(extractedData);
+                    
+                    // Effacer les anciennes données TEST si c'est une commande FIFA
+                    if (extractedData.command === 'fifa_connect_search') {
+                        console.log('🧹 Effacement des anciennes données TEST...');
+                        clearOldTestData();
+                    }
+                    
+                    // Mettre à jour le statut
+                    const voiceStatus = document.getElementById('voice-status');
+                    if (voiceStatus) {
+                        voiceStatus.textContent = ' Données traitées par ServiceVocal + NLP !';
+                        voiceStatus.className = 'text-center text-green-600 font-medium';
+                    }
+                    
+                    console.log(' Résultat vocal traité avec succès par ServiceVocal + NLP');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du traitement du résultat vocal:', error);
+                
+                const voiceStatus = document.getElementById('voice-status');
+                if (voiceStatus) {
+                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.className = 'text-center text-red-600 font-medium';
+                }
+            }
+        });
+        
+        // Callback d'erreur
+        serviceVocal.onError((error) => {
+            console.error('❌ Erreur ServiceVocal:', error);
+            
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.className = 'text-center text-red-600 font-medium';
+            }
+        });
+        
+        // Callback de démarrage
+        serviceVocal.onStart(() => {
+            console.log(' ServiceVocal démarré');
+            
+            //  NOUVEAU : Mettre à jour l'affichage en temps réel
+            updateVoiceLiveStatus(' Reconnaissance vocale en cours...', 'bg-blue-100 text-blue-700');
+            
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = ' Reconnaissance vocale en cours...';
+                voiceStatus.className = 'text-center text-blue-600 font-medium';
+            }
+        });
+        
+        // Callback d'arrêt
+        serviceVocal.onStop(() => {
+            console.log('⏸️ ServiceVocal arrêté');
+            
+            //  NOUVEAU : Mettre à jour l'affichage en temps réel
+            updateVoiceLiveStatus('⏸️ Reconnaissance vocale arrêtée', 'bg-orange-100 text-orange-700');
+            
+            const voiceStatus = document.getElementById('voice-status');
+            if (voiceStatus) {
+                voiceStatus.textContent = '⏸️ Reconnaissance vocale arrêtée';
+                voiceStatus.className = 'text-center text-orange-600 font-medium';
+            }
+        });
+        
+        console.log(' Callbacks ServiceVocal configurés avec succès');
+    }
+    
+    //  NOUVEAU : Intégration avec le service vocal existant (fallback)
+    function integrateWithExistingSpeechService() {
+        if (!window.speechService) {
+            console.error('❌ Service vocal non disponible pour l\'intégration');
+            return;
+        }
+        
+        // Intercepter directement les résultats
+        const originalStartListening = window.speechService.startListening;
+        const originalStopListening = window.speechService.stopListening;
+        
+        // Intercepter le démarrage de l'écoute
+        window.speechService.startListening = function() {
+            console.log(' Démarrage de l\'écoute avec intégration directe...');
+            originalStartListening.call(this);
+            
+            // Surveiller les résultats en temps réel
+            this.startResultMonitoring();
+        };
+        
+        // Intercepter l'arrêt de l'écoute
+        window.speechService.stopListening = function() {
+            console.log('⏸️ Arrêt de l\'écoute avec intégration directe...');
+            originalStopListening.call(this);
+            
+            // Traiter les résultats immédiatement
+            this.processResultsImmediately();
+        };
+        
+        // Surveillance en temps réel
+        window.speechService.startResultMonitoring = function() {
+            console.log(' Démarrage de la surveillance des résultats...');
+            
+            this.resultMonitor = setInterval(() => {
+                if (this.lastResult && this.lastResult !== this.processedResult) {
+                    console.log(' Nouveau résultat détecté par surveillance:', this.lastResult);
+                    this.processedResult = this.lastResult;
+                    this.processVoiceResult(this.lastResult);
+                }
+            }, 100);
+        };
+        
+        // Traitement immédiat des résultats
+        window.speechService.processResultsImmediately = function() {
+            console.log(' Traitement immédiat des résultats...');
+            
+            setTimeout(() => {
+                if (this.lastResult) {
+                    console.log(' Traitement immédiat du résultat:', this.lastResult);
+                    this.processVoiceResult(this.lastResult);
+                } else {
+                    console.log('⚠️ Aucun résultat disponible pour traitement immédiat');
+                }
+            }, 500);
+        };
+        
+        // Traitement du résultat vocal
+        window.speechService.processVoiceResult = function(result) {
+            console.log(' Traitement du résultat vocal:', result);
+            
+            //  NOUVEAU : Mettre à jour l'affichage en temps réel
+            updateLiveVoiceDisplay({
+                transcript: result,
+                confidence: 0.9,
+                isFinal: true,
+                final: result,
+                interim: ''
+            });
+            
+            try {
+                // Utiliser le NLP médical si disponible
+                let extractedData;
+                if (nlpMedical) {
+                    extractedData = nlpMedical.analyzeTranscript(result, 0.9);
+                } else {
+                    extractedData = analyzeVoiceText(result);
+                }
+                
+                if (extractedData) {
+                    console.log(' Données extraites par intégration directe:', extractedData);
+                    
+                    //  NOUVEAU : Mettre à jour l'analyse NLP et les données extraites
+                    updateNLPAnalysis(extractedData);
+                    
+                    // Afficher les résultats dans la console vocale
+                    displayVoiceResults(extractedData);
+                    
+                    // Remplir le formulaire principal
+                    fillFormFields(extractedData);
+                    
+                    // Effacer les anciennes données TEST si c'est une commande FIFA
+                    if (extractedData.command === 'fifa_connect_search') {
+                        console.log('🧹 Effacement des anciennes données TEST...');
+                        clearOldTestData();
+                    }
+                    
+                    // Mettre à jour le statut
+                    const voiceStatus = document.getElementById('voice-status');
+                    if (voiceStatus) {
+                        voiceStatus.textContent = ' Données traitées par intégration directe !';
+                        voiceStatus.className = 'text-center text-green-600 font-medium';
+                    }
+                    
+                    console.log(' Résultat vocal traité avec succès par intégration directe');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du traitement du résultat vocal:', error);
+                
+                const voiceStatus = document.getElementById('voice-status');
+                if (voiceStatus) {
+                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.className = 'text-center text-red-600 font-medium';
+                }
+            }
+        };
+        
+        console.log(' Intégration directe avec le service vocal existant configurée');
+    }
+    
+            // Initialiser tous les composants
+        function initAll() {
+            console.log(' Initialisation complète de l\'application...');
+            
+            //  TEST IMMÉDIAT ET VISIBLE
+            console.log(' TEST IMMÉDIAT DES ÉLÉMENTS...');
+            const modeManuel = document.getElementById('mode-manuel');
+            const modeVocal = document.getElementById('mode-vocal');
+            const consoleVocale = document.getElementById('console-vocale');
+            
+            console.log(' Mode Manuel trouvé:', modeManuel);
+            console.log(' Mode Vocal trouvé:', modeVocal);
+            console.log(' Console Vocale trouvée:', consoleVocale);
+            
+            if (!modeManuel || !modeVocal || !consoleVocale) {
+                console.error('❌ ÉLÉMENTS MANQUANTS ! Vérifiez les IDs HTML');
+                return;
+            }
+            
+            // Initialiser les modes de collecte
+            //  ANCIEN SYSTÈME SUPPRIMÉ
+    // initModesCollecte();
+            
+            // Initialiser la console vocale
+            initConsoleVocale();
+            
+            //  NOUVEAU : Intégration directe avec le service vocal
+            integrateWithSpeechService();
+            
+            //  TEST IMMÉDIAT DES BOUTONS DE MODE
+            console.log(' TEST IMMÉDIAT DES BOUTONS DE MODE...');
+            const modeManuelTest = document.getElementById('mode-manuel');
+            const modeVocalTest = document.getElementById('mode-vocal');
+            const consoleVocaleFinal = document.getElementById('console-vocale');
+            
+            if (modeManuelTest && modeVocalTest && consoleVocaleFinal) {
+                console.log(' Tous les éléments des modes trouvés');
+                console.log(' Bouton Mode Manuel:', modeManuelTest);
+                console.log(' Bouton Mode Vocal:', modeVocalTest);
+                console.log(' Console Vocale:', consoleVocaleFinal);
+                
+                // Test du clic sur Mode Vocal
+                console.log(' Test du clic sur Mode Vocal...');
+                modeVocalTest.click();
+                
+                // Vérification après 1 seconde
+                setTimeout(() => {
+                    console.log(' Vérification après clic sur Mode Vocal:');
+                    console.log('   - Mode Manuel actif:', modeManuelTest.classList.contains('bg-blue-600'));
+                    console.log('   - Mode Vocal actif:', modeVocalTest.classList.contains('bg-blue-600'));
+                    console.log('   - Console vocale masquée:', consoleVocaleFinal.classList.contains('hidden'));
+                    console.log('   - Console vocale style display:', consoleVocaleFinal.style.display);
+                    console.log('   - Console vocale style visibility:', consoleVocaleFinal.style.visibility);
+                    console.log('   - Console vocale style opacity:', consoleVocaleFinal.style.opacity);
+                }, 1000);
+            } else {
+                console.error('❌ Éléments des modes non trouvés dans initAll');
+            }
+        
+        // Vérification finale de l'état des modes
+        const consoleVocaleFinalCheck = document.getElementById('console-vocale');
+        const modeManuelFinal = document.getElementById('mode-manuel');
+        const modeVocalFinal = document.getElementById('mode-vocal');
+        
+        if (consoleVocaleFinalCheck && modeManuelFinal && modeVocalFinal) {
+            console.log(' Vérification finale des modes:');
+            console.log('   - Mode Manuel actif:', modeManuelFinal.classList.contains('bg-blue-600'));
+            console.log('   - Mode Vocal actif:', modeVocalFinal.classList.contains('bg-blue-600'));
+            console.log('   - Console vocale masquée:', consoleVocaleFinalCheck.classList.contains('hidden'));
+            console.log('   - Console vocale style display:', consoleVocaleFinalCheck.style.display);
+        }
+        
+        // Initialiser le service de reconnaissance vocale (déjà fait plus haut)
+        if (window.speechService) {
+            console.log(' Service vocal global détecté et configuré');
+            
+            //  NOUVELLE APPROCHE : Configuration des callbacks avec intégration directe
+            if (!window.speechService.onResult) {
+                console.log(' Configuration du callback principal avec intégration directe...');
+                
+                // Configurer les callbacks pour la console vocale
+                window.speechService.onResult = function(result) {
+                    console.log(' Résultat vocal reçu (callback principal):', result);
+                    console.log(' Type de résultat:', typeof result);
+                    console.log(' Contenu du résultat:', result);
+                    
+                    // Stocker le dernier résultat pour l'intégration directe
+                    this.lastResult = result;
+                    
+                    // Analyser le texte et extraire les données
+                    const extractedData = analyzeVoiceText(result);
+                    console.log(' Données extraites (callback principal):', extractedData);
+                    
+                    // Afficher les résultats dans la console vocale
+                    displayVoiceResults(extractedData);
+                    
+                    // Remplir le formulaire principal
+                    fillFormFields(extractedData);
+                    
+                    //  NOUVEAU : Effacer les anciennes données TEST si c'est une commande FIFA
+                    if (extractedData.command === 'fifa_connect_search') {
+                        console.log('🧹 Effacement des anciennes données TEST...');
+                        clearOldTestData();
+                    }
+                };
+            } else {
+                console.log(' Callback principal déjà configuré');
+            }
+            
+            // Vérification immédiate que le callback est configuré
+            console.log(' Callback onResult configuré dans initAll');
+            console.log(' Vérification callback:', typeof window.speechService.onResult);
+        }
+        
+        // Configurer le callback d'erreur
+        if (window.speechService) {
+            window.speechService.onError = function(error) {
+                console.error('❌ Erreur de reconnaissance vocale:', error);
+                
+                const voiceStatus = document.getElementById('voice-status');
+                if (voiceStatus) {
+                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.className = 'text-center text-red-600 font-medium';
+                }
+            };
+        }
+        
+        console.log(' Application initialisée avec succès');
+        
+        // Vérification finale des callbacks
+        if (window.speechService && window.speechService.onResult) {
+            console.log(' Callback onResult configuré avec succès');
+        } else {
+            console.error('❌ Callback onResult non configuré !');
+        }
+        
+        //  TEST DIRECT DE LA COMMANDE FIFA CONNECT
+        setTimeout(() => {
+            console.log(' TEST DIRECT DE LA COMMANDE FIFA CONNECT...');
+            testFifaConnectCommand();
+        }, 2000);
+        
+        //  NOUVEAU : Test de l'intégration directe
+        setTimeout(() => {
+            console.log(' TEST DE L\'INTÉGRATION DIRECTE...');
+            testIntegrationDirecte();
+        }, 3000);
+    }
+    
+    //  FONCTION DE TEST DE L'INTÉGRATION DIRECTE
+    function testIntegrationDirecte() {
+        console.log(' Test de l\'intégration directe ServiceVocal + NLP...');
+        
+        // Vérifier que ServiceVocal est disponible
+        if (typeof ServiceVocal !== 'undefined') {
+            console.log(' ServiceVocal disponible globalement');
+        } else {
+            console.warn('⚠️ ServiceVocal non disponible globalement');
+        }
+        
+        // Vérifier que NLPMedicalPCMA est disponible
+        if (typeof NLPMedicalPCMA !== 'undefined') {
+            console.log(' NLPMedicalPCMA disponible globalement');
+        } else {
+            console.warn('⚠️ NLPMedicalPCMA non disponible globalement');
+        }
+        
+        // Vérifier les variables locales
+        if (serviceVocal) {
+            console.log(' Variable serviceVocal disponible:', serviceVocal.getStatus());
+        } else {
+            console.warn('⚠️ Variable serviceVocal non disponible');
+        }
+        
+        if (nlpMedical) {
+            console.log(' Variable nlpMedical disponible');
+        } else {
+            console.warn('⚠️ Variable nlpMedical non disponible');
+        }
+        
+        console.log(' Test de l\'intégration directe terminé');
+    }
+    
+    // ========================================
+    //  NOUVEAU : FONCTIONS D'AFFICHAGE EN TEMPS RÉEL
+    // ========================================
+    
+    //  Mettre à jour le statut de la reconnaissance vocale
+    function updateVoiceLiveStatus(status, className) {
+        const statusElement = document.getElementById('voice-live-status');
+        if (statusElement) {
+            statusElement.textContent = status;
+            statusElement.className = `px-2 py-1 text-xs font-medium rounded-full ${className}`;
+        }
+    }
+    
+    //  Mettre à jour l'affichage en temps réel de la reconnaissance vocale
+    function updateLiveVoiceDisplay(data) {
+        console.log(' Mise à jour de l\'affichage en temps réel:', data);
+        
+        // Mettre à jour la confiance
+        const confidenceElement = document.getElementById('voice-confidence');
+        if (confidenceElement && data.confidence) {
+            const confidencePercent = Math.round(data.confidence * 100);
+            confidenceElement.textContent = `${confidencePercent}%`;
+            
+            // Changer la couleur selon la confiance
+            if (confidencePercent >= 80) {
+                confidenceElement.className = 'ml-2 px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full';
+            } else if (confidencePercent >= 60) {
+                confidenceElement.className = 'ml-2 px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full';
+            } else {
+                confidenceElement.className = 'ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full';
+            }
+        }
+        
+        // Mettre à jour la transcription en cours
+        const interimElement = document.getElementById('voice-interim-transcript');
+        if (interimElement && data.interim) {
+            interimElement.innerHTML = `<span class="text-purple-600">${data.interim}</span>`;
+        }
+        
+        // Mettre à jour la transcription finale
+        if (data.isFinal && data.final) {
+            const finalElement = document.getElementById('voice-final-transcript');
+            if (finalElement) {
+                finalElement.innerHTML = `<span class="text-green-600 font-medium">${data.final}</span>`;
+            }
+        }
+    }
+    
+    //  Mettre à jour l'analyse NLP et les données extraites
+    function updateNLPAnalysis(extractedData) {
+        console.log('🧠 Mise à jour de l\'analyse NLP:', extractedData);
+        
+        // Mettre à jour l'analyse NLP
+        const nlpElement = document.getElementById('voice-nlp-analysis');
+        if (nlpElement) {
+            let nlpText = '';
+            
+            if (extractedData.command === 'fifa_connect_search') {
+                nlpText = ` Commande FIFA CONNECT détectée${extractedData.fifa_number ? ` (Numéro: ${extractedData.fifa_number})` : ''}`;
+            } else if (extractedData.player_name || extractedData.age || extractedData.position || extractedData.club) {
+                const parts = [];
+                if (extractedData.player_name) parts.push(`Nom: ${extractedData.player_name}`);
+                if (extractedData.age) parts.push(`Âge: ${extractedData.age}`);
+                if (extractedData.position) parts.push(`Position: ${extractedData.position}`);
+                if (extractedData.club) parts.push(`Club: ${extractedData.club}`);
+                nlpText = parts.join(' | ');
+            } else {
+                nlpText = 'Aucune donnée structurée détectée';
+            }
+            
+            nlpElement.innerHTML = `<span class="text-blue-600">${nlpText}</span>`;
+        }
+        
+        // Mettre à jour les données extraites
+        const dataElement = document.getElementById('voice-extracted-data');
+        if (dataElement) {
+            const dataText = JSON.stringify(extractedData, null, 2);
+            dataElement.innerHTML = `<pre class="text-xs text-green-600 overflow-auto">${dataText}</pre>`;
+        }
+    }
+    
+    //  Réinitialiser l'affichage en temps réel
+    function resetLiveVoiceDisplay() {
+        updateVoiceLiveStatus('En attente', 'bg-gray-100 text-gray-700');
+        
+        const confidenceElement = document.getElementById('voice-confidence');
+        if (confidenceElement) {
+            confidenceElement.textContent = '--';
+            confidenceElement.className = 'ml-2 px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full';
+        }
+        
+        const interimElement = document.getElementById('voice-interim-transcript');
+        if (interimElement) {
+            interimElement.innerHTML = '<span class="text-gray-400">Parlez maintenant...</span>';
+        }
+        
+        const finalElement = document.getElementById('voice-final-transcript');
+        if (finalElement) {
+            finalElement.innerHTML = '<span class="text-gray-400">Aucune transcription finale</span>';
+        }
+        
+        const nlpElement = document.getElementById('voice-nlp-analysis');
+        if (nlpElement) {
+            nlpElement.innerHTML = '<span class="text-gray-400">Analyse en attente...</span>';
+        }
+        
+        const dataElement = document.getElementById('voice-extracted-data');
+        if (dataElement) {
+            dataElement.innerHTML = '<span class="text-gray-400">Aucune donnée extraite</span>';
+        }
+    }
+    
+    //  FONCTION DE TEST DIRECTE
+    function testFifaConnectCommand() {
+        console.log(' Test direct de la commande FIFA CONNECT...');
+        
+        // 1. Tester l'analyse du texte (avec et sans numéro)
+        const testTexts = [
+            "ID FIFA CONNECT",
+            "ID FIFA CONNECT 001",
+            "FIFA CONNECT 001",
+            "FIFA 001"
+        ];
+        
+        testTexts.forEach((testText, index) => {
+            console.log(`\n Test ${index + 1}: "${testText}"`);
+            
+            const analysis = analyzeVoiceText(testText);
+            console.log(' Résultat de l\'analyse:', analysis);
+            
+            if (analysis.command === 'fifa_connect_search') {
+                console.log(' Commande FIFA CONNECT détectée avec succès !');
+                
+                if (analysis.fifa_number) {
+                    console.log(` Numéro FIFA capturé: ${analysis.fifa_number}`);
+                }
+                
+                // 2. Tester le remplissage des champs
+                console.log(' Test du remplissage des champs...');
+                fillFormFields(analysis);
+                
+                // 3. Tester la recherche automatique
+                console.log(' Test de la recherche automatique...');
+                searchPlayerByFifaConnect();
+                
+            } else {
+                console.error('❌ Commande FIFA CONNECT non détectée !');
+                console.log(' Texte analysé:', testText);
+                console.log(' Résultat obtenu:', analysis);
+            }
+        });
+    }
+    
+    //  NOUVELLE FONCTION : Effacer les anciennes données TEST
+    function clearOldTestData() {
+        console.log('🧹 Effacement des anciennes données TEST...');
+        
+        // Champs vocaux à effacer
+        const voiceFields = [
+            'voice_player_name',
+            'voice_age', 
+            'voice_position',
+            'voice_club'
+        ];
+        
+        // Champs du formulaire principal à effacer
+        const mainFields = [
+            'voice_player_name_main',
+            'voice_age_main', 
+            'voice_position_main',
+            'voice_club_main'
+        ];
+        
+        // Effacer les champs vocaux
+        voiceFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = '';
+                field.classList.remove('bg-green-50', 'border-green-500');
+                field.classList.add('border-gray-300');
+            }
+        });
+        
+        // Effacer les champs du formulaire principal
+        mainFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = '';
+                field.classList.remove('bg-green-50', 'border-green-500');
+                field.classList.add('border-gray-300');
+            }
+        });
+        
+        // Effacer les champs de résultat vocal
+        const resultFields = [
+            'voice_player_name_result',
+            'voice_age_result',
+            'voice_position_result',
+            'voice_club_result'
+        ];
+        
+        resultFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = '';
+                field.classList.remove('bg-green-50', 'border-green-500');
+                field.classList.add('border-gray-300');
+            }
+        });
+        
+        console.log(' Anciennes données TEST effacées avec succès !');
+    }
+    
+    // Démarrer l'initialisation quand le DOM est prêt
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+        initAll();
+    }
+    
+    //  INITIALISATION PROPRE SANS TESTS FORCÉS
+    console.log(' Initialisation propre des composants...');
+    
+} else {
+    console.error('❌ Module SpeechRecognitionService non trouvé !');
+}
 });
 </script>
 
 @push('scripts')
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="/js/SpeechRecognitionService-laravel.js"></script>
+        <script src="/js/ServiceVocal.js"></script>
+        <script src="/js/SpeechRecognitionService-laravel.js"></script>
+
+<!-- Système de modes sécurisé -->
+<script>
+class ModeManager {
+    constructor() {
+        this.currentMode = 'manual';
+        this.modes = ['manual', 'vocal', 'ocr', 'fhir'];
+        this.modeElements = {};
+        this.modeSections = {};
+        this.init();
+    }
+    
+    init() {
+        this.initializeElements();
+        this.setupEventListeners();
+        this.initializeSectionVisibility();
+        this.initializeVoiceConsole();
+        this.setupTransferButtons();
+    }
+
+moveFormToManualSection() {
+    const mainForm = document.getElementById('pcma-form');
+    const manualSection = document.getElementById('manual-mode-section');
+    
+    if (mainForm && manualSection) {
+        manualSection.appendChild(mainForm);
+    }
+}
+
+hideVocalContentInManual() {
+    const vocalElements = [
+        'init-service',
+        'start-recording-btn',
+        'stop-recording-btn',
+        'transfer-to-form-btn',
+        'voice-status',
+        'audio-activity-indicator'
+    ];
+    
+    vocalElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.classList.add('hidden');
+        }
+    });
+}
+    
+    initializeElements() {
+        this.modeElements = {
+            manual: document.getElementById('mode-manuel'),
+            vocal: document.getElementById('mode-vocal'),
+            ocr: document.getElementById('scan-tab'),
+            fhir: document.getElementById('mode-fhir')
+        };
+        
+        this.modeSections = {
+            manual: document.getElementById('manual-mode-section'),
+            vocal: document.getElementById('vocal-mode-section'),
+            ocr: document.getElementById('ocr-mode-section'),
+            fhir: document.getElementById('fhir-mode-section')
+        };
+    }
+    
+    initializeSectionVisibility() {
+        const manualSection = document.getElementById('manual-mode-section');
+        if (manualSection) {
+            manualSection.classList.remove('hidden');
+            manualSection.style.setProperty('display', 'block', 'important');
+            manualSection.style.setProperty('visibility', 'visible', 'important');
+            manualSection.style.setProperty('opacity', '1', 'important');
+        }
+        
+        const otherSections = ['vocal-mode-section', 'ocr-mode-section', 'fhir-mode-section'];
+        otherSections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('hidden');
+                section.style.setProperty('display', 'none', 'important');
+                section.style.setProperty('visibility', 'hidden', 'important');
+                section.style.setProperty('opacity', '0', 'important');
+            }
+        });
+        
+        const manualButton = document.getElementById('mode-manuel');
+        if (manualButton) {
+            manualButton.classList.remove('bg-gray-100', 'text-gray-700');
+            manualButton.classList.add('bg-blue-600', 'text-white', 'active');
+        }
+        
+        const otherButtons = ['mode-vocal', 'scan-tab', 'mode-fhir'];
+        otherButtons.forEach(buttonId => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.classList.remove('bg-blue-600', 'text-white', 'active');
+                button.classList.add('bg-gray-100', 'text-gray-700');
+            }
+        });
+        
+        this.currentMode = 'manual';
+    }
+    
+    initializeVoiceConsole() {
+        const testServiceBtn = document.getElementById('init-service');
+        if (testServiceBtn) {
+            testServiceBtn.addEventListener('click', () => {
+                this.testSpeechService();
+            });
+        }
+        
+        const testAdvancedBtn = document.getElementById('test-advanced-btn');
+        if (testAdvancedBtn) {
+            testAdvancedBtn.addEventListener('click', () => {
+                this.testAdvancedSpeechRecognition();
+            });
+        }
+        
+        const startRecordingBtn = document.getElementById('start-recording-btn');
+        if (startRecordingBtn) {
+            startRecordingBtn.addEventListener('click', () => {
+                this.startSpeechRecognition();
+            });
+        }
+        
+        const stopRecordingBtn = document.getElementById('stop-recording-btn');
+        if (stopRecordingBtn) {
+            stopRecordingBtn.addEventListener('click', () => {
+                this.stopSpeechRecognition();
+            });
+        }
+        
+        const transferBtn = document.getElementById('transfer-to-form-btn');
+        if (transferBtn) {
+            transferBtn.addEventListener('click', () => {
+                this.transferVocalDataToManual();
+            });
+        }
+    }
+    
+    //  NOUVEAU : TEST AVANCÉ DE LA RECONNAISSANCE VOCALE
+    testAdvancedSpeechRecognition() {
+        const voiceStatus = document.getElementById('voice-status');
+        if (voiceStatus) {
+            voiceStatus.textContent = 'Test avancé en cours...';
+            voiceStatus.className = 'text-sm text-blue-600 mb-4';
+        }
+        
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            if (voiceStatus) {
+                voiceStatus.textContent = 'API Speech Recognition non supportée';
+                voiceStatus.className = 'text-sm text-red-600 mb-4';
+            }
+            return;
+        }
+        
+        try {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const testRecognition = new SpeechRecognition();
+            
+            testRecognition.continuous = false;
+            testRecognition.interimResults = false;
+            testRecognition.lang = 'fr-FR';
+            testRecognition.maxAlternatives = 1;
+            
+            testRecognition.onstart = () => {
+                if (voiceStatus) {
+                    voiceStatus.textContent = 'Test: Reconnaissance démarrée !';
+                    voiceStatus.className = 'text-sm text-green-600 mb-4';
+                }
+                
+                setTimeout(() => {
+                    testRecognition.stop();
+                }, 2000);
+            };
+            
+            testRecognition.onresult = (event) => {
+                if (voiceStatus) {
+                    voiceStatus.textContent = 'Test: Reconnaissance fonctionne parfaitement !';
+                    voiceStatus.className = 'text-sm text-green-600 mb-4';
+                }
+            };
+            
+            testRecognition.onerror = (event) => {
+                if (voiceStatus) {
+                    voiceStatus.textContent = `Test: Erreur ${event.error}`;
+                    voiceStatus.className = 'text-sm text-red-600 mb-4';
+                }
+            };
+            
+            testRecognition.onend = () => {
+                // Test terminé
+            };
+            
+            testRecognition.start();
+            
+        } catch (error) {
+            if (voiceStatus) {
+                voiceStatus.textContent = `Test: Erreur de création - ${error.message}`;
+                voiceStatus.className = 'text-sm text-red-600 mb-4';
+            }
+        }
+    }
+    
+    testSpeechService() {
+        const serviceStatus = document.getElementById('service-status');
+        if (serviceStatus) {
+            serviceStatus.textContent = 'Test en cours...';
+            serviceStatus.className = 'mt-2 text-sm text-blue-600';
+        }
+        
+        this.checkCompleteEnvironment().then((result) => {
+            if (result.success) {
+                if (serviceStatus) {
+                    serviceStatus.textContent = 'Service vocal disponible !';
+                    serviceStatus.className = 'mt-2 text-sm text-green-600';
+                }
+                
+                const startBtn = document.getElementById('start-recording-btn');
+                const stopBtn = document.getElementById('stop-recording-btn');
+                if (startBtn) {
+                    startBtn.disabled = false;
+                    startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                if (stopBtn) {
+                    stopBtn.disabled = false;
+                    stopBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            } else {
+                if (serviceStatus) {
+                    serviceStatus.textContent = `${result.error}`;
+                    serviceStatus.className = 'mt-2 text-sm text-red-600';
+                }
+            }
+        });
+    }
+    
+    async checkCompleteEnvironment() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            return {
+                success: false,
+                error: 'API Speech Recognition non supportée dans ce navigateur'
+            };
+        }
+        
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop());
+            
+            return { success: true };
+        } catch (error) {
+            if (error.name === 'NotAllowedError') {
+                return {
+                    success: false,
+                    error: 'Permission microphone refusée - Cliquez sur "Autoriser"'
+                };
+            } else if (error.name === 'NotFoundError') {
+                return {
+                    success: false,
+                    error: 'Aucun microphone détecté sur cet appareil'
+                };
+            } else {
+                return {
+                    success: false,
+                    error: `Erreur microphone: ${error.message}`
+                };
+            }
+        }
+    }
+    
+    startSpeechRecognition() {
+        const voiceStatus = document.getElementById('voice-status');
+        const startBtn = document.getElementById('start-recording-btn');
+        const stopBtn = document.getElementById('stop-recording-btn');
+        
+        this.startGoogleCloudSpeechRecognition();
+    }
+    
+    startGoogleCloudSpeechRecognition() {
+        const voiceStatus = document.getElementById('voice-status');
+        const startBtn = document.getElementById('start-recording-btn');
+        const stopBtn = document.getElementById('stop-recording-btn');
+        
+        if (!this.speechService) {
+            this.speechService = new SpeechRecognitionService();
+            this.configureSpeechService();
+        }
+        
+        this.isRecording = true;
+        this.recordingStartTime = Date.now();
+        
+        this.speechService.startListening().then(() => {
+            if (voiceStatus) {
+                voiceStatus.textContent = 'Enregistrement Google Cloud en cours... (60s max)';
+                voiceStatus.className = 'text-sm text-green-600 mb-4';
+            }
+            if (startBtn) {
+                startBtn.classList.add('hidden');
+            }
+            if (stopBtn) {
+                stopBtn.classList.remove('hidden');
+            }
+            
+            this.startTimeCounter();
+            this.startAudioIndicator();
+            
+        }).catch(error => {
+            if (voiceStatus) {
+                voiceStatus.textContent = `Erreur: ${error.message}`;
+                voiceStatus.className = 'text-sm text-red-600 mb-4';
+            }
+            this.resetRecognitionButtons();
+        });
+    }
+    
+    async configureSpeechService() {
+        try {
+            const response = await fetch('/api/google-speech-key');
+            
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.apiKey) {
+                this.speechService.configure({
+                    apiKey: data.apiKey,
+                    language: 'fr-FR',
+                    encoding: 'WEBM_OPUS',
+                    sampleRate: 48000,
+                    model: 'latest_long'
+                });
+                
+                this.speechService.onResult = (result) => {
+                    let transcript = result;
+                    
+                    if (typeof result === 'object' && result.text) {
+                        transcript = result.text;
+                    }
+                    
+                    this.processSpeechResult(transcript);
+                };
+                
+                this.speechService.onError = (error) => {
+                    const voiceStatus = document.getElementById('voice-status');
+                    if (voiceStatus) {
+                        voiceStatus.textContent = `Erreur: ${error.message}`;
+                        voiceStatus.className = 'text-sm text-red-600 mb-4';
+                    }
+                };
+                
+            } else {
+                throw new Error('Clé API non trouvée dans la réponse');
+            }
+            
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    stopSpeechRecognition() {
+        this.isRecording = false;
+        
+        if (this.speechService) {
+            try {
+                this.speechService.stopListening();
+            } catch (error) {
+                // Service déjà arrêté
+            }
+        }
+        
+        setTimeout(() => {
+            this.stopRecordingSession();
+        }, 500);
+    }
+    
+    stopRecordingSession() {
+        this.isRecording = false;
+        
+        if (this.timeCounter) {
+            clearInterval(this.timeCounter);
+            this.timeCounter = null;
+        }
+        
+        const audioIndicator = document.getElementById('audio-activity-indicator');
+        if (audioIndicator) {
+            audioIndicator.remove();
+        }
+        
+        const voiceStatus = document.getElementById('voice-status');
+        if (voiceStatus) {
+            voiceStatus.textContent = 'Reconnaissance arrêtée';
+            voiceStatus.className = 'text-sm text-orange-600 mb-4';
+        }
+        
+        this.resetRecognitionButtons();
+    }
+    startAudioIndicator() {
+        const voiceStatus = document.getElementById('voice-status');
+        
+        if (voiceStatus) {
+            const indicator = document.createElement('span');
+            indicator.id = 'audio-activity-indicator';
+            indicator.innerHTML = ' 🔊';
+            indicator.style.animation = 'pulse 1s infinite';
+            voiceStatus.appendChild(indicator);
+        }
+        
+        if (!document.getElementById('audio-indicator-style')) {
+            const style = document.createElement('style');
+            style.id = 'audio-indicator-style';
+            style.textContent = `
+                @keyframes pulse {
+                    0% { opacity: 1; }
+                    50% { opacity: 0.3; }
+                    100% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    startTimeCounter() {
+        const voiceStatus = document.getElementById('voice-status');
+        
+        if (this.timeCounter) {
+            clearInterval(this.timeCounter);
+        }
+        
+        this.timeCounter = setInterval(() => {
+            if (!this.isRecording) {
+                clearInterval(this.timeCounter);
+                return;
+            }
+            
+            const elapsedTime = Date.now() - this.recordingStartTime;
+            const remainingTime = Math.max(0, 60 - Math.floor(elapsedTime / 1000));
+            
+            if (voiceStatus) {
+                voiceStatus.textContent = `Écoute en cours... (${remainingTime}s restantes)`;
+            }
+            
+            if (remainingTime <= 0) {
+                this.stopSpeechRecognition();
+            }
+        }, 1000);
+    }
+    
+    resetRecognitionButtons() {
+        const startBtn = document.getElementById('start-recording-btn');
+        const stopBtn = document.getElementById('stop-recording-btn');
+        
+        if (startBtn) {
+            startBtn.classList.remove('hidden');
+        }
+        if (stopBtn) {
+            stopBtn.classList.add('hidden');
+        }
+    }
+    
+    processSpeechResult(transcript) {
+        const recognizedText = document.getElementById('recognized-text');
+        if (recognizedText) {
+            recognizedText.textContent = transcript;
+        }
+        
+        const speechText = document.getElementById('speech-text');
+        if (speechText) {
+            speechText.classList.remove('hidden');
+        }
+        
+        this.analyzeAndExtractData(transcript);
+    }
+    
+    analyzeAndExtractData(transcript) {
+        const extractedData = {
+            player_name: '',
+            age: '',
+            position: '',
+            club: ''
+        };
+        
+        const text = transcript.toLowerCase();
+        
+        const nameMatch = text.match(/s'appelle\s+([^,]+)/);
+        if (nameMatch) {
+            extractedData.player_name = nameMatch[1].trim();
+        }
+        
+        const ageMatch = text.match(/il a (\d{1,2})\s*ans?/);
+        if (ageMatch) {
+            extractedData.age = ageMatch[1];
+        }
+        
+        const positionMatch = text.match(/il est (attaquant|défenseur|gardien|milieu|ailier)/);
+        if (positionMatch) {
+            extractedData.position = positionMatch[1];
+        }
+        
+        const clubMatch = text.match(/il joue à ([^,]+)/);
+        if (clubMatch) {
+            extractedData.club = clubMatch[1].trim();
+        }
+        
+        this.fillVoiceResults(extractedData);
+    }
+    
+    fillVoiceResults(data) {
+        const voiceResults = document.getElementById('voice-results');
+        if (voiceResults) {
+            voiceResults.classList.remove('hidden');
+        }
+        
+        if (data.player_name) {
+            const nameField = document.getElementById('voice_player_name_result');
+            if (nameField) nameField.value = data.player_name;
+        }
+        
+        if (data.age) {
+            const ageField = document.getElementById('voice_age_result');
+            if (ageField) ageField.value = data.age;
+        }
+        
+        if (data.position) {
+            const positionField = document.getElementById('voice_position_result');
+            if (positionField) positionField.value = data.position;
+        }
+        
+        if (data.club) {
+        const clubField = document.getElementById('voice_club_result');
+        if (clubField) clubField.value = data.club;
+        }
+    }
+    
+    setupEventListeners() {
+        Object.entries(this.modeElements).forEach(([mode, element]) => {
+            if (element) {
+                element.removeEventListener('click', this.handleModeClick);
+                
+                element.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.switchMode(mode);
+                });
+                
+                element.removeAttribute('onclick');
+            }
+        });
+    }
+    
+    switchMode(targetMode) {
+        if (!this.modes.includes(targetMode)) {
+            return;
+        }
+        
+        document.body.classList.remove('vocal-mode-active');
+        if (targetMode === 'vocal') {
+            document.body.classList.add('vocal-mode-active');
+        }
+        
+        if (targetMode === 'vocal') {
+            this.showVocalElementsInVocalMode(targetMode);
+        } else {
+            this.hideVocalElementsInManualMode(targetMode);
+        }
+        
+        this.updateButtonStates(targetMode);
+        this.updateSectionVisibility(targetMode);
+        this.currentMode = targetMode;
+        this.showModeIndicator(targetMode);
+        
+        const debugElement = document.getElementById('debug-current-mode');
+        if (debugElement) {
+            debugElement.textContent = targetMode.toUpperCase();
+        }
+    }
+    
+    updateButtonStates(activeMode) {
+        Object.entries(this.modeElements).forEach(([mode, element]) => {
+            if (element) {
+                if (mode === activeMode) {
+                    element.classList.remove('bg-gray-100', 'text-gray-700');
+                    element.classList.add('bg-blue-600', 'text-white', 'active');
+                } else {
+                    element.classList.remove('bg-blue-600', 'text-white', 'active');
+                    element.classList.add('bg-gray-100', 'text-gray-700');
+                }
+            }
+        });
+    }
+    
+    updateSectionVisibility(activeMode) {
+        Object.entries(this.modeSections).forEach(([mode, section]) => {
+            if (section) {
+                if (mode === activeMode) {
+                    section.classList.remove('hidden');
+                    section.style.removeProperty('display');
+                    section.style.removeProperty('visibility');
+                    section.style.removeProperty('opacity');
+                } else {
+                    section.classList.add('hidden');
+                    section.style.removeProperty('display');
+                    section.style.removeProperty('visibility');
+                    section.style.removeProperty('opacity');
+                }
+            }
+        });
+        
+        if (activeMode !== 'vocal') {
+            const vocalSection = document.getElementById('vocal-mode-section');
+            if (vocalSection) {
+                vocalSection.classList.add('hidden');
+                vocalSection.style.setProperty('display', 'none', 'important');
+                vocalSection.style.setProperty('visibility', 'hidden', 'important');
+                vocalSection.style.setProperty('opacity', '0', 'important');
+            }
+            
+            const vocalElements = [
+                'init-service', 'start-recording-btn', 'stop-recording-btn', 'transfer-to-form-btn',
+                'voice-status', 'audio-activity-indicator', 'console-vocale', 'voice-results',
+                'voice_player_name', 'voice_age', 'voice_position', 'voice_club',
+                'voice_player_name_result', 'voice_age_result', 'voice_position_result', 'voice_club_result'
+            ];
+            
+            vocalElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.classList.add('hidden');
+                    element.style.setProperty('display', 'none', 'important');
+                    element.style.setProperty('visibility', 'hidden', 'important');
+                    element.style.setProperty('opacity', '0', 'important');
+                }
+            });
+        } else {
+            const vocalSection = document.getElementById('vocal-mode-section');
+            if (vocalSection) {
+                vocalSection.classList.remove('hidden');
+                vocalSection.style.removeProperty('display');
+                vocalSection.style.removeProperty('visibility');
+                vocalSection.style.removeProperty('opacity');
+            }
+        }
+    }
+    
+    showModeIndicator(mode) {
+        const existingIndicator = document.querySelector('.mode-indicator');
+        if (existingIndicator) {
+            existingIndicator.remove();
+        }
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'mode-indicator';
+        indicator.textContent = `Mode ${mode.charAt(0).toUpperCase() + mode.slice(1)} Actif`;
+        
+        document.body.appendChild(indicator);
+        
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                indicator.remove();
+            }
+        }, 3000);
+    }
+    
+    transferDataToManual(data) {
+        // Implémenter le transfert de données
+        // Cette méthode sera étendue selon les besoins
+    }
+    
+    setupTransferButtons() {
+        const transferVocalBtn = document.getElementById('transfer-to-form-btn');
+        if (transferVocalBtn) {
+            transferVocalBtn.addEventListener('click', () => {
+                this.transferVocalDataToManual();
+            });
+        }
+        
+        const transferOcrBtn = document.getElementById('transfer-ocr-to-form-btn');
+        if (transferOcrBtn) {
+            transferOcrBtn.addEventListener('click', () => {
+                this.transferOcrDataToManual();
+            });
+        }
+        
+        const transferFhirBtn = document.getElementById('transfer-fhir-to-form-btn');
+        if (transferFhirBtn) {
+            transferFhirBtn.addEventListener('click', () => {
+                this.transferFhirDataToManual();
+            });
+        }
+    }
+    
+    transferVocalDataToManual() {
+        try {
+            const vocalData = {
+                player_name: document.getElementById('voice_player_name')?.value || '',
+                age: document.getElementById('voice_age')?.value || '',
+                position: document.getElementById('voice_position')?.value || '',
+                club: document.getElementById('voice_club')?.value || '',
+                fifa_connect_id: document.getElementById('voice_fifa_connect_id')?.value || ''
+            };
+            
+            this.showTransferSuccess('vocal');
+            
+        } catch (error) {
+            this.showTransferError('vocal', error.message);
+        }
+    }
+    
+    transferOcrDataToManual() {
+        try {
+            const ocrData = {
+                // Données extraites par OCR
+            };
+            
+            this.showTransferSuccess('ocr');
+            
+        } catch (error) {
+            this.showTransferError('ocr', error.message);
+        }
+    }
+    
+    transferFhirDataToManual() {
+        try {
+            const fhirData = {
+                // Données récupérées depuis le serveur FHIR
+            };
+            
+            this.showTransferSuccess('fhir');
+            
+        } catch (error) {
+            this.showTransferError('fhir', error.message);
+        }
+    }
+    
+    showTransferSuccess(mode) {
+        const message = `Données ${mode} transférées avec succès vers le formulaire principal !`;
+        this.showNotification(message, 'success');
+    }
+    
+    showTransferError(mode, errorMessage) {
+        const message = `Erreur lors du transfert ${mode}: ${errorMessage}`;
+        this.showNotification(message, 'error');
+    }
+    
+    showNotification(message, type = 'info') {
+        const existingNotifications = document.querySelectorAll('.mode-notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        const notification = document.createElement('div');
+        notification.className = `mode-notification fixed top-20 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
+            type === 'success' ? 'bg-green-500 text-white' :
+            type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+        
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <span class="mr-2">${type === 'success' ? '' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span class="text-sm font-medium">${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    hideVocalElementsInManualMode(currentMode) {
+        if (currentMode !== 'vocal' && this.currentMode !== 'vocal') {
+            const vocalElements = [
+                'init-service',
+                'start-recording-btn',
+                'stop-recording-btn',
+                'transfer-to-form-btn',
+                'voice-status',
+                'audio-activity-indicator',
+                'console-vocale',
+                'voice-results',
+                'voice_player_name',
+                'voice_age',
+                'voice_position',
+                'voice_club',
+                'voice_player_name_result',
+                'voice_age_result',
+                'voice_position_result',
+                'voice_club_result'
+            ];
+            
+            vocalElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.classList.add('hidden');
+                    element.style.setProperty('display', 'none', 'important');
+                    element.style.setProperty('visibility', 'hidden', 'important');
+                    element.style.setProperty('opacity', '0', 'important');
+                }
+            });
+            
+            const vocalSection = document.getElementById('vocal-mode-section');
+            if (vocalSection) {
+                vocalSection.classList.add('hidden');
+                vocalSection.style.setProperty('display', 'none', 'important');
+                vocalSection.style.setProperty('visibility', 'hidden', 'important');
+                vocalSection.style.setProperty('opacity', '0', 'important');
+            }
+        }
+    }
+    
+    showVocalElementsInVocalMode(currentMode) {
+        if (currentMode === 'vocal' || this.currentMode === 'vocal') {
+            const vocalElements = [
+                'init-service',
+                'start-recording-btn',
+                'stop-recording-btn',
+                'transfer-to-form-btn',
+                'voice-status',
+                'audio-activity-indicator',
+                'console-vocale',
+                'voice-results',
+                'voice_player_name',
+                'voice_age',
+                'voice_position',
+                'voice_club',
+                'voice_player_name_result',
+                'voice_age_result',
+                'voice_position_result',
+                'voice_club_result'
+            ];
+            
+            vocalElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.classList.remove('hidden');
+                    element.style.removeProperty('display');
+                    element.style.removeProperty('visibility');
+                    element.style.removeProperty('opacity');
+                }
+            });
+            
+            const vocalSection = document.getElementById('vocal-mode-section');
+            if (vocalSection) {
+                vocalSection.classList.remove('hidden');
+                vocalSection.style.removeProperty('display');
+                vocalSection.style.removeProperty('visibility');
+                vocalSection.style.removeProperty('opacity');
+            }
+        }
+    }
+    
+    forceHideElement(element) {
+        if (!element) return;
+        return;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        try {
+            window.modeManager = new ModeManager();
+        } catch (error) {
+            // Erreur d'initialisation
+        }
+    }, 500);
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.modeManager) {
+            // Système déjà initialisé
+        } else {
+            setTimeout(() => {
+                try {
+                    window.modeManager = new ModeManager();
+                } catch (error) {
+                    // Erreur d'initialisation différée
+                }
+            }, 1000);
+        }
+    });
+} else {
+    if (!window.modeManager) {
+        setTimeout(() => {
+            try {
+                window.modeManager = new ModeManager();
+            } catch (error) {
+                // Erreur d'initialisation immédiate
+            }
+        }, 100);
+    }
+}
+</script>
 @endpush
 @endsection 
