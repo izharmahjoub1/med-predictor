@@ -42,6 +42,8 @@ use App\Http\Controllers\PassportController;
 use App\Http\Controllers\FederationController;
 use App\Http\Controllers\Api\AutoKeyController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\GoogleAssistantController;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -1462,4 +1464,111 @@ Route::prefix('portal')->group(function () {
             ]
         ]);
     });
+});
+
+// =============================================================================
+// FIT V3 - Routes API avec Intelligence Artificielle
+// =============================================================================
+require __DIR__.'/api-v3.php';
+
+// =============================================================================
+// Google Assistant Routes (API sans CSRF)
+// =============================================================================
+require __DIR__.'/google-assistant.php';
+
+// Google Assistant routes
+Route::prefix('google-assistant')->group(function () {
+    Route::post('/webhook', [GoogleAssistantController::class, 'handleIntent']);
+    Route::post('/submit-pcma', [GoogleAssistantController::class, 'submitPcmaToFit']);
+    Route::get('/fit-health', [GoogleAssistantController::class, 'checkFitApiHealth']);
+    Route::get('/health', [GoogleAssistantController::class, 'health']);
+});
+
+// Route pour récupérer les données de session PCMA
+Route::get('/google-assistant/session/{sessionId}', [GoogleAssistantController::class, 'getSessionData']);
+
+// Route pour récupérer les données de session PCMA
+Route::get('/google-assistant/session/{sessionId}', [GoogleAssistantController::class, 'getSessionData']);
+
+// Route pour la recherche de joueurs (renommée pour éviter les conflits)
+Route::get('/athletes/search', function (Request $request) {
+    $name = $request->query('name');
+    
+    if (!$name) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Nom du joueur requis'
+        ], 400);
+    }
+    
+    try {
+        // Log de débogage
+        \Log::info("🔍 Recherche du joueur: '$name'");
+        
+        // Rechercher dans la table players (structure complète avec first_name, last_name, fifa_connect_id, etc.)
+        $query = DB::table('players');
+        
+        // Recherche exacte d'abord
+        $player = $query->where('name', $name)
+            ->orWhere('first_name', $name)
+            ->orWhere('last_name', $name)
+            ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), $name)
+            ->first();
+        
+        // Si pas trouvé, recherche partielle
+        if (!$player) {
+            \Log::info("🔍 Recherche exacte échouée, tentative de recherche partielle...");
+            
+            $player = $query->where('name', 'LIKE', '%' . $name . '%')
+                ->orWhere('first_name', 'LIKE', '%' . $name . '%')
+                ->orWhere('last_name', 'LIKE', '%' . $name . '%')
+                ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'LIKE', '%' . $name . '%')
+                ->orWhere(DB::raw("CONCAT(last_name, ' ', first_name)"), 'LIKE', '%' . $name . '%')
+                ->first();
+        }
+        
+        // Log du résultat
+        if ($player) {
+            \Log::info("✅ Joueur trouvé:", [
+                'id' => $player->id,
+                'name' => $player->name,
+                'first_name' => $player->first_name ?? 'N/A',
+                'last_name' => $player->last_name ?? 'N/A'
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'player' => [
+                    'id' => $player->id,
+                    'name' => $player->name ?: ($player->first_name . ' ' . $player->last_name),
+                    'fifa_connect_id' => $player->fifa_connect_id,
+                    'club' => $player->current_club_id ? 'Club ID: ' . $player->current_club_id : null,
+                    'position' => $player->position,
+                    'age' => $player->age ?: ($player->birth_date ? \Carbon\Carbon::parse($player->birth_date)->age : null),
+                    'nationality' => $player->nationality,
+                    'jersey_number' => $player->jersey_number,
+                    'overall_rating' => $player->overall_rating,
+                    'potential_rating' => $player->potential_rating
+                ]
+            ]);
+        } else {
+            \Log::info("❌ Joueur non trouvé dans la base");
+            
+            // Retourner plus d'informations pour le débogage
+            return response()->json([
+                'success' => false,
+                'message' => 'Joueur non trouvé',
+                'debug' => [
+                    'searched_name' => $name,
+                    'search_type' => 'exact_and_partial'
+                ]
+            ]);
+        }
+        
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la recherche: ' . $e->getMessage()
+        ], 500);
+    }
 });

@@ -135,3 +135,7 @@ echo "🌐 Testez dans votre navigateur: http://localhost:8001/joueur/2\n";
 
 
 
+
+
+
+

@@ -153,3 +153,7 @@ echo "🎯 Le portail utilise le VRAI layout portal-patient avec les données de
 
 
 
+
+
+
+

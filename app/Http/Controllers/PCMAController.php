@@ -398,7 +398,33 @@ class PCMAController extends Controller
     {
         $pcma->load(['athlete', 'assessor']);
         
-        $pdf = Pdf::loadView('pcma.pdf', compact('pcma'));
+        // Préparer les données pour la vue PDF
+        $formData = [
+            'type' => $pcma->type ?? 'standard',
+            'assessment_date' => $pcma->assessment_date ?? now()->format('Y-m-d'),
+            'assessment_id' => $pcma->id,
+            'blood_pressure' => $pcma->blood_pressure ?? 'Non mesuré',
+            'heart_rate' => $pcma->heart_rate ?? 'Non mesuré',
+            'temperature' => $pcma->temperature ?? 'Non mesuré',
+            'oxygen_saturation' => $pcma->oxygen_saturation ?? 'Non mesuré',
+            'respiratory_rate' => $pcma->respiratory_rate ?? 'Non mesuré',
+            'weight' => $pcma->weight ?? 'Non mesuré',
+            'cardiovascular_history' => $pcma->cardiovascular_history ?? 'Aucun',
+            'surgical_history' => $pcma->surgical_history ?? 'Aucun',
+            'medications' => $pcma->current_medications ?? 'Aucun',
+            'allergies' => $pcma->allergies ?? 'Aucune',
+            'general_appearance' => $pcma->general_appearance ?? 'Non évalué',
+            'skin_examination' => $pcma->skin_examination ?? 'Non évalué',
+            'cardiac_rhythm' => $pcma->cardiac_rhythm ?? 'Non évalué',
+            'heart_murmur' => $pcma->heart_murmur ?? 'Non évalué',
+            'fifa_connect_id' => $pcma->fifa_connect_id ?? 'Non spécifié',
+            'status' => $pcma->status ?? 'pending'
+        ];
+        
+        $athlete = $pcma->athlete;
+        $generatedAt = now();
+        
+        $pdf = Pdf::loadView('pcma.pdf', compact('pcma', 'formData', 'athlete', 'generatedAt'));
         
         $athleteName = $pcma->athlete->name ?? 'unknown';
         return $pdf->download("PCMA-{$pcma->id}-{$athleteName}.pdf");

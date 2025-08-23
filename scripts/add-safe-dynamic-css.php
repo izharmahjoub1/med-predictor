@@ -117,3 +117,7 @@ echo "🎨 Les styles s'adaptent aux données du joueur sans casser le design!\n
 
 
 
+
+
+
+

@@ -138,3 +138,6 @@ echo "Les logos simplifiés devraient maintenant s'afficher correctement.\n";
 
 
 
+
+
+

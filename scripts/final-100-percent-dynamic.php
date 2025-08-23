@@ -164,3 +164,7 @@ echo "🎯 Date de naissance, taille, stade, pays du club → toutes dynamiques!
 
 
 
+
+
+
+

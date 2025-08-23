@@ -150,3 +150,6 @@ echo "Vous pouvez maintenant afficher ces logos dans vos vues.\n";
 
 
 
+
+
+

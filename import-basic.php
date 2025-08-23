@@ -185,3 +185,6 @@ function getOrCreateAssociation($db, $nationality) {
 
 
 
+
+
+

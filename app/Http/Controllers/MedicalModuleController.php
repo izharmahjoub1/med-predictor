@@ -55,3 +55,7 @@ class MedicalModuleController extends Controller
 
 
 
+
+
+
+

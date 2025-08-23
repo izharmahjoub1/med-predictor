@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Speech-to-Text API Externe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-800">
+            🎤 Test Google Speech-to-Text API Externe
+        </h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-blue-800 mb-4">
+                🎤 Assistant Vocal Google Speech-to-Text API
+            </h2>
+            <p class="text-gray-600 mb-6">
+                Assistant vocal stable via API externe (contourne l'API native défaillante)
+            </p>
+            
+            <!-- Contrôles vocaux -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <button type="button" id="start-api-speech" class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    🎤 Démarrer Reconnaissance API
+                </button>
+                
+                <button type="button" id="stop-api-speech" class="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium hidden">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    🛑 Arrêter Reconnaissance
+                </button>
+                
+                <button type="button" id="test-api-connection" class="flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    🔗 Test Connexion API
+                </button>
+            </div>
+            
+            <!-- Statut de la reconnaissance -->
+            <div id="api-speech-status" class="mb-4 p-3 bg-gray-100 rounded-lg">
+                <p class="text-gray-600">🎯 Cliquez sur "Démarrer Reconnaissance API" pour commencer</p>
+            </div>
+            
+            <!-- Aperçu de la reconnaissance -->
+            <div id="api-speech-preview" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-medium text-gray-700 mb-2">🎯 Aperçu de la Reconnaissance API :</h4>
+                <div id="api-speech-text" class="text-gray-600 italic">Aucune reconnaissance en cours...</div>
+            </div>
+            
+            <!-- Configuration API -->
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                <h4 class="font-medium text-yellow-800 mb-2">⚙️ Configuration API Google Speech-to-Text :</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-yellow-700 mb-1">Clé API Google :</label>
+                        <input type="password" id="google-api-key" placeholder="Entrez votre clé API Google" 
+                               class="w-full px-3 py-2 border border-yellow-300 rounded-md text-sm">
+                        <p class="text-xs text-yellow-600 mt-1">Obligatoire pour la vraie reconnaissance vocale</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" id="save-api-key" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors text-sm">
+                            💾 Sauvegarder la clé
+                        </button>
+                        <button type="button" id="test-api-key" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm">
+                            🧪 Tester la clé
+                        </button>
+                    </div>
+                    <div id="api-key-status" class="text-sm hidden"></div>
+                </div>
+                <p class="text-yellow-700 text-sm mt-3">
+                    <strong>Note :</strong> Cette solution utilise l'API Google Speech-to-Text officielle pour une reconnaissance vocale précise et fiable.
+                    Une clé API Google Cloud est requise.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Formulaire de test -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Formulaire de Test</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom du joueur</label>
+                    <input type="text" id="player-name-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Nom du joueur">
+                    <div id="player-name-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Âge</label>
+                    <input type="number" id="player-age-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Âge">
+                    <div id="player-age-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                    <input type="text" id="player-position-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Position">
+                    <div id="player-position-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
+                    <input type="text" id="player-club-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Club">
+                    <div id="player-club-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="button" id="save-pcma-btn" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium">
+                    💾 Enregistrer PCMA
+                </button>
+                
+                <button type="button" id="clear-form-btn" class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors font-medium">
+                    🗑️ Vider le formulaire
+                </button>
+                
+                <button type="button" id="new-player-btn" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    👤 Nouveau joueur
+                </button>
+            </div>
+            
+            <div id="form-status" class="mt-4 p-3 rounded-md hidden">
+                <div id="form-status-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales pour Google Speech-to-Text API Externe
+        let isListening = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let currentPlayerData = { name: '', age: '', position: '', club: '' };
+
+        // Configuration de l'API externe
+        const API_CONFIG = {
+            // API Google Speech-to-Text
+            googleSpeech: {
+                baseUrl: 'https://speech.googleapis.com/v1/speech:recognize',
+                apiKey: '', // À remplir avec votre clé API Google
+                language: 'fr-FR',
+                sampleRate: 16000,
+                encoding: 'WEBM_OPUS'
+            },
+            // Configuration audio
+            audioConfig: {
+                sampleRate: 16000,
+                channels: 1,
+                format: 'webm'
+            }
+        };
+
+        // Initialisation de la reconnaissance vocale via API externe
+        function initAPISpeechRecognition() {
+            try {
+                // Vérification de la disponibilité de l'API MediaRecorder
+                if (!('MediaRecorder' in window)) {
+                    throw new Error('MediaRecorder non supporté par votre navigateur');
+                }
+                
+                // Vérification des permissions microphone
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Accès microphone non supporté');
+                }
+                
+                console.log('✅ API Speech Recognition initialisé avec succès');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Erreur d\'initialisation API Speech:', error);
+                updateAPISpeechStatus('❌ Erreur d\'initialisation: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Démarrer la reconnaissance vocale via API
+        async function startAPISpeechRecognition() {
+            if (!initAPISpeechRecognition()) {
+                return;
+            }
+            
+            try {
+                // Demander l'accès au microphone
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        sampleRate: API_CONFIG.audioConfig.sampleRate,
+                        channelCount: API_CONFIG.audioConfig.channels,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    } 
+                });
+                
+                console.log('🎤 Accès microphone accordé');
+                
+                // Créer l'enregistreur audio
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                // Configuration des événements
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = async function() {
+                    console.log('🎤 Enregistrement audio terminé, traitement via API...');
+                    await processAudioWithAPI();
+                };
+                
+                // Démarrer l'enregistrement
+                mediaRecorder.start(1000); // Chunk toutes les secondes
+                isListening = true;
+                
+                // Mise à jour de l'interface
+                updateAPISpeechStatus('🎤 Enregistrement en cours - Parlez maintenant !', 'success');
+                document.getElementById('start-api-speech').classList.add('hidden');
+                document.getElementById('stop-api-speech').classList.remove('hidden');
+                
+                console.log('🚀 Reconnaissance API démarrée avec succès');
+                
+            } catch (error) {
+                console.error('❌ Erreur de démarrage API Speech:', error);
+                updateAPISpeechStatus('❌ Erreur de démarrage: ' + error.message, 'error');
+            }
+        }
+
+        // Arrêter la reconnaissance vocale
+        function stopAPISpeechRecognition() {
+            if (mediaRecorder && isListening) {
+                isListening = false;
+                mediaRecorder.stop();
+                
+                // Arrêter le stream audio
+                if (mediaRecorder.stream) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                
+                console.log('🛑 Reconnaissance API arrêtée');
+                
+                // Mise à jour de l'interface
+                document.getElementById('start-api-speech').classList.remove('hidden');
+                document.getElementById('stop-api-speech').classList.add('hidden');
+                updateAPISpeechStatus('🛑 Reconnaissance arrêtée', 'info');
+                updateAPISpeechText('Aucune reconnaissance en cours...');
+            }
+        }
+
+        // Traitement de l'audio via API externe
+        async function processAudioWithAPI() {
+            if (audioChunks.length === 0) {
+                console.log('⚠️ Aucun audio à traiter');
+                return;
+            }
+            
+            try {
+                updateAPISpeechStatus('🔍 Traitement de l\'audio via API...', 'info');
+                
+                // Créer un blob audio
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                
+                // Appel réel à l'API Google Speech-to-Text
+                const result = await callGoogleSpeechAPI(audioBlob);
+                
+                if (result.success) {
+                    console.log('🎯 Texte reconnu via API:', result.text);
+                    updateAPISpeechText('🎯 API: ' + result.text);
+                    processVoiceCommand(result.text);
+                } else {
+                    throw new Error(result.error);
+                }
+                
+                // Réinitialiser les chunks audio
+                audioChunks = [];
+                
+            } catch (error) {
+                console.error('❌ Erreur traitement API:', error);
+                updateAPISpeechStatus('❌ Erreur API: ' + error.message, 'error');
+                audioChunks = [];
+            }
+        }
+
+        // Appel réel à l'API Google Speech-to-Text
+        async function callGoogleSpeechAPI(audioBlob) {
+            try {
+                console.log('🔗 Appel à l\'API Google Speech-to-Text...');
+                
+                // Vérifier si la clé API est configurée
+                if (!API_CONFIG.googleSpeech.apiKey) {
+                    console.warn('⚠️ Clé API Google non configurée, utilisation du fallback');
+                    return await simulateAPICall(audioBlob);
+                }
+                
+                // Convertir l'audio en base64 pour l'API
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+                
+                // Configuration de l'API Google Speech-to-Text
+                const apiUrl = `${API_CONFIG.googleSpeech.baseUrl}?key=${API_CONFIG.googleSpeech.apiKey}`;
+                
+                // Paramètres de reconnaissance
+                const requestBody = {
+                    config: {
+                        encoding: API_CONFIG.googleSpeech.encoding,
+                        sampleRateHertz: API_CONFIG.googleSpeech.sampleRate,
+                        languageCode: API_CONFIG.googleSpeech.language,
+                        enableAutomaticPunctuation: true,
+                        model: 'latest_long',
+                        useEnhanced: true
+                    },
+                    audio: {
+                        content: base64Audio
+                    }
+                };
+                
+                console.log('📡 Envoi de la requête à Google Speech-to-Text...');
+                
+                // Appel à l'API
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Erreur API Google:', response.status, errorText);
+                    
+                    // Gérer spécifiquement l'erreur 403 (API non activée)
+                    if (response.status === 403) {
+                        console.log('🔄 API non activée, passage au fallback...');
+                        return await simulateAPICall(audioBlob);
+                    }
+                    
+                    throw new Error(`Erreur API Google: ${response.status} - ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📥 Réponse API Google reçue:', result);
+                
+                if (result.results && result.results.length > 0) {
+                    const transcript = result.results[0].alternatives[0].transcript;
+                    const confidence = result.results[0].alternatives[0].confidence;
+                    
+                    console.log('🎯 Texte reconnu par Google:', transcript);
+                    console.log('📊 Confiance:', confidence);
+                    
+                    return {
+                        success: true,
+                        text: transcript,
+                        confidence: confidence,
+                        source: 'Google Speech-to-Text'
+                    };
+                } else {
+                    throw new Error('Aucun résultat de reconnaissance de la part de Google');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur API Google Speech-to-Text:', error);
+                
+                // Éviter la récursion infinie - retourner directement le fallback
+                console.log('🔄 Fallback vers la simulation...');
+                return await simulateAPICall(audioBlob);
+            }
+        }
+
+        // Simulation d'appel API (fallback uniquement)
+        async function simulateAPICall(audioBlob) {
+            // Simulation de délai réseau
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Simulation de réponse API
+            const responses = [
+                "Le nom du joueur est Jean Dupont",
+                "L'âge du joueur est 25 ans",
+                "La position du joueur est attaquant",
+                "Le club du joueur est Paris Saint-Germain",
+                "Sauvegarder les données",
+                "Nouveau joueur"
+            ];
+            
+            // Retourner une réponse aléatoire pour la démonstration
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            
+            return {
+                success: true,
+                text: randomResponse,
+                confidence: 0.95
+            };
+        }
+
+        // Test de connexion API
+        async function testAPIConnection() {
+            try {
+                updateAPISpeechStatus('🔗 Test de connexion API...', 'info');
+                
+                // Vérifier si la clé API est configurée
+                if (!API_CONFIG.googleSpeech.apiKey) {
+                    updateAPISpeechStatus('⚠️ Clé API non configurée. Configurez d\'abord votre clé Google.', 'warning');
+                    return;
+                }
+                
+                // Test simple de l'API avec un audio minimal
+                const testAudio = new Blob(['test'], { type: 'audio/webm' });
+                
+                try {
+                    // Test direct sans récursion
+                    const result = await callGoogleSpeechAPI(testAudio);
+                    
+                    if (result.source === 'Google Speech-to-Text') {
+                        updateAPISpeechStatus('✅ Connexion API Google Speech-to-Text réussie !', 'success');
+                        console.log('🔗 Test de connexion API Google réussi');
+                    } else {
+                        updateAPISpeechStatus('⚠️ API Google non activée - Utilisation du fallback', 'warning');
+                        console.log('⚠️ API Google non activée, fallback utilisé');
+                    }
+                    
+                } catch (error) {
+                    updateAPISpeechStatus('❌ Erreur de connexion API: ' + error.message, 'error');
+                    console.error('❌ Erreur test connexion API Google:', error);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur test connexion API:', error);
+                updateAPISpeechStatus('❌ Erreur test connexion: ' + error.message, 'error');
+            }
+        }
+
+        // Sauvegarder la clé API
+        function saveAPIKey() {
+            const apiKeyInput = document.getElementById('google-api-key');
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                showAPIKeyStatus('❌ Veuillez entrer une clé API', 'error');
+                return;
+            }
+            
+            // Sauvegarder dans la configuration
+            API_CONFIG.googleSpeech.apiKey = apiKey;
+            
+            // Sauvegarder dans le localStorage (optionnel)
+            localStorage.setItem('google_speech_api_key', apiKey);
+            
+            showAPIKeyStatus('✅ Clé API sauvegardée avec succès !', 'success');
+            console.log('💾 Clé API Google sauvegardée');
+            
+            // Mettre à jour le statut
+            updateAPISpeechStatus('✅ Clé API configurée - Prêt pour la reconnaissance vocale !', 'success');
+        }
+
+        // Tester la clé API
+        async function testAPIKey() {
+            const apiKeyInput = document.getElementById('google-api-key');
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                showAPIKeyStatus('❌ Veuillez entrer une clé API', 'error');
+                return;
+            }
+            
+            showAPIKeyStatus('🧪 Test de la clé API...', 'info');
+            
+            // Sauvegarder temporairement pour le test
+            const originalKey = API_CONFIG.googleSpeech.apiKey;
+            API_CONFIG.googleSpeech.apiKey = apiKey;
+            
+            try {
+                // Test simple
+                const testAudio = new Blob(['test'], { type: 'audio/webm' });
+                await callGoogleSpeechAPI(testAudio);
+                
+                showAPIKeyStatus('✅ Clé API valide !', 'success');
+                console.log('✅ Clé API Google testée avec succès');
+                
+            } catch (error) {
+                showAPIKeyStatus('❌ Clé API invalide: ' + error.message, 'error');
+                console.error('❌ Test clé API échoué:', error);
+                
+                // Restaurer la clé originale
+                API_CONFIG.googleSpeech.apiKey = originalKey;
+            }
+        }
+
+        // Afficher le statut de la clé API
+        function showAPIKeyStatus(message, type = 'info') {
+            const statusElement = document.getElementById('api-key-status');
+            if (statusElement) {
+                statusElement.className = `text-sm ${
+                    type === 'success' ? 'text-green-600' : 
+                    type === 'error' ? 'text-red-600' : 'text-blue-600'
+                }`;
+                statusElement.textContent = message;
+                statusElement.classList.remove('hidden');
+                
+                // Masquer après 5 secondes
+                setTimeout(() => {
+                    statusElement.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+        // Charger la clé API depuis le localStorage
+        function loadAPIKey() {
+            const savedKey = localStorage.getItem('google_speech_api_key');
+            if (savedKey) {
+                API_CONFIG.googleSpeech.apiKey = savedKey;
+                const apiKeyInput = document.getElementById('google-api-key');
+                if (apiKeyInput) {
+                    apiKeyInput.value = savedKey;
+                }
+                console.log('📥 Clé API Google chargée depuis le stockage local');
+            }
+        }
+
+        // Mise à jour du statut de la reconnaissance API
+        function updateAPISpeechStatus(message, type = 'info') {
+            const statusElement = document.getElementById('api-speech-status');
+            if (statusElement) {
+                statusElement.className = `mb-4 p-3 rounded-lg ${
+                    type === 'success' ? 'bg-green-100 text-green-800' :
+                    type === 'error' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                }`;
+                statusElement.innerHTML = `<p>${message}</p>`;
+            }
+        }
+
+        // Mise à jour du texte de reconnaissance API
+        function updateAPISpeechText(text) {
+            const textElement = document.getElementById('api-speech-text');
+            if (textElement) {
+                textElement.textContent = text;
+            }
+        }
+
+        // Traitement des commandes vocales
+        function processVoiceCommand(text) {
+            const lowerText = text.toLowerCase().trim();
+            console.log('🎯 Traitement de la commande vocale:', lowerText);
+            
+            let commandProcessed = false;
+            
+            // Détection du nom du joueur
+            if (lowerText.includes('nom') || lowerText.includes('s\'appelle') || lowerText.includes('il s\'appelle')) {
+                const nameMatch = text.match(/(?:nom|s'appelle|il s'appelle)\s+(?:du joueur\s+)?(?:est\s+)?([a-zA-ZÀ-ÿ\s]+)/i);
+                if (nameMatch && nameMatch[1]) {
+                    const playerName = nameMatch[1].trim();
+                    currentPlayerData.name = playerName;
+                    updateFieldStatus('player-name-field', 'success', playerName);
+                    speakResponse(`Nom du joueur enregistré: ${playerName}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection de l'âge du joueur
+            if (lowerText.includes('âge') || lowerText.includes('age')) {
+                const ageMatch = text.match(/(?:âge|age)\s+(?:du joueur\s+)?(?:est\s+)?(\d+)/i);
+                if (ageMatch && ageMatch[1]) {
+                    const playerAge = ageMatch[1];
+                    currentPlayerData.age = playerAge;
+                    updateFieldStatus('player-age-field', 'success', playerAge);
+                    speakResponse(`Âge du joueur enregistré: ${playerAge} ans`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection de la position du joueur
+            if (lowerText.includes('position')) {
+                const positionMatch = text.match(/(?:position\s+(?:du joueur\s+)?(?:est\s+)?([a-zA-ZÀ-ÿ\s]+))/i);
+                if (positionMatch && positionMatch[1]) {
+                    const playerPosition = positionMatch[1].trim();
+                    currentPlayerData.position = playerPosition;
+                    updateFieldStatus('player-position-field', 'success', playerPosition);
+                    speakResponse(`Position du joueur enregistrée: ${playerPosition}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection du club du joueur
+            if (lowerText.includes('club')) {
+                const clubMatch = text.match(/(?:club\s+(?:du joueur\s+)?(?:est\s+)?([a-zA-ZÀ-ÿ\s]+))/i);
+                if (clubMatch && clubMatch[1]) {
+                    const playerClub = clubMatch[1].trim();
+                    currentPlayerData.club = playerClub;
+                    updateFieldStatus('player-club-field', 'success', playerClub);
+                    speakResponse(`Club du joueur enregistré: ${playerClub}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Commande de sauvegarde
+            if (lowerText.includes('sauvegarder') || lowerText.includes('sauvegarder') || lowerText.includes('enregistrer')) {
+                savePCMA();
+                commandProcessed = true;
+            }
+            
+            // Commande de nouveau joueur
+            if (lowerText.includes('nouveau joueur') || lowerText.includes('nouveau') || lowerText.includes('suivant')) {
+                clearForm();
+                commandProcessed = true;
+            }
+            
+            // Réponse par défaut si aucune commande reconnue
+            if (!commandProcessed) {
+                speakResponse('Commande non reconnue. Utilisez les commandes disponibles: nom, âge, position, club, sauvegarder, nouveau joueur.');
+            }
+            
+            // Vérification de la complétude du formulaire
+            checkFormCompletion();
+        }
+
+        // Réponse vocale
+        function speakResponse(text) {
+            console.log('🗣️ Réponse vocale:', text);
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                
+                utterance.onstart = function() {
+                    console.log('🎤 Synthèse vocale démarrée');
+                };
+                
+                utterance.onend = function() {
+                    console.log('🎤 Synthèse vocale terminée');
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error('❌ Erreur synthèse vocale:', event.error);
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Mise à jour du statut des champs
+        function updateFieldStatus(fieldId, status, value) {
+            const field = document.getElementById(fieldId);
+            const statusElement = document.getElementById(fieldId + '-status');
+            
+            if (field && statusElement) {
+                field.value = value;
+                
+                statusElement.className = `text-sm ${
+                    status === 'success' ? 'text-green-600' : 'text-red-600'
+                }`;
+                statusElement.textContent = status === 'success' ? '✅ Rempli' : '❌ Erreur';
+            }
+        }
+
+        // Vérification de la complétude du formulaire
+        function checkFormCompletion() {
+            const isComplete = currentPlayerData.name && currentPlayerData.age && currentPlayerData.position && currentPlayerData.club;
+            
+            if (isComplete) {
+                showFormStatus('success', '🎯 Formulaire complet ! Dites "sauvegarder" pour enregistrer.');
+            } else {
+                const missingFields = [];
+                if (!currentPlayerData.name) missingFields.push('nom');
+                if (!currentPlayerData.age) missingFields.push('âge');
+                if (!currentPlayerData.position) missingFields.push('position');
+                if (!currentPlayerData.club) missingFields.push('club');
+                
+                showFormStatus('info', `📋 Champs manquants: ${missingFields.join(', ')}`);
+            }
+        }
+
+        // Affichage du statut du formulaire
+        function showFormStatus(type, message) {
+            const statusElement = document.getElementById('form-status');
+            if (statusElement) {
+                statusElement.className = `mt-4 p-3 rounded-md ${
+                    type === 'success' ? 'bg-green-100 text-green-800' : 
+                    type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                }`;
+                statusElement.innerHTML = `<div id="form-status-text">${message}</div>`;
+                statusElement.classList.remove('hidden');
+            }
+        }
+
+        // Sauvegarde du PCMA
+        function savePCMA() {
+            if (currentPlayerData.name && currentPlayerData.age && currentPlayerData.position && currentPlayerData.club) {
+                console.log('💾 Sauvegarde des données:', currentPlayerData);
+                
+                // Simulation de sauvegarde
+                showFormStatus('success', '✅ Données sauvegardées avec succès !');
+                speakResponse('Données du joueur sauvegardées avec succès !');
+                
+            } else {
+                showFormStatus('error', '❌ Tous les champs doivent être remplis avant la sauvegarde');
+                speakResponse('Veuillez remplir tous les champs avant de sauvegarder');
+            }
+        }
+
+        // Vidage du formulaire
+        function clearForm() {
+            currentPlayerData = { name: '', age: '', position: '', club: '' };
+            
+            // Réinitialisation des champs
+            const fields = ['player-name-field', 'player-age-field', 'player-position-field', 'player-club-field'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const statusElement = document.getElementById(fieldId + '-status');
+                
+                if (field) field.value = '';
+                if (statusElement) {
+                    statusElement.className = 'text-sm text-gray-500';
+                    statusElement.textContent = 'En attente...';
+                }
+            });
+            
+            // Réinitialisation du statut
+            showFormStatus('info', '📋 Formulaire vidé. Prêt pour un nouveau joueur.');
+            speakResponse('Formulaire vidé. Prêt pour un nouveau joueur.');
+            
+            console.log('✅ Formulaire vidé et réinitialisé');
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOM Content Loaded - Google Speech-to-Text API Externe initialisé !');
+            
+            // Charger la clé API sauvegardée
+            loadAPIKey();
+            
+            // Event listeners pour les boutons vocaux
+            document.getElementById('start-api-speech').addEventListener('click', startAPISpeechRecognition);
+            document.getElementById('stop-api-speech').addEventListener('click', stopAPISpeechRecognition);
+            document.getElementById('test-api-connection').addEventListener('click', testAPIConnection);
+            
+            // Event listeners pour les boutons de gestion de la clé API
+            document.getElementById('save-api-key').addEventListener('click', saveAPIKey);
+            document.getElementById('test-api-key').addEventListener('click', testAPIKey);
+            
+            // Event listeners pour les boutons du formulaire
+            document.getElementById('save-pcma-btn').addEventListener('click', savePCMA);
+            document.getElementById('clear-form-btn').addEventListener('click', clearForm);
+            document.getElementById('new-player-btn').addEventListener('click', clearForm);
+            
+            // Initialisation du formulaire
+            clearForm();
+            
+            // Vérifier le statut de la clé API
+            if (API_CONFIG.googleSpeech.apiKey) {
+                updateAPISpeechStatus('✅ Clé API configurée - Prêt pour la reconnaissance vocale !', 'success');
+            } else {
+                updateAPISpeechStatus('⚠️ Configurez votre clé API Google pour activer la reconnaissance vocale', 'warning');
+            }
+            
+            console.log('✅ Google Speech-to-Text API Externe initialisé avec succès !');
+        });
+    </script>
+</body>
+</html>

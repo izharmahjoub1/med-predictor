@@ -149,3 +149,7 @@ echo "🎨 Images par défaut disponibles si les vraies images ne sont pas trouv
 
 
 
+
+
+
+

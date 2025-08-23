@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         cacheDirectory=".phpunit.cache"
+>
+    <testsuites>
+        <testsuite name="Browser">
+            <directory suffix="Test.php">tests/Browser</directory>
+        </testsuite>
+        <testsuite name="ConsoleVocale">
+            <directory suffix="Test.php">tests/Browser/ConsoleVocale</directory>
+        </testsuite>
+    </testsuites>
+    
+    <source>
+        <include>
+            <directory suffix=".php">app</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">app/Console</directory>
+            <directory suffix=".php">app/Exceptions</directory>
+            <directory suffix=".php">app/Providers</directory>
+        </exclude>
+    </source>
+    
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="GOOGLE_SPEECH_API_KEY" value="test_key"/>
+        <env name="DUSK_DRIVER" value="chrome"/>
+        <env name="DUSK_HEADLESS" value="true"/>
+    </php>
+</phpunit>

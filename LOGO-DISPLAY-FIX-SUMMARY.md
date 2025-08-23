@@ -178,3 +178,6 @@ $logoUrl = $this->logoService->getLogo($club) ?? $this->generateFallback($club);
 
 
 
+
+
+

@@ -1,302 +1,184 @@
-# Guide de Déploiement - Secrétariat Médical & Portail Athlète
+# 🚀 Guide de Déploiement - Plateforme FIT sur fit.tbhc.uk
 
-## 🚀 Déploiement en Production
+## 🎯 **Objectif**
 
-### Prérequis Système
+Déployer la plateforme Med Predictor FIT sur le domaine `fit.tbhc.uk` en utilisant Google Workspace pour l'hébergement et la gestion.
 
--   **PHP** : 8.1 ou supérieur
--   **Laravel** : 10.x
--   **Base de données** : MySQL 8.0 ou PostgreSQL 13
--   **Composer** : Dernière version
--   **Node.js** : 16.x ou supérieur (pour la compilation des assets)
+## 🌐 **Configuration du domaine**
 
-### 1. Installation des Dépendances
+### **1. Vérification du domaine tbhc.uk**
+- **Domaine principal :** `tbhc.uk`
+- **Sous-domaine cible :** `fit.tbhc.uk`
+- **Registrar :** Vérifier que vous avez accès à la gestion DNS
 
+### **2. Configuration Google Workspace**
+- **Compte Google Workspace :** `admin@tbhc.uk`
+- **Services activés :** Gmail, Drive, Sites, Cloud Platform
+- **Utilisateurs :** Créer les comptes pour l'équipe
+
+## 🏗️ **Options de déploiement**
+
+### **Option 1 : Google Cloud Platform (Recommandée)**
+- **Avantages :** Scalabilité, performance, intégration Google
+- **Coût :** ~$50-200/mois selon l'usage
+- **Complexité :** Moyenne
+
+### **Option 2 : Google Cloud Run**
+- **Avantages :** Serverless, auto-scaling, économique
+- **Coût :** ~$20-100/mois
+- **Complexité :** Faible
+
+### **Option 3 : Google App Engine**
+- **Avantages :** Gestion automatique, monitoring intégré
+- **Coût :** ~$30-150/mois
+- **Complexité :** Faible
+
+## 🔧 **Déploiement Google Cloud Platform**
+
+### **1. Configuration du projet GCP**
 ```bash
-# Installer les dépendances PHP
-composer install --optimize-autoloader --no-dev
+# Installer Google Cloud CLI
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
 
-# Installer les dépendances Node.js (si nécessaire)
-npm install
-npm run build
+# Initialiser le projet
+gcloud init
+gcloud config set project med-predictor-fit
+
+# Activer les APIs nécessaires
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable run.googleapis.com
+gcloud services enable sqladmin.googleapis.com
+gcloud services enable compute.googleapis.com
 ```
 
-### 2. Configuration de l'Environnement
+### **2. Configuration de la base de données**
+```bash
+# Créer une instance Cloud SQL
+gcloud sql instances create med-predictor-db \
+    --database-version=MYSQL_8_0 \
+    --tier=db-f1-micro \
+    --region=europe-west1 \
+    --root-password=YOUR_STRONG_PASSWORD
 
-#### Fichier `.env`
+# Créer la base de données
+gcloud sql databases create med_predictor \
+    --instance=med-predictor-db
 
-```env
-# Configuration de base
-APP_NAME="Med Predictor"
+# Créer un utilisateur
+gcloud sql users create med_predictor_user \
+    --instance=med-predictor-db \
+    --password=USER_PASSWORD
+```
+
+### **3. Configuration des variables d'environnement**
+```bash
+# Créer un fichier .env.production
+cat > .env.production << EOF
+APP_NAME="Med Predictor FIT"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://votre-domaine.com
+APP_URL=https://fit.tbhc.uk
 
-# Base de données
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST=/cloudsql/PROJECT_ID:europe-west1:med-predictor-db
 DB_PORT=3306
 DB_DATABASE=med_predictor
-DB_USERNAME=votre_utilisateur
-DB_PASSWORD=votre_mot_de_passe
+DB_USERNAME=med_predictor_user
+DB_PASSWORD=USER_PASSWORD
 
-# Cache et sessions
+GOOGLE_SPEECH_API_KEY=your_google_cloud_api_key
+GOOGLE_CLOUD_PROJECT=med-predictor-fit
+
 CACHE_DRIVER=redis
 SESSION_DRIVER=redis
 QUEUE_CONNECTION=redis
 
-# Sanctum pour l'API
-SANCTUM_STATEFUL_DOMAINS=votre-domaine.com
-SESSION_DOMAIN=.votre-domaine.com
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
 
-# Stockage des fichiers
-FILESYSTEM_DISK=local
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=noreply@tbhc.uk
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@tbhc.uk
+MAIL_FROM_NAME="Med Predictor FIT"
+EOF
 ```
 
-### 3. Base de Données
+### **4. Configuration Docker**
+```dockerfile
+# Dockerfile
+FROM php:8.1-fpm
 
-#### Migrations
+# Installer les dépendances système
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    nginx \
+    supervisor
 
-```bash
-# Exécuter les migrations
-php artisan migrate --force
+# Installer les extensions PHP
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Vérifier le statut des migrations
-php artisan migrate:status
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Définir le répertoire de travail
+WORKDIR /var/www
+
+# Copier les fichiers du projet
+COPY . /var/www
+
+# Installer les dépendances
+RUN composer install --optimize-autoloader --no-dev
+RUN npm install && npm run build
+
+# Configurer les permissions
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 755 /var/www/storage
+
+# Exposer le port 80
+EXPOSE 80
+
+# Démarrer les services
+CMD ["php-fpm"]
 ```
 
-#### Seeders (Optionnel)
-
-```bash
-# Créer les données de test
-php artisan db:seed --class=TestDataSeeder
-```
-
-### 4. Configuration Sanctum
-
-```bash
-# Publier la configuration Sanctum
-php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-
-# Exécuter les migrations Sanctum
-php artisan migrate
-```
-
-### 5. Optimisations de Production
-
-```bash
-# Optimiser l'autoloader
-composer install --optimize-autoloader --no-dev
-
-# Configurer le cache
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Optimiser les assets
-npm run build
-```
-
-### 6. Permissions des Dossiers
-
-```bash
-# Définir les permissions appropriées
-chmod -R 755 storage/
-chmod -R 755 bootstrap/cache/
-chown -R www-data:www-data storage/
-chown -R www-data:www-data bootstrap/cache/
-```
-
-## 🔐 Configuration de Sécurité
-
-### 1. Middleware de Rôles
-
-Vérifiez que le middleware `CheckRole` est bien enregistré dans `app/Http/Kernel.php` :
-
-```php
-protected $routeMiddleware = [
-    // ... autres middlewares
-    'role' => \App\Http\Middleware\CheckRole::class,
-];
-```
-
-### 2. Authentification Sanctum
-
-Assurez-vous que Sanctum est configuré dans `config/sanctum.php` :
-
-```php
-'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-    '%s%s',
-    'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-    env('APP_URL') ? ','.parse_url(env('APP_URL'), PHP_URL_HOST) : ''
-))),
-```
-
-### 3. Protection CSRF
-
-Vérifiez que la protection CSRF est active pour les routes web.
-
-## 👥 Création des Utilisateurs
-
-### 1. Utilisateur Administrateur
-
-```bash
-php artisan tinker
-```
-
-```php
-// Créer un administrateur
-User::create([
-    'name' => 'Administrateur',
-    'email' => 'admin@medpredictor.com',
-    'password' => Hash::make('mot_de_passe_securise'),
-    'role' => 'admin',
-    'email_verified_at' => now()
-]);
-```
-
-### 2. Utilisateur Secrétaire
-
-```php
-// Créer un secrétaire
-User::create([
-    'name' => 'Secrétaire Médical',
-    'email' => 'secretary@medpredictor.com',
-    'password' => Hash::make('mot_de_passe_securise'),
-    'role' => 'secretary',
-    'email_verified_at' => now()
-]);
-```
-
-### 3. Utilisateur Athlète
-
-```php
-// Créer un athlète
-User::create([
-    'name' => 'Athlète Test',
-    'email' => 'athlete@medpredictor.com',
-    'password' => Hash::make('mot_de_passe_securise'),
-    'role' => 'athlete',
-    'fifa_connect_id' => 'FIFA123456',
-    'email_verified_at' => now()
-]);
-
-// Créer l'enregistrement athlète correspondant
-Athlete::create([
-    'name' => 'Athlète Test',
-    'fifa_connect_id' => 'FIFA123456',
-    'email' => 'athlete@medpredictor.com',
-    'date_of_birth' => '1990-01-01',
-    'blood_type' => 'O+',
-    'allergies' => 'Aucune'
-]);
-```
-
-## 🧪 Tests de Validation
-
-### 1. Test des Routes
-
-```bash
-# Vérifier que toutes les routes sont enregistrées
-php artisan route:list
-
-# Tester les routes du secrétariat
-curl -X GET "https://votre-domaine.com/secretary/dashboard" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Tester les routes du portail athlète
-curl -X GET "https://votre-domaine.com/api/v1/portal/dashboard-summary" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-### 2. Test des Fonctionnalités
-
-#### Secrétariat Médical
-
--   ✅ Accès au dashboard
--   ✅ Recherche d'athlètes par FIFA Connect ID
--   ✅ Création de rendez-vous
--   ✅ Upload de documents
--   ✅ Analyse IA des documents
-
-#### Portail Athlète
-
--   ✅ Authentification sécurisée
--   ✅ Dashboard personnel
--   ✅ Formulaire de bien-être
--   ✅ Gestion des appareils connectés
--   ✅ Accès aux données personnelles uniquement
-
-### 3. Test de Performance
-
-```bash
-# Test de charge basique
-ab -n 1000 -c 10 https://votre-domaine.com/
-
-# Test des API
-ab -n 500 -c 5 https://votre-domaine.com/api/v1/portal/dashboard-summary
-```
-
-## 📊 Monitoring et Maintenance
-
-### 1. Logs
-
-```bash
-# Surveiller les logs d'erreur
-tail -f storage/logs/laravel.log
-
-# Surveiller les logs d'accès
-tail -f /var/log/nginx/access.log
-```
-
-### 2. Base de Données
-
-```bash
-# Vérifier l'intégrité de la base
-php artisan db:show
-
-# Optimiser les tables
-php artisan db:optimize
-```
-
-### 3. Cache
-
-```bash
-# Vider le cache si nécessaire
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
-
-## 🔧 Configuration Serveur Web
-
-### Nginx
-
+### **5. Configuration Nginx**
 ```nginx
+# nginx.conf
 server {
     listen 80;
-    server_name votre-domaine.com;
-    return 301 https://$server_name$request_uri;
-}
+    server_name fit.tbhc.uk;
+    root /var/www/public;
 
-server {
-    listen 443 ssl http2;
-    server_name votre-domaine.com;
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
 
-    ssl_certificate /path/to/certificate.crt;
-    ssl_certificate_key /path/to/private.key;
+    index index.php;
 
-    root /var/www/med-predictor/public;
-    index index.php index.html index.htm;
+    charset utf-8;
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-        fastcgi_index index.php;
+        fastcgi_pass 127.0.0.1:9000;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
@@ -307,103 +189,237 @@ server {
 }
 ```
 
-### Apache
+### **6. Déploiement avec Cloud Build**
+```yaml
+# cloudbuild.yaml
+steps:
+  # Build de l'image Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/med-predictor:$COMMIT_SHA', '.']
+  
+  # Push de l'image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/med-predictor:$COMMIT_SHA']
+  
+  # Déploiement sur Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'med-predictor'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/med-predictor:$COMMIT_SHA'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
 
-```apache
-<VirtualHost *:80>
-    ServerName votre-domaine.com
-    DocumentRoot /var/www/med-predictor/public
-
-    <Directory /var/www/med-predictor/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog ${APACHE_LOG_DIR}/med-predictor_error.log
-    CustomLog ${APACHE_LOG_DIR}/med-predictor_access.log combined
-</VirtualHost>
+images:
+  - 'gcr.io/$PROJECT_ID/med-predictor:$COMMIT_SHA'
 ```
 
-## 🚨 Sécurité
+## 🔐 **Configuration SSL et domaine**
 
-### 1. Firewall
-
+### **1. Configuration DNS**
 ```bash
-# Configurer le firewall
-ufw allow 22
-ufw allow 80
-ufw allow 443
-ufw enable
+# Ajouter les enregistrements DNS dans votre registrar
+# Type A : fit.tbhc.uk -> IP_GOOGLE_CLOUD
+# Type CNAME : www.fit.tbhc.uk -> fit.tbhc.uk
 ```
 
-### 2. SSL/TLS
-
+### **2. Configuration SSL automatique**
 ```bash
-# Installer Certbot pour Let's Encrypt
-sudo apt install certbot python3-certbot-nginx
-
-# Obtenir un certificat SSL
-sudo certbot --nginx -d votre-domaine.com
+# Google Cloud gère automatiquement les certificats SSL
+# Assurez-vous que le domaine pointe vers votre instance
 ```
 
-### 3. Sauvegarde
+## 📧 **Configuration email Google Workspace**
 
+### **1. Configuration SMTP**
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=noreply@tbhc.uk
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@tbhc.uk
+MAIL_FROM_NAME="Med Predictor FIT"
+```
+
+### **2. Création des comptes utilisateurs**
 ```bash
-# Script de sauvegarde automatique
+# Dans Google Workspace Admin
+# Créer les comptes pour l'équipe :
+# - izhar@tbhc.uk (Lead Developer)
+# - dev2@tbhc.uk (Développeur)
+# - qa@tbhc.uk (Tester QA)
+# - uat@tbhc.uk (Tester UAT)
+```
+
+## 🚀 **Script de déploiement automatisé**
+
+### **1. Script de déploiement**
+```bash
 #!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-mysqldump -u username -p database_name > backup_$DATE.sql
-tar -czf backup_$DATE.tar.gz backup_$DATE.sql
-rm backup_$DATE.sql
+# deploy.sh
+
+set -e
+
+echo "🚀 Déploiement de Med Predictor FIT..."
+
+# Variables
+PROJECT_ID="med-predictor-fit"
+REGION="europe-west1"
+SERVICE_NAME="med-predictor"
+
+# Build et déploiement
+echo "📦 Build de l'application..."
+gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME
+
+echo "🚀 Déploiement sur Cloud Run..."
+gcloud run deploy $SERVICE_NAME \
+    --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
+    --platform managed \
+    --region $REGION \
+    --allow-unauthenticated \
+    --set-env-vars "APP_ENV=production" \
+    --set-env-vars "APP_URL=https://fit.tbhc.uk"
+
+echo "✅ Déploiement terminé !"
+echo "🌐 URL : https://fit.tbhc.uk"
 ```
 
-## 📈 Monitoring
-
-### 1. Health Checks
-
+### **2. Script de migration de base**
 ```bash
-# Vérifier l'état de l'application
-curl -f https://votre-domaine.com/health
+#!/bin/bash
+# migrate.sh
 
-# Vérifier la base de données
-php artisan db:monitor
+echo "🗄️ Migration de la base de données..."
+
+# Exécuter les migrations
+gcloud run jobs create migrate-med-predictor \
+    --image gcr.io/$PROJECT_ID/med-predictor \
+    --region $REGION \
+    --command="php" \
+    --args="artisan,migrate,--force"
+
+echo "✅ Migration terminée !"
 ```
 
-### 2. Métriques
+## 📊 **Monitoring et maintenance**
 
--   **Performance** : Temps de réponse des API
--   **Disponibilité** : Uptime de l'application
--   **Erreurs** : Taux d'erreur 4xx/5xx
--   **Utilisation** : Nombre d'utilisateurs actifs
+### **1. Configuration Google Cloud Monitoring**
+```bash
+# Activer le monitoring
+gcloud services enable monitoring.googleapis.com
 
-## 🎯 Validation Finale
+# Créer des alertes
+gcloud alpha monitoring policies create \
+    --policy-from-file=monitoring-policy.yaml
+```
 
-### Checklist de Déploiement
+### **2. Configuration des logs**
+```bash
+# Activer Cloud Logging
+gcloud services enable logging.googleapis.com
 
--   ✅ Migrations exécutées
--   ✅ Sanctum configuré
--   ✅ Utilisateurs créés
--   ✅ SSL/TLS configuré
--   ✅ Firewall activé
--   ✅ Logs configurés
--   ✅ Sauvegarde automatisée
--   ✅ Monitoring en place
--   ✅ Tests de validation passés
+# Configurer la rétention des logs
+gcloud logging sinks create med-predictor-logs \
+    storage.googleapis.com/$PROJECT_ID-logs \
+    --log-filter="resource.type=cloud_run_revision"
+```
 
-### URLs de Test
+## 🔄 **Pipeline CI/CD avec GitHub Actions**
 
--   **Secrétariat** : `https://votre-domaine.com/secretary/dashboard`
--   **Portail Athlète** : `https://votre-domaine.com/portal`
--   **API Documentation** : `https://votre-domaine.com/api/documentation`
+### **1. Configuration GitHub Actions**
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Google Cloud
 
-## �� Déploiement Réussi !
+on:
+  push:
+    branches: [ main, develop-v3 ]
 
-L'application est maintenant prête pour la production avec :
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Google Cloud
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+    
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy med-predictor \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/med-predictor:${{ github.sha }} \
+          --region europe-west1 \
+          --platform managed \
+          --allow-unauthenticated
+```
 
--   ✅ Architecture FIFA Connect ID respectée
--   ✅ Sécurité et authentification implémentées
--   ✅ Interfaces utilisateur complètes
--   ✅ Fonctionnalités avancées opérationnelles
--   ✅ Monitoring et maintenance configurés
+## 📋 **Checklist de déploiement**
 
-**L'implémentation est complète et prête pour la production !** 🚀
+### **Pré-déploiement :**
+- [ ] **Vérifier le domaine** `fit.tbhc.uk` est accessible
+- [ ] **Configurer Google Workspace** avec les comptes utilisateurs
+- [ ] **Préparer la base de données** Cloud SQL
+- [ ] **Configurer les variables d'environnement** de production
+- [ ] **Tester localement** avec Docker
+
+### **Déploiement :**
+- [ ] **Déployer sur Google Cloud Platform**
+- [ ] **Configurer le domaine** et SSL
+- [ ] **Migrer la base de données**
+- [ ] **Tester l'application** en production
+- [ ] **Configurer le monitoring** et les alertes
+
+### **Post-déploiement :**
+- [ ] **Former l'équipe** à l'utilisation
+- [ ] **Configurer les sauvegardes** automatiques
+- [ ] **Mettre en place le support** utilisateur
+- [ ] **Documenter les procédures** de maintenance
+
+## 💰 **Estimation des coûts**
+
+### **Google Cloud Platform :**
+- **Cloud Run :** $20-100/mois
+- **Cloud SQL :** $30-150/mois
+- **Cloud Build :** $10-50/mois
+- **Monitoring :** $10-30/mois
+- **Total estimé :** $70-330/mois
+
+### **Google Workspace :**
+- **5 utilisateurs :** $25-50/mois
+- **Total estimé :** $95-380/mois
+
+## 🆘 **Support et maintenance**
+
+### **Contact :**
+- **Lead Developer :** `izhar@tbhc.uk`
+- **Support technique :** `support@tbhc.uk`
+- **Documentation :** Voir les guides créés
+
+### **Maintenance :**
+- **Sauvegardes :** Quotidiennes automatiques
+- **Mises à jour :** Mensuelles planifiées
+- **Monitoring :** 24/7 avec alertes
+
+---
+
+**🎯 Votre plateforme FIT sera bientôt accessible sur fit.tbhc.uk !**
+
+**📧 Contact :** `izhar@tbhc.uk`  
+**🌐 URL :** `https://fit.tbhc.uk`  
+**📚 Documentation :** Voir les guides de déploiement
+
+**Dernière mise à jour :** 23 Août 2025  
+**Version :** 1.0.0  
+**Statut :** 🚀 Prêt pour le déploiement

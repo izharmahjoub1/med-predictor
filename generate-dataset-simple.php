@@ -278,3 +278,6 @@ echo "FIT Score : " . $exemple['fit_score_calcul']['fit_score_final'] . " (" . $
 
 
 
+
+
+

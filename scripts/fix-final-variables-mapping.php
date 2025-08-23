@@ -125,3 +125,7 @@ echo "🎯 GHS Mental → ghs_mental_score (variable réelle de la base)\n";
 
 
 
+
+
+
+

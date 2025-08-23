@@ -1,0 +1,48 @@
+parameters:
+    level: 8
+    paths:
+        - app
+        - config
+        - database
+        - resources
+        - routes
+        - tests
+    
+    excludePaths:
+        - app/Console
+        - app/Exceptions
+        - app/Providers
+        - resources/views
+    
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Collection::#'
+        - '#Call to an undefined method Illuminate\\Support\\Collection::#'
+        - '#Call to an undefined method Illuminate\\Http\\Request::#'
+        - '#Call to an undefined method Illuminate\\Http\\Response::#'
+        - '#Call to an undefined method Illuminate\\View\\View::#'
+    
+    checkMissingCallableSignature: false
+    checkUnusedVariables: true
+    checkUnusedPrivateMethods: true
+    checkUnusedPrivateProperties: true
+    
+    treatPhpDocTypesAsCertain: false
+    
+    # Laravel specific
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    
+    # Ignore common Laravel patterns
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Collection::#'
+        - '#Call to an undefined method Illuminate\\Support\\Collection::#'
+        - '#Call to an undefined method Illuminate\\Http\\Request::#'
+        - '#Call to an undefined method Illuminate\\Http\\Response::#'
+        - '#Call to an undefined method Illuminate\\View\\View::#'
+        - '#Call to an undefined method Illuminate\\Routing\\Router::#'
+        - '#Call to an undefined method Illuminate\\Validation\\Validator::#'

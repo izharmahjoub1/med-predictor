@@ -78,3 +78,7 @@ echo "\n💡 L'erreur 'N is not defined' devrait être résolue!\n";
 
 
 
+
+
+
+

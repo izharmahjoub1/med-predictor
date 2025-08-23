@@ -295,3 +295,6 @@ echo "Présence moyenne : " . round($presenceTotal / count($dataset['joueurs']),
 
 
 
+
+
+

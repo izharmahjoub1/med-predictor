@@ -119,3 +119,6 @@ echo "Tous les composants de logos des clubs sont prêts à être utilisés.\n";
 
 
 
+
+
+

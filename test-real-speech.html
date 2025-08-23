@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test VRAIE Reconnaissance Vocale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-800">
+            🎤 Test VRAIE Reconnaissance Vocale (Web Speech API)
+        </h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-blue-800 mb-4">
+                🎤 Assistant Vocal RÉEL
+            </h2>
+            <p class="text-gray-600 mb-6">
+                Cette version utilise l'API native du navigateur pour comprendre VRAIMENT ce que vous dites !
+            </p>
+            
+            <!-- Contrôles vocaux -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <button type="button" id="start-real-speech" class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    🎤 Démarrer Reconnaissance RÉELLE
+                </button>
+                
+                <button type="button" id="stop-real-speech" class="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium hidden">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    🛑 Arrêter Reconnaissance
+                </button>
+                
+                <button type="button" id="test-permissions" class="flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    🔍 Test Permissions
+                </button>
+            </div>
+            
+            <!-- Statut de la reconnaissance -->
+            <div id="real-speech-status" class="mb-4 p-3 bg-gray-100 rounded-lg">
+                <p class="text-gray-600">🎯 Cliquez sur "Démarrer Reconnaissance RÉELLE" pour commencer</p>
+            </div>
+            
+            <!-- Aperçu en temps réel -->
+            <div id="real-speech-preview" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-medium text-gray-700 mb-2">🎯 Ce que vous dites EN TEMPS RÉEL :</h4>
+                <div id="real-speech-text" class="text-gray-600 italic">Aucune reconnaissance en cours...</div>
+                <div id="interim-text" class="text-blue-500 italic mt-2"></div>
+            </div>
+            
+            <!-- Configuration -->
+            <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                <h4 class="font-medium text-green-800 mb-2">✅ Configuration API Native :</h4>
+                <p class="text-green-700 text-sm">
+                    Cette solution utilise l'API Web Speech native de votre navigateur (pas de clé API requise).
+                    Elle comprend VRAIMENT ce que vous dites en français !
+                </p>
+            </div>
+        </div>
+        
+        <!-- Formulaire de test -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Formulaire PCMA - Test Vocal</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom du joueur</label>
+                    <input type="text" id="player-name-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'Le nom du joueur est Pierre'">
+                    <div id="player-name-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Âge</label>
+                    <input type="number" id="player-age-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'L'âge du joueur est 25 ans'">
+                    <div id="player-age-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                    <input type="text" id="player-position-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'La position du joueur est attaquant'">
+                    <div id="player-position-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
+                    <input type="text" id="player-club-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'Le club du joueur est PSG'">
+                    <div id="player-club-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="button" id="save-pcma-btn" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium">
+                    💾 Enregistrer PCMA
+                </button>
+                
+                <button type="button" id="clear-form-btn" class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors font-medium">
+                    🗑️ Vider le formulaire
+                </button>
+                
+                <button type="button" id="new-player-btn" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    👤 Nouveau joueur
+                </button>
+            </div>
+            
+            <div id="form-status" class="mt-4 p-3 rounded-md hidden">
+                <div id="form-status-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales pour la reconnaissance vocale RÉELLE
+        let isListening = false;
+        let recognition = null;
+        let currentPlayerData = { name: '', age: '', position: '', club: '' };
+
+        // Initialisation de la reconnaissance vocale NATIVE
+        function initRealSpeechRecognition() {
+            try {
+                // Vérification de la disponibilité de l'API native
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    throw new Error('Reconnaissance vocale non supportée par votre navigateur');
+                }
+                
+                // Création de l'instance
+                recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+                
+                // Configuration optimale pour comprendre VRAIMENT ce que vous dites
+                recognition.lang = 'fr-FR';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.maxAlternatives = 1;
+                
+                // ÉVÉNEMENTS POUR COMPRENDRE VOTRE VRAIE VOIX
+                recognition.onstart = function() {
+                    console.log('🎤 Reconnaissance RÉELLE démarrée - Je vous écoute !');
+                    isListening = true;
+                    updateRealSpeechStatus('🎤 JE VOUS ÉCOUTE ! Parlez maintenant...', 'success');
+                    document.getElementById('start-real-speech').classList.add('hidden');
+                    document.getElementById('stop-real-speech').classList.remove('hidden');
+                };
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+                    
+                    // Traitement des résultats de votre VRAIE voix
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    // Affichage en temps réel de ce que VOUS dites
+                    if (finalTranscript) {
+                        console.log('🎯 VOUS AVEZ DIT:', finalTranscript);
+                        updateRealSpeechText('✅ VOUS AVEZ DIT: ' + finalTranscript);
+                        processRealVoiceCommand(finalTranscript);
+                        document.getElementById('interim-text').textContent = '';
+                    }
+                    
+                    if (interimTranscript) {
+                        document.getElementById('interim-text').textContent = '🔄 En train de dire: ' + interimTranscript;
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('❌ Erreur reconnaissance RÉELLE:', event.error);
+                    let errorMessage = 'Erreur de reconnaissance';
+                    
+                    switch(event.error) {
+                        case 'not-allowed':
+                            errorMessage = 'Permission microphone refusée - Autorisez le microphone';
+                            break;
+                        case 'no-speech':
+                            errorMessage = 'Aucune parole détectée - Parlez plus fort';
+                            break;
+                        case 'audio-capture':
+                            errorMessage = 'Problème de microphone';
+                            break;
+                        case 'network':
+                            errorMessage = 'Problème réseau - Vérifiez votre connexion';
+                            break;
+                        default:
+                            errorMessage = `Erreur: ${event.error}`;
+                    }
+                    
+                    updateRealSpeechStatus('❌ ' + errorMessage, 'error');
+                    stopRealSpeechRecognition();
+                };
+                
+                recognition.onend = function() {
+                    console.log('🎤 Reconnaissance RÉELLE terminée');
+                    if (isListening) {
+                        // Redémarrage automatique pour écoute continue
+                        setTimeout(() => {
+                            if (isListening) {
+                                console.log('🔄 Redémarrage automatique...');
+                                try {
+                                    recognition.start();
+                                } catch (error) {
+                                    console.error('❌ Erreur redémarrage:', error);
+                                    updateRealSpeechStatus('❌ Erreur redémarrage: ' + error.message, 'error');
+                                    stopRealSpeechRecognition();
+                                }
+                            }
+                        }, 100);
+                    }
+                };
+                
+                console.log('✅ Reconnaissance vocale RÉELLE initialisée');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Erreur d\'initialisation:', error);
+                updateRealSpeechStatus('❌ ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Démarrer la reconnaissance RÉELLE
+        function startRealSpeechRecognition() {
+            if (!recognition) {
+                if (!initRealSpeechRecognition()) {
+                    return;
+                }
+            }
+            
+            if (!isListening) {
+                try {
+                    recognition.start();
+                    console.log('🚀 Démarrage reconnaissance RÉELLE...');
+                    updateRealSpeechStatus('🚀 Démarrage de la reconnaissance RÉELLE...', 'info');
+                } catch (error) {
+                    console.error('❌ Erreur de démarrage:', error);
+                    updateRealSpeechStatus('❌ Erreur: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Arrêter la reconnaissance
+        function stopRealSpeechRecognition() {
+            if (recognition && isListening) {
+                isListening = false;
+                recognition.stop();
+                console.log('🛑 Arrêt reconnaissance RÉELLE');
+                
+                document.getElementById('start-real-speech').classList.remove('hidden');
+                document.getElementById('stop-real-speech').classList.add('hidden');
+                updateRealSpeechStatus('🛑 Reconnaissance arrêtée', 'info');
+                updateRealSpeechText('Reconnaissance arrêtée...');
+                document.getElementById('interim-text').textContent = '';
+            }
+        }
+
+        // Test des permissions
+        async function testPermissions() {
+            try {
+                updateRealSpeechStatus('🔍 Test des permissions microphone...', 'info');
+                
+                // Test permission microphone
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop());
+                
+                updateRealSpeechStatus('✅ Permissions microphone accordées !', 'success');
+                console.log('✅ Permissions microphone OK');
+                
+            } catch (error) {
+                console.error('❌ Erreur permissions:', error);
+                updateRealSpeechStatus('❌ Permission microphone refusée', 'error');
+            }
+        }
+
+        // Mise à jour du statut
+        function updateRealSpeechStatus(message, type = 'info') {
+            const statusElement = document.getElementById('real-speech-status');
+            if (statusElement) {
+                statusElement.className = `mb-4 p-3 rounded-lg ${
+                    type === 'success' ? 'bg-green-100 text-green-800' :
+                    type === 'error' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                }`;
+                statusElement.innerHTML = `<p>${message}</p>`;
+            }
+        }
+
+        // Mise à jour du texte reconnu
+        function updateRealSpeechText(text) {
+            const textElement = document.getElementById('real-speech-text');
+            if (textElement) {
+                textElement.textContent = text;
+            }
+        }
+
+        // Traitement des commandes vocales RÉELLES
+        function processRealVoiceCommand(text) {
+            const lowerText = text.toLowerCase().trim();
+            console.log('🎯 Traitement commande RÉELLE:', lowerText);
+            
+            let commandProcessed = false;
+            
+            // Détection du nom (flexible)
+            if (lowerText.includes('nom') && (lowerText.includes('est') || lowerText.includes('s\'appelle'))) {
+                const patterns = [
+                    /(?:nom.*?(?:est|s'appelle))\s+([a-zA-ZÀ-ÿ\s]+)/i,
+                    /([a-zA-ZÀ-ÿ\s]+)(?:\s+est\s+le\s+nom)/i
+                ];
+                
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match && match[1]) {
+                        const playerName = match[1].trim();
+                        currentPlayerData.name = playerName;
+                        updateFieldStatus('player-name-field', 'success', playerName);
+                        speakResponse(`Nom enregistré: ${playerName}`);
+                        commandProcessed = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Détection de l'âge
+            if (lowerText.includes('âge') || lowerText.includes('age')) {
+                const ageMatch = text.match(/(?:âge|age).*?(\d+)/i);
+                if (ageMatch && ageMatch[1]) {
+                    const playerAge = ageMatch[1];
+                    currentPlayerData.age = playerAge;
+                    updateFieldStatus('player-age-field', 'success', playerAge);
+                    speakResponse(`Âge enregistré: ${playerAge} ans`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection de la position
+            if (lowerText.includes('position')) {
+                const positionMatch = text.match(/position.*?(?:est|c'est)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+                if (positionMatch && positionMatch[1]) {
+                    const playerPosition = positionMatch[1].trim();
+                    currentPlayerData.position = playerPosition;
+                    updateFieldStatus('player-position-field', 'success', playerPosition);
+                    speakResponse(`Position enregistrée: ${playerPosition}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection du club
+            if (lowerText.includes('club')) {
+                const clubMatch = text.match(/club.*?(?:est|c'est)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+                if (clubMatch && clubMatch[1]) {
+                    const playerClub = clubMatch[1].trim();
+                    currentPlayerData.club = playerClub;
+                    updateFieldStatus('player-club-field', 'success', playerClub);
+                    speakResponse(`Club enregistré: ${playerClub}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Commandes d'action
+            if (lowerText.includes('sauvegarder') || lowerText.includes('enregistrer')) {
+                savePCMA();
+                commandProcessed = true;
+            }
+            
+            if (lowerText.includes('nouveau') || lowerText.includes('vider')) {
+                clearForm();
+                commandProcessed = true;
+            }
+            
+            // Réponse par défaut
+            if (!commandProcessed) {
+                console.log('ℹ️ Commande non reconnue:', text);
+                // speakResponse('Commande non reconnue. Essayez: "Le nom du joueur est Pierre"');
+            }
+            
+            // Vérification de complétude
+            checkFormCompletion();
+        }
+
+        // Réponse vocale
+        function speakResponse(text) {
+            console.log('🗣️ Réponse:', text);
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Mise à jour du statut des champs
+        function updateFieldStatus(fieldId, status, value) {
+            const field = document.getElementById(fieldId);
+            const statusElement = document.getElementById(fieldId + '-status');
+            
+            if (field && statusElement) {
+                field.value = value;
+                statusElement.className = `text-sm ${
+                    status === 'success' ? 'text-green-600' : 'text-red-600'
+                }`;
+                statusElement.textContent = status === 'success' ? '✅ Rempli' : '❌ Erreur';
+            }
+        }
+
+        // Vérification de complétude
+        function checkFormCompletion() {
+            const isComplete = currentPlayerData.name && currentPlayerData.age && currentPlayerData.position && currentPlayerData.club;
+            
+            if (isComplete) {
+                showFormStatus('success', '🎯 Formulaire complet ! Dites "sauvegarder".');
+            } else {
+                const missingFields = [];
+                if (!currentPlayerData.name) missingFields.push('nom');
+                if (!currentPlayerData.age) missingFields.push('âge');
+                if (!currentPlayerData.position) missingFields.push('position');
+                if (!currentPlayerData.club) missingFields.push('club');
+                
+                showFormStatus('info', `📋 Manquant: ${missingFields.join(', ')}`);
+            }
+        }
+
+        // Affichage du statut du formulaire
+        function showFormStatus(type, message) {
+            const statusElement = document.getElementById('form-status');
+            if (statusElement) {
+                statusElement.className = `mt-4 p-3 rounded-md ${
+                    type === 'success' ? 'bg-green-100 text-green-800' : 
+                    type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                }`;
+                statusElement.innerHTML = `<div>${message}</div>`;
+                statusElement.classList.remove('hidden');
+            }
+        }
+
+        // Sauvegarde
+        function savePCMA() {
+            if (currentPlayerData.name && currentPlayerData.age && currentPlayerData.position && currentPlayerData.club) {
+                console.log('💾 Sauvegarde:', currentPlayerData);
+                showFormStatus('success', '✅ Données sauvegardées !');
+                speakResponse('Données sauvegardées avec succès !');
+            } else {
+                showFormStatus('error', '❌ Tous les champs requis');
+                speakResponse('Veuillez remplir tous les champs');
+            }
+        }
+
+        // Vidage du formulaire
+        function clearForm() {
+            currentPlayerData = { name: '', age: '', position: '', club: '' };
+            
+            const fields = ['player-name-field', 'player-age-field', 'player-position-field', 'player-club-field'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const statusElement = document.getElementById(fieldId + '-status');
+                
+                if (field) field.value = '';
+                if (statusElement) {
+                    statusElement.className = 'text-sm text-gray-500';
+                    statusElement.textContent = 'En attente...';
+                }
+            });
+            
+            showFormStatus('info', '📋 Formulaire vidé');
+            speakResponse('Formulaire vidé');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 Reconnaissance vocale RÉELLE initialisée !');
+            
+            // Event listeners
+            document.getElementById('start-real-speech').addEventListener('click', startRealSpeechRecognition);
+            document.getElementById('stop-real-speech').addEventListener('click', stopRealSpeechRecognition);
+            document.getElementById('test-permissions').addEventListener('click', testPermissions);
+            
+            document.getElementById('save-pcma-btn').addEventListener('click', savePCMA);
+            document.getElementById('clear-form-btn').addEventListener('click', clearForm);
+            document.getElementById('new-player-btn').addEventListener('click', clearForm);
+            
+            clearForm();
+            
+            console.log('✅ Assistant vocal RÉEL prêt !');
+        });
+    </script>
+</body>
+</html>
+

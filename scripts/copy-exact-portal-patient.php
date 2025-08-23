@@ -100,3 +100,7 @@ echo "✨ Seules les données ont été remplacées par des variables Blade!\n";
 
 
 
+
+
+
+

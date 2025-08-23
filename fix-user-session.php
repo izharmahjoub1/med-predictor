@@ -197,3 +197,6 @@ echo "   Le site devrait maintenant fonctionner sans erreur 500.\n";
 
 
 
+
+
+

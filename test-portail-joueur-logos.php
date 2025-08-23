@@ -168,3 +168,6 @@ echo "La vue portail-joueur devrait maintenant afficher tous les logos correctem
 
 
 
+
+
+

@@ -1,0 +1,25 @@
+# Utiliser l'image PHP 8.2 officielle avec Apache
+FROM php:8.2-apache
+
+# Installer les dépendances système minimales
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    && docker-php-ext-install pdo_sqlite mbstring gd zip
+
+# Définir le répertoire de travail
+WORKDIR /var/www/html
+
+# Créer un fichier de test simple
+RUN echo '<!DOCTYPE html><html><head><title>FIT Medical Voice Assistant</title></head><body><h1>FIT Medical Voice Assistant</h1><p>Service is running!</p></body></html>' > /var/www/html/index.html
+
+# Configurer Apache
+RUN a2enmod rewrite
+
+# Exposer le port 80
+EXPOSE 80
+
+# Démarrer Apache
+CMD ["apache2-foreground"]

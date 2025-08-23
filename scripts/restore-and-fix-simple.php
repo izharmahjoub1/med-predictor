@@ -143,3 +143,7 @@ echo "🎯 Plus d'erreur 'N is not defined' ou 'A is not defined'!\n";
 
 
 
+
+
+
+

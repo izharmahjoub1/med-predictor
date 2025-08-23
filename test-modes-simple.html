@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Simple des Modes</title>
+    <style>
+        .mode-selector {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-selector.active {
+            background-color: #2563eb;
+            color: white;
+        }
+        .mode-selector:not(.active) {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .mode-section {
+            padding: 20px;
+            margin: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .mode-section.hidden {
+            display: none;
+        }
+        .console-vocal {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+        }
+        .console-manuel {
+            background-color: #dbeafe;
+            border-color: #3b82f6;
+        }
+        .console-ocr {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+        }
+        .console-fhir {
+            background-color: #f3e8ff;
+            border-color: #8b5cf6;
+        }
+        .debug-info {
+            background-color: #fef2f2;
+            border: 1px solid #ef4444;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Simple des Modes</h1>
+    
+    <!-- Boutons de sélection de mode -->
+    <div>
+        <button type="button" id="mode-manuel" class="mode-selector active">Mode Manuel</button>
+        <button type="button" id="mode-vocal" class="mode-selector">Mode Vocal</button>
+        <button type="button" id="mode-ocr" class="mode-selector">Mode OCR</button>
+        <button type="button" id="mode-fhir" class="mode-selector">Mode FHIR</button>
+    </div>
+    
+    <!-- Sections de contenu -->
+    <div id="manual-mode-section" class="mode-section console-manuel">
+        <h2>📝 Mode Manuel</h2>
+        <p>Formulaire manuel pour saisir les données du patient.</p>
+        <input type="text" placeholder="Nom du patient" class="w-full p-2 border rounded">
+    </div>
+    
+    <div id="vocal-mode-section" class="mode-section console-vocal hidden">
+        <h2>🎤 Mode Vocal</h2>
+        <p>Console vocale pour la reconnaissance de la parole.</p>
+        <div id="init-service" class="p-3 bg-yellow-100 rounded mb-2">
+            <button id="init-service-btn">🧪 Tester le Service</button>
+        </div>
+        <div id="start-recording-btn" class="p-3 bg-green-100 rounded mb-2">
+            <button>🎤 Démarrer Reconnaissance</button>
+        </div>
+        <div id="stop-recording-btn" class="p-3 bg-red-100 rounded mb-2 hidden">
+            <button>⏹️ Arrêter</button>
+        </div>
+        <div id="voice-status" class="p-3 bg-blue-100 rounded">
+            Statut: Prêt
+        </div>
+    </div>
+    
+    <div id="ocr-mode-section" class="mode-section console-ocr hidden">
+        <h2>📷 Mode OCR</h2>
+        <p>Reconnaissance optique de caractères pour les documents.</p>
+    </div>
+    
+    <div id="fhir-mode-section" class="mode-section console-fhir hidden">
+        <h2>🏥 Mode FHIR</h2>
+        <p>Intégration avec le standard FHIR pour les données médicales.</p>
+    </div>
+    
+    <!-- Informations de debug -->
+    <div class="debug-info">
+        <h3>🐛 Debug Info</h3>
+        <div>Mode actuel: <span id="debug-current-mode">MANUEL</span></div>
+        <div>ModeManager initialisé: <span id="debug-manager-status">❌</span></div>
+        <div>Console vocale visible: <span id="debug-vocal-visible">❌</span></div>
+    </div>
+    
+    <!-- Boutons de test -->
+    <div style="margin: 20px;">
+        <button onclick="testModeManager()" style="padding: 10px; background: #10b981; color: white; border: none; border-radius: 5px; margin: 5px;">
+            🧪 Tester ModeManager
+        </button>
+        <button onclick="forceSwitchMode('vocal')" style="padding: 10px; background: #f59e0b; color: white; border: none; border-radius: 5px; margin: 5px;">
+            🔄 Forcer Mode Vocal
+        </button>
+        <button onclick="forceSwitchMode('manual')" style="padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 5px; margin: 5px;">
+            🔄 Forcer Mode Manuel
+        </button>
+    </div>
+
+    <script>
+        // 🎯 GESTIONNAIRE DE MODES SIMPLIFIÉ
+        class ModeManager {
+            constructor() {
+                this.currentMode = 'manual';
+                this.modes = ['manual', 'vocal', 'ocr', 'fhir'];
+                this.modeElements = {};
+                this.modeSections = {};
+                this.init();
+            }
+            
+            init() {
+                console.log('🔧 Initialisation du gestionnaire de modes...');
+                
+                // Initialiser les références aux éléments
+                this.initializeElements();
+                
+                // Configurer les event listeners
+                this.setupEventListeners();
+                
+                // Initialiser la visibilité des sections
+                this.initializeSectionVisibility();
+                
+                console.log('✅ Gestionnaire de modes initialisé avec succès !');
+            }
+            
+            initializeElements() {
+                // Boutons de sélection de mode
+                this.modeElements = {
+                    manual: document.getElementById('mode-manuel'),
+                    vocal: document.getElementById('mode-vocal'),
+                    ocr: document.getElementById('mode-ocr'),
+                    fhir: document.getElementById('mode-fhir')
+                };
+                
+                // Sections de contenu des modes
+                this.modeSections = {
+                    manual: document.getElementById('manual-mode-section'),
+                    vocal: document.getElementById('vocal-mode-section'),
+                    ocr: document.getElementById('ocr-mode-section'),
+                    fhir: document.getElementById('fhir-mode-section')
+                };
+                
+                // Vérifier que tous les éléments nécessaires sont présents
+                Object.entries(this.modeElements).forEach(([mode, element]) => {
+                    if (element) {
+                        console.log(`✅ Élément ${mode} trouvé:`, element);
+                    } else {
+                        console.warn(`⚠️ Élément ${mode} non trouvé`);
+                    }
+                });
+            }
+            
+            setupEventListeners() {
+                Object.entries(this.modeElements).forEach(([mode, element]) => {
+                    if (element) {
+                        element.addEventListener('click', () => {
+                            console.log(`🎯 Clic sur le mode ${mode}`);
+                            this.switchMode(mode);
+                        });
+                        
+                        // Nettoyer les onclick inline
+                        element.removeAttribute('onclick');
+                        
+                        console.log(`✅ Event listener configuré pour le mode ${mode}`);
+                    }
+                });
+            }
+            
+            initializeSectionVisibility() {
+                console.log('🔧 Initialisation de la visibilité des sections...');
+                
+                // Forcer l'affichage du mode manuel par défaut
+                const manualSection = document.getElementById('manual-mode-section');
+                if (manualSection) {
+                    manualSection.classList.remove('hidden');
+                    console.log('✅ Section manuelle forcée à visible');
+                }
+                
+                // Forcer le masquage de toutes les autres sections
+                const otherSections = ['vocal-mode-section', 'ocr-mode-section', 'fhir-mode-section'];
+                otherSections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        section.classList.add('hidden');
+                        console.log(`✅ Section ${sectionId} forcée à cachée`);
+                    }
+                });
+            }
+            
+            switchMode(targetMode) {
+                if (!this.modes.includes(targetMode)) {
+                    console.error(`❌ Mode invalide: ${targetMode}`);
+                    return;
+                }
+                
+                console.log(`🔄 Commutation vers le mode: ${targetMode}`);
+                
+                // Masquer les éléments vocaux en mode manuel
+                if (targetMode === 'manual') {
+                    this.hideVocalElementsInManualMode(targetMode);
+                }
+                
+                // Mettre à jour l'état des boutons
+                this.updateButtonStates(targetMode);
+                
+                // Mettre à jour l'affichage des sections
+                this.updateSectionVisibility(targetMode);
+                
+                // Mettre à jour le mode actuel
+                this.currentMode = targetMode;
+                
+                // Mettre à jour l'indicateur de debug
+                this.updateDebugInfo();
+                
+                console.log(`✅ Mode ${targetMode} activé avec succès !`);
+            }
+            
+            updateButtonStates(activeMode) {
+                Object.entries(this.modeElements).forEach(([mode, element]) => {
+                    if (element) {
+                        if (mode === activeMode) {
+                            // Mode actif
+                            element.classList.remove('bg-gray-100', 'text-gray-700');
+                            element.classList.add('active');
+                        } else {
+                            // Mode inactif
+                            element.classList.remove('active');
+                            element.classList.add('bg-gray-100', 'text-gray-700');
+                        }
+                    }
+                });
+            }
+            
+            updateSectionVisibility(activeMode) {
+                console.log(`🔧 updateSectionVisibility appelé pour le mode: ${activeMode}`);
+                
+                Object.entries(this.modeSections).forEach(([mode, section]) => {
+                    if (section) {
+                        if (mode === activeMode) {
+                            // Section active
+                            section.classList.remove('hidden');
+                            console.log(`✅ Section ${mode} activée`);
+                        } else {
+                            // Section inactive
+                            section.classList.add('hidden');
+                            console.log(`✅ Section ${mode} masquée`);
+                        }
+                    }
+                });
+            }
+            
+            hideVocalElementsInManualMode(currentMode) {
+                console.log(`🔧 Masquage des éléments vocaux en mode ${currentMode}...`);
+                
+                if (currentMode === 'manual') {
+                    const vocalElements = [
+                        'init-service',
+                        'start-recording-btn',
+                        'stop-recording-btn',
+                        'transfer-to-form-btn',
+                        'voice-status',
+                        'audio-activity-indicator'
+                    ];
+                    
+                    vocalElements.forEach(elementId => {
+                        const element = document.getElementById(elementId);
+                        if (element) {
+                            element.classList.add('hidden');
+                            console.log(`✅ Élément vocal ${elementId} masqué en mode manuel`);
+                        }
+                    });
+                }
+            }
+            
+            updateDebugInfo() {
+                const debugMode = document.getElementById('debug-current-mode');
+                const debugManager = document.getElementById('debug-manager-status');
+                const debugVocal = document.getElementById('debug-vocal-visible');
+                
+                if (debugMode) debugMode.textContent = this.currentMode.toUpperCase();
+                if (debugManager) debugManager.textContent = '✅';
+                
+                const vocalSection = document.getElementById('vocal-mode-section');
+                if (debugVocal && vocalSection) {
+                    debugVocal.textContent = vocalSection.classList.contains('hidden') ? '❌' : '✅';
+                }
+            }
+        }
+        
+        // 🚀 INITIALISATION DU SYSTÈME DE MODES
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔧 DOM chargé, initialisation du système de modes...');
+            
+            try {
+                window.modeManager = new ModeManager();
+                console.log('✅ Système de modes initialisé avec succès !');
+                
+                // Mettre à jour les infos de debug
+                if (window.modeManager) {
+                    window.modeManager.updateDebugInfo();
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'initialisation du système de modes:', error);
+            }
+        });
+        
+        // 🧪 FONCTIONS DE TEST
+        function testModeManager() {
+            console.log('🧪 Test du ModeManager...');
+            
+            if (window.modeManager) {
+                console.log('✅ ModeManager trouvé:', window.modeManager);
+                console.log('✅ Mode actuel:', window.modeManager.currentMode);
+                console.log('✅ Éléments initialisés:', window.modeManager.modeElements);
+                console.log('✅ Sections initialisées:', window.modeManager.modeSections);
+                
+                // Tester le basculement vers le mode vocal
+                window.modeManager.switchMode('vocal');
+            } else {
+                console.error('❌ ModeManager non trouvé');
+            }
+        }
+        
+        function forceSwitchMode(mode) {
+            console.log(`🔄 Forçage du basculement vers le mode ${mode}...`);
+            
+            if (window.modeManager) {
+                window.modeManager.switchMode(mode);
+            } else {
+                console.error('❌ ModeManager non trouvé');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -17,8 +17,8 @@ class GoogleGeminiService
 
     public function __construct()
     {
-        $this->apiKey = config('services.google.api_key');
-        $this->baseUrl = config('services.google.base_url');
+        $this->apiKey = config('services.google.api_key') ?? '';
+        $this->baseUrl = config('services.google.base_url') ?? '';
         $this->model = config('services.google.model', 'gemini-pro');
         $this->timeout = config('services.google.timeout', 60);
         $this->maxTokens = config('services.google.max_tokens', 1000);

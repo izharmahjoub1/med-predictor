@@ -202,3 +202,6 @@ echo "🎉 DIAGNOSTIC TERMINÉ !\n";
 
 
 
+
+
+

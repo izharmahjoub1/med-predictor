@@ -149,3 +149,7 @@ echo "✨ La structure est maintenant compatible avec les images!\n";
 
 
 
+
+
+
+

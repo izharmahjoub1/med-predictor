@@ -289,3 +289,6 @@ echo "\n🚀 Prochaine étape : Améliorer la barre de recherche\n";
 
 
 
+
+
+

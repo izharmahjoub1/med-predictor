@@ -145,3 +145,7 @@ echo "🎯 Le portail utilise le layout portal-patient avec les données de Sadi
 
 
 
+
+
+
+

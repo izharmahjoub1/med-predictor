@@ -123,3 +123,6 @@ echo "Les logos devraient maintenant s'afficher correctement dans vos vues.\n";
 
 
 
+
+
+

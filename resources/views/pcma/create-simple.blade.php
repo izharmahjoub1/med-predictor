@@ -7,6 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
+    <!-- 🧪 TEST VISIBLE - FICHIER CREATE-SIMPLE UTILISÉ ! -->
+    <div class="bg-yellow-500 text-black p-4 rounded-lg mb-4" style="font-size: 20px; font-weight: bold; text-align: center;">
+        🧪 TEST VISIBLE - FICHIER CREATE-SIMPLE UTILISÉ ! 
+        <br>
+        Si vous voyez ce message JAUNE, Laravel utilise create-simple.blade.php !
+    </div>
+
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-6xl mx-auto">
             <div class="mb-8">

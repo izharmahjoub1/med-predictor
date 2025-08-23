@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Module SpeechRecognitionService</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-800">
+            🎤 Test Module SpeechRecognitionService
+        </h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-blue-800 mb-4">
+                🎤 Assistant Vocal Modulaire
+            </h2>
+            <p class="text-gray-600 mb-6">
+                Test du module JavaScript ES6 refactorisé pour la production
+            </p>
+            
+            <!-- Configuration API -->
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                <h4 class="font-medium text-yellow-800 mb-2">🔑 Configuration API Google :</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-yellow-700 mb-1">Clé API Google :</label>
+                        <input type="password" id="google-api-key" placeholder="Entrez votre clé API Google" 
+                               class="w-full px-3 py-2 border border-yellow-300 rounded-md text-sm">
+                        <p class="text-xs text-yellow-600 mt-1">Obligatoire pour la reconnaissance vocale</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" id="init-service" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors text-sm">
+                            🚀 Initialiser le Service
+                        </button>
+                        <button type="button" id="test-service" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm">
+                            🧪 Tester le Service
+                        </button>
+                    </div>
+                    <div id="service-status" class="text-sm hidden"></div>
+                </div>
+            </div>
+            
+            <!-- Contrôles vocaux -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <button type="button" id="start-speech" class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50" disabled>
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    🎤 Démarrer Reconnaissance
+                </button>
+                
+                <button type="button" id="stop-speech" class="flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium hidden">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    🛑 Arrêter Reconnaissance
+                </button>
+            </div>
+            
+            <!-- Statut du service -->
+            <div id="speech-status" class="mb-4 p-3 bg-gray-100 rounded-lg">
+                <p class="text-gray-600">🎯 Initialisez d'abord le service avec votre clé API</p>
+            </div>
+            
+            <!-- Aperçu de la reconnaissance -->
+            <div id="speech-preview" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-medium text-gray-700 mb-2">🎯 Reconnaissance Vocale :</h4>
+                <div id="speech-text" class="text-gray-600 italic">En attente d'initialisation...</div>
+                <div id="confidence" class="text-sm text-blue-600 mt-1"></div>
+            </div>
+        </div>
+        
+        <!-- Formulaire de test -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Formulaire PCMA - Test Vocal</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom du joueur</label>
+                    <input type="text" id="player-name-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'Le nom du joueur est Pierre'">
+                    <div id="player-name-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Âge</label>
+                    <input type="number" id="player-age-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'L'âge du joueur est 25 ans'">
+                    <div id="player-age-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                    <input type="text" id="player-position-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'La position du joueur est attaquant'">
+                    <div id="player-position-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
+                    <input type="text" id="player-club-field" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Dites: 'Le club du joueur est PSG'">
+                    <div id="player-club-field-status" class="text-sm text-gray-500 mt-1">En attente...</div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="button" id="save-pcma-btn" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium">
+                    💾 Enregistrer PCMA
+                </button>
+                
+                <button type="button" id="clear-form-btn" class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors font-medium">
+                    🗑️ Vider le formulaire
+                </button>
+                
+                <button type="button" id="new-player-btn" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    👤 Nouveau joueur
+                </button>
+            </div>
+            
+            <div id="form-status" class="mt-4 p-3 rounded-md hidden">
+                <div id="form-status-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import du module -->
+    <script type="module">
+        import SpeechRecognitionService from './public/js/SpeechRecognitionService.js';
+        
+        // Instance du service
+        let speechService = null;
+        let currentPlayerData = { name: '', age: '', position: '', club: '' };
+
+        // Éléments DOM
+        const elements = {
+            apiKeyInput: document.getElementById('google-api-key'),
+            initBtn: document.getElementById('init-service'),
+            testBtn: document.getElementById('test-service'),
+            startBtn: document.getElementById('start-speech'),
+            stopBtn: document.getElementById('stop-speech'),
+            status: document.getElementById('speech-status'),
+            preview: document.getElementById('speech-text'),
+            confidence: document.getElementById('confidence'),
+            serviceStatus: document.getElementById('service-status')
+        };
+
+        // Initialiser le service
+        async function initService() {
+            try {
+                const apiKey = elements.apiKeyInput.value.trim();
+                
+                if (!apiKey) {
+                    showServiceStatus('❌ Veuillez entrer une clé API', 'error');
+                    return;
+                }
+
+                showServiceStatus('🚀 Initialisation du service...', 'info');
+                
+                // Créer et initialiser le service
+                speechService = new SpeechRecognitionService();
+                const success = await speechService.init(apiKey, {
+                    language: 'fr-FR',
+                    sampleRate: 16000
+                });
+
+                if (success) {
+                    showServiceStatus('✅ Service initialisé avec succès !', 'success');
+                    elements.startBtn.disabled = false;
+                    updateSpeechStatus('✅ Service prêt - Cliquez sur "Démarrer Reconnaissance"', 'success');
+                } else {
+                    throw new Error('Échec de l\'initialisation');
+                }
+
+            } catch (error) {
+                showServiceStatus('❌ Erreur d\'initialisation: ' + error.message, 'error');
+                console.error('❌ Erreur init:', error);
+            }
+        }
+
+        // Tester le service
+        async function testService() {
+            try {
+                if (!speechService) {
+                    showServiceStatus('❌ Service non initialisé', 'error');
+                    return;
+                }
+
+                showServiceStatus('🧪 Test du service...', 'info');
+                
+                // Test simple
+                const status = speechService.getStatus();
+                console.log('📊 Statut du service:', status);
+                
+                showServiceStatus('✅ Service fonctionnel !', 'success');
+                
+            } catch (error) {
+                showServiceStatus('❌ Erreur test: ' + error.message, 'error');
+            }
+        }
+
+        // Démarrer la reconnaissance
+        async function startSpeech() {
+            try {
+                if (!speechService) {
+                    throw new Error('Service non initialisé');
+                }
+
+                const success = await speechService.startListening(
+                    // Callback résultat
+                    (text, confidence) => {
+                        console.log('🎯 Résultat reçu:', text, confidence);
+                        elements.preview.textContent = '✅ ' + text;
+                        elements.confidence.textContent = `Confiance: ${(confidence * 100).toFixed(1)}%`;
+                        processVoiceCommand(text);
+                    },
+                    // Callback erreur
+                    (error) => {
+                        console.error('❌ Erreur reconnaissance:', error);
+                        updateSpeechStatus('❌ Erreur: ' + error.message, 'error');
+                    },
+                    // Callback statut
+                    (status, message) => {
+                        updateSpeechStatus(message, status === 'error' ? 'error' : 'info');
+                    }
+                );
+
+                if (success) {
+                    elements.startBtn.classList.add('hidden');
+                    elements.stopBtn.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error('❌ Erreur démarrage:', error);
+                updateSpeechStatus('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Arrêter la reconnaissance
+        function stopSpeech() {
+            try {
+                if (speechService) {
+                    speechService.stopListening();
+                }
+                
+                elements.startBtn.classList.remove('hidden');
+                elements.stopBtn.classList.add('hidden');
+                
+            } catch (error) {
+                console.error('❌ Erreur arrêt:', error);
+            }
+        }
+
+        // Traitement des commandes vocales
+        function processVoiceCommand(text) {
+            const lowerText = text.toLowerCase().trim();
+            console.log('🎯 Traitement commande:', lowerText);
+            
+            let commandProcessed = false;
+            
+            // Détection du nom
+            if (lowerText.includes('nom') && lowerText.includes('est')) {
+                const nameMatch = text.match(/(?:nom.*?est)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+                if (nameMatch && nameMatch[1]) {
+                    const playerName = nameMatch[1].trim();
+                    currentPlayerData.name = playerName;
+                    updateFieldStatus('player-name-field', 'success', playerName);
+                    speakResponse(`Nom enregistré: ${playerName}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection de l'âge
+            if (lowerText.includes('âge') || lowerText.includes('age')) {
+                const ageMatch = text.match(/(?:âge|age).*?(\d+)/i);
+                if (ageMatch && ageMatch[1]) {
+                    const playerAge = ageMatch[1];
+                    currentPlayerData.age = playerAge;
+                    updateFieldStatus('player-age-field', 'success', playerAge);
+                    speakResponse(`Âge enregistré: ${playerAge} ans`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection de la position
+            if (lowerText.includes('position')) {
+                const positionMatch = text.match(/position.*?(?:est|c'est)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+                if (positionMatch && positionMatch[1]) {
+                    const playerPosition = positionMatch[1].trim();
+                    currentPlayerData.position = playerPosition;
+                    updateFieldStatus('player-position-field', 'success', playerPosition);
+                    speakResponse(`Position enregistrée: ${playerPosition}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Détection du club
+            if (lowerText.includes('club')) {
+                const clubMatch = text.match(/club.*?(?:est|c'est)\s+([a-zA-ZÀ-ÿ\s]+)/i);
+                if (clubMatch && clubMatch[1]) {
+                    const playerClub = clubMatch[1].trim();
+                    currentPlayerData.club = playerClub;
+                    updateFieldStatus('player-club-field', 'success', playerClub);
+                    speakResponse(`Club enregistré: ${playerClub}`);
+                    commandProcessed = true;
+                }
+            }
+            
+            // Commandes d'action
+            if (lowerText.includes('sauvegarder') || lowerText.includes('enregistrer')) {
+                savePCMA();
+                commandProcessed = true;
+            }
+            
+            if (lowerText.includes('nouveau') || lowerText.includes('vider')) {
+                clearForm();
+                commandProcessed = true;
+            }
+            
+            // Vérification de complétude
+            checkFormCompletion();
+        }
+
+        // Réponse vocale
+        function speakResponse(text) {
+            console.log('🗣️ Réponse:', text);
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Mise à jour du statut des champs
+        function updateFieldStatus(fieldId, status, value) {
+            const field = document.getElementById(fieldId);
+            const statusElement = document.getElementById(fieldId + '-status');
+            
+            if (field && statusElement) {
+                field.value = value;
+                statusElement.className = `text-sm ${
+                    status === 'success' ? 'text-green-600' : 'text-red-600'
+                }`;
+                statusElement.textContent = status === 'success' ? '✅ Rempli' : '❌ Erreur';
+            }
+        }
+
+        // Vérification de complétude
+        function checkFormCompletion() {
+            const isComplete = currentPlayerData.name && currentPlayerData.age && currentPlayerData.position && currentPlayerData.club;
+            
+            if (isComplete) {
+                showFormStatus('success', '🎯 Formulaire complet ! Dites "sauvegarder".');
+            } else {
+                const missingFields = [];
+                if (!currentPlayerData.name) missingFields.push('nom');
+                if (!currentPlayerData.age) missingFields.push('âge');
+                if (!currentPlayerData.position) missingFields.push('position');
+                if (!currentPlayerData.club) missingFields.push('club');
+                
+                showFormStatus('info', `📋 Manquant: ${missingFields.join(', ')}`);
+            }
+        }
+
+        // Affichage du statut du formulaire
+        function showFormStatus(type, message) {
+            const statusElement = document.getElementById('form-status');
+            if (statusElement) {
+                statusElement.className = `mt-4 p-3 rounded-md ${
+                    type === 'success' ? 'bg-green-100 text-green-800' : 
+                    type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                }`;
+                statusElement.innerHTML = `<div>${message}</div>`;
+                statusElement.classList.remove('hidden');
+            }
+        }
+
+        // Sauvegarde
+        function savePCMA() {
+            if (currentPlayerData.name && currentPlayerData.age && currentPlayerData.position && currentPlayerData.club) {
+                console.log('💾 Sauvegarde:', currentPlayerData);
+                showFormStatus('success', '✅ Données sauvegardées !');
+                speakResponse('Données sauvegardées avec succès !');
+            } else {
+                showFormStatus('error', '❌ Tous les champs requis');
+                speakResponse('Veuillez remplir tous les champs');
+            }
+        }
+
+        // Vidage du formulaire
+        function clearForm() {
+            currentPlayerData = { name: '', age: '', position: '', club: '' };
+            
+            const fields = ['player-name-field', 'player-age-field', 'player-position-field', 'player-club-field'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const statusElement = document.getElementById(fieldId + '-status');
+                
+                if (field) field.value = '';
+                if (statusElement) {
+                    statusElement.className = 'text-sm text-gray-500';
+                    statusElement.textContent = 'En attente...';
+                }
+            });
+            
+            showFormStatus('info', '📋 Formulaire vidé');
+            speakResponse('Formulaire vidé');
+        }
+
+        // Mise à jour du statut de la reconnaissance
+        function updateSpeechStatus(message, type = 'info') {
+            if (elements.status) {
+                elements.status.className = `mb-4 p-3 rounded-lg ${
+                    type === 'success' ? 'bg-green-100 text-green-800' :
+                    type === 'error' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                }`;
+                elements.status.innerHTML = `<p>${message}</p>`;
+            }
+        }
+
+        // Mise à jour du statut du service
+        function showServiceStatus(message, type = 'info') {
+            if (elements.serviceStatus) {
+                elements.serviceStatus.className = `text-sm ${
+                    type === 'success' ? 'text-green-600' : 
+                    type === 'error' ? 'text-red-600' : 'text-blue-600'
+                }`;
+                elements.serviceStatus.textContent = message;
+                elements.serviceStatus.classList.remove('hidden');
+                
+                // Masquer après 5 secondes
+                setTimeout(() => {
+                    elements.serviceStatus.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+        // Event listeners
+        elements.initBtn.addEventListener('click', initService);
+        elements.testBtn.addEventListener('click', testService);
+        elements.startBtn.addEventListener('click', startSpeech);
+        elements.stopBtn.addEventListener('click', stopSpeech);
+        
+        document.getElementById('save-pcma-btn').addEventListener('click', savePCMA);
+        document.getElementById('clear-form-btn').addEventListener('click', clearForm);
+        document.getElementById('new-player-btn').addEventListener('click', clearForm);
+
+        // Initialisation
+        clearForm();
+        console.log('✅ Module SpeechRecognitionService chargé et prêt !');
+    </script>
+</body>
+</html>
+

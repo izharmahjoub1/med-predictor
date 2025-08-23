@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Mode Vocal</title>
+    <style>
+        .mode-selector {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-selector.active {
+            background-color: #2563eb !important;
+            color: white !important;
+        }
+        .mode-selector.inactive {
+            background-color: #f3f4f6 !important;
+            color: #374151 !important;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .console-vocale {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-8">🧪 Test Mode Vocal</h1>
+        
+        <!-- Sélection des modes -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Modes de collecte :</h2>
+            <div class="flex space-x-4">
+                <button type="button" id="mode-manuel" class="mode-selector active p-4 rounded-lg">
+                    <div class="text-center">
+                        <h3 class="font-semibold">Mode Manuel</h3>
+                        <p class="text-sm opacity-90">Saisie directe au clavier</p>
+                    </div>
+                </button>
+
+                <button type="button" id="mode-vocal" class="mode-selector inactive p-4 rounded-lg">
+                    <div class="text-center">
+                        <h3 class="font-semibold">Mode Vocal</h3>
+                        <p class="text-sm opacity-90">Reconnaissance vocale intelligente</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Console Vocale (visible uniquement en mode vocal) -->
+        <div id="console-vocale" class="hidden console-vocale">
+            <div class="flex items-center mb-4">
+                <h2 class="text-xl font-semibold text-green-800">🎤 Console Vocale Intelligente</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Instructions vocales -->
+                <div class="bg-white border border-green-300 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-green-700 mb-3">📋 Commandes vocales disponibles :</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="font-semibold text-green-600">🎯 Identité du joueur :</p>
+                            <ul class="list-disc list-inside text-green-700 ml-2">
+                                <li>"Le joueur s'appelle [nom], il a [âge] ans, il joue [position], il joue à [club]"</li>
+                                <li>"ID FIFA CONNECT" → Remplit automatiquement tous les champs d'identité</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-green-600">🔍 Exemples :</p>
+                            <ul class="list-disc list-inside text-green-700 ml-2">
+                                <li>"Le joueur s'appelle Ali Jebali, il a 28 ans, il joue attaquant, il joue à l'AS Gabès"</li>
+                                <li>"ID FIFA CONNECT"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrôles d'enregistrement -->
+                <div class="flex items-center justify-center space-x-4">
+                    <button 
+                        type="button" 
+                        id="start-recording-btn"
+                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                    >
+                        🎤 Commencer l'enregistrement
+                    </button>
+                    <button 
+                        type="button" 
+                        id="stop-recording-btn"
+                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold hidden"
+                    >
+                        ⏹️ Arrêter l'enregistrement
+                    </button>
+                </div>
+
+                <!-- Statut et résultats -->
+                <div id="voice-status" class="text-center text-green-700 font-medium">
+                    Prêt à écouter - Cliquez sur "Commencer l'enregistrement"
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de test -->
+        <div class="mt-8 p-6 bg-gray-50 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Formulaire de test :</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Nom du joueur :</label>
+                    <input type="text" id="player_name" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Âge :</label>
+                    <input type="number" id="age" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Position :</label>
+                    <select id="position" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">Sélectionner...</option>
+                        <option value="attaquant">Attaquant</option>
+                        <option value="milieu">Milieu</option>
+                        <option value="défenseur">Défenseur</option>
+                        <option value="gardien">Gardien</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Club :</label>
+                    <input type="text" id="club" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialisation des modes
+        function initModes() {
+            console.log('🚀 Initialisation des modes...');
+            
+            const modeManuel = document.getElementById('mode-manuel');
+            const modeVocal = document.getElementById('mode-vocal');
+            const consoleVocale = document.getElementById('console-vocale');
+            
+            if (!modeManuel || !modeVocal || !consoleVocale) {
+                console.error('❌ Éléments des modes non trouvés');
+                return;
+            }
+            
+            // Mode Manuel par défaut (actif)
+            setModeManuel();
+            
+            // Event listeners pour les modes
+            modeManuel.addEventListener('click', setModeManuel);
+            modeVocal.addEventListener('click', setModeVocal);
+            
+            console.log('✅ Modes initialisés');
+        }
+        
+        // Activer le mode Manuel
+        function setModeManuel() {
+            console.log('🎯 Activation du mode Manuel');
+            
+            const modeManuel = document.getElementById('mode-manuel');
+            const modeVocal = document.getElementById('mode-vocal');
+            const consoleVocale = document.getElementById('console-vocale');
+            
+            // Mise à jour des boutons
+            modeManuel.className = 'mode-selector active p-4 rounded-lg';
+            modeVocal.className = 'mode-selector inactive p-4 rounded-lg';
+            
+            // Masquer la console vocale
+            consoleVocale.classList.add('hidden');
+            
+            console.log('✅ Mode Manuel activé');
+        }
+        
+        // Activer le mode Vocal
+        function setModeVocal() {
+            console.log('🎯 Activation du mode Vocal');
+            
+            const modeManuel = document.getElementById('mode-manuel');
+            const modeVocal = document.getElementById('mode-vocal');
+            const consoleVocale = document.getElementById('console-vocale');
+            
+            // Mise à jour des boutons
+            modeVocal.className = 'mode-selector active p-4 rounded-lg';
+            modeManuel.className = 'mode-selector inactive p-4 rounded-lg';
+            
+            // Afficher la console vocale
+            consoleVocale.classList.remove('hidden');
+            
+            console.log('✅ Mode Vocal activé');
+        }
+        
+        // Initialiser au chargement de la page
+        document.addEventListener('DOMContentLoaded', initModes);
+        
+        // Test automatique après 2 secondes
+        setTimeout(() => {
+            console.log('🧪 Test automatique du mode vocal...');
+            setModeVocal();
+        }, 2000);
+    </script>
+</body>
+</html>

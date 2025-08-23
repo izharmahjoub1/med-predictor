@@ -187,3 +187,6 @@ Le logo FTF s'affiche maintenant correctement sur toutes les fiches joueurs avec
 
 
 
+
+
+

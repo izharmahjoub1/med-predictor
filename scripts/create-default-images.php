@@ -112,3 +112,7 @@ echo "🏆 Photos des joueurs, logos des clubs, drapeaux des nationalités!\n";
 
 
 
+
+
+
+

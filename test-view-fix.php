@@ -64,3 +64,6 @@ echo "La fonction htmlspecialchars() ne devrait plus recevoir d'array.\n";
 
 
 
+
+
+

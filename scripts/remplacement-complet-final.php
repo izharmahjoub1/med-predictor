@@ -93,3 +93,7 @@ echo "💡 Chaque joueur devrait maintenant afficher ses vraies données!\n";
 
 
 
+
+
+
+

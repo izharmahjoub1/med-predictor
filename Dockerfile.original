@@ -1,0 +1,71 @@
+# Utiliser l'image PHP 8.2 officielle avec Apache
+FROM php:8.2-apache
+
+# Installer les dépendances système
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    sqlite3 \
+    libsqlite3-dev \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip
+
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Définir le répertoire de travail
+WORKDIR /var/www/html
+
+# Copier tout le code source d'abord
+COPY . .
+
+# Créer un fichier .env de base
+RUN echo 'APP_NAME="FIT Medical Voice Assistant"\n\
+    APP_ENV=production\n\
+    APP_KEY=\n\
+    APP_DEBUG=false\n\
+    APP_URL=http://localhost\n\
+    LOG_CHANNEL=stack\n\
+    DB_CONNECTION=sqlite\n\
+    DB_DATABASE=/var/www/html/database/database.sqlite\n\
+    CACHE_DRIVER=file\n\
+    SESSION_DRIVER=file\n\
+    QUEUE_CONNECTION=sync' > .env
+
+# Installer les dépendances PHP
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Créer le fichier de base de données SQLite
+RUN touch database/database.sqlite
+
+# Définir les permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 storage bootstrap/cache
+
+# Générer la clé d'application
+RUN php artisan key:generate --no-interaction
+
+# Exécuter les migrations avec gestion d'erreur
+RUN php artisan migrate --force --no-interaction || true
+
+# Optimiser l'application pour la production (sans route cache)
+RUN php artisan config:cache \
+    && php artisan view:cache
+
+# Configurer Apache pour Laravel
+RUN a2enmod rewrite
+
+# Configurer le DocumentRoot vers le dossier public
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+# Exposer le port 80 (port par défaut d'Apache)
+EXPOSE 80
+
+# Démarrer Apache directement
+CMD ["apache2-foreground"]

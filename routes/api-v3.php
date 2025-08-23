@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V3\AiIntelligenceController;
+use App\Http\Controllers\Api\V3\PerformanceAnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +14,7 @@ use App\Http\Controllers\Api\V3\AiIntelligenceController;
 |
 */
 
-Route::prefix('v3')->name('v3.')->group(function () {
+Route::prefix('v3')->name('v3.')->middleware(['v3.api'])->group(function () {
     
     /*
     |--------------------------------------------------------------------------
@@ -54,6 +55,33 @@ Route::prefix('v3')->name('v3.')->group(function () {
             
         Route::post('/cache/clear', [AiIntelligenceController::class, 'clearCache'])
             ->name('cache.clear');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Analytics de Performance Avancées
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('performance')->name('performance.')->group(function () {
+        
+        // Analyse des tendances
+        Route::get('/trends/{playerId}', [PerformanceAnalyticsController::class, 'analyzeTrends'])
+            ->name('trends')
+            ->where('playerId', '[0-9]+');
+            
+        // Comparaison de joueurs
+        Route::post('/compare', [PerformanceAnalyticsController::class, 'comparePlayers'])
+            ->name('compare');
+            
+        // Métriques de performance
+        Route::get('/metrics/{playerId}', [PerformanceAnalyticsController::class, 'getPlayerMetrics'])
+            ->name('metrics')
+            ->where('playerId', '[0-9]+');
+            
+        // Résumé des performances
+        Route::get('/summary/{playerId}', [PerformanceAnalyticsController::class, 'getPlayerSummary'])
+            ->name('summary')
+            ->where('playerId', '[0-9]+');
     });
 
     /*
@@ -327,7 +355,7 @@ Route::prefix('v3')->name('v3.')->group(function () {
     | Performance et Monitoring
     |--------------------------------------------------------------------------
     */
-    Route::prefix('performance')->name('performance.')->group(function () {
+    Route::prefix('system')->name('system.')->group(function () {
         
         // Métriques de performance
         Route::get('/metrics', function () {

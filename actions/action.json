@@ -1,0 +1,26 @@
+{
+  "actions": [
+    {
+      "name": "actions.devices",
+      "deviceControl": {
+        "fulfillment": {
+          "initialPrompt": {
+            "firstSimple": {
+              "speech": "Bienvenue dans FIT Med Assistant. Je vais vous aider à remplir les formulaires PCMA. Dites 'commence un PCMA' pour démarrer."
+            }
+          }
+        }
+      }
+    }
+  ],
+  "conversations": {
+    "initial": {
+      "name": "actions.devices.INITIAL",
+      "url": "https://votre-domaine.com/api/google-assistant/webhook"
+    }
+  },
+  "locale": "fr",
+  "projectId": "fit-med-assistant",
+  "projectName": "FIT Med Assistant",
+  "versionId": "1"
+}

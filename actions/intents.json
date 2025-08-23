@@ -1,0 +1,131 @@
+{
+  "intents": [
+    {
+      "name": "actions.intent.MAIN",
+      "description": "Intent principal pour démarrer l'assistant",
+      "trainingPhrases": [
+        "OK Google, parle à FIT Med Assistant",
+        "Hey Google, ouvre FIT Med Assistant",
+        "Google, lance FIT Med Assistant"
+      ],
+      "parameters": [],
+      "responses": [
+        {
+          "simpleResponse": {
+            "textToSpeech": "Bienvenue dans FIT Med Assistant. Je vais vous aider à remplir les formulaires PCMA. Dites 'commence un PCMA' pour démarrer.",
+            "displayText": "Bienvenue dans FIT Med Assistant. Dites 'commence un PCMA' pour démarrer."
+          }
+        }
+      ]
+    },
+    {
+      "name": "start_pcma",
+      "description": "Démarrer un nouveau formulaire PCMA",
+      "trainingPhrases": [
+        "commence un PCMA pour [player_name]",
+        "démarre un PCMA pour [player_name]",
+        "nouveau PCMA pour [player_name]",
+        "crée un PCMA pour [player_name]",
+        "lance un PCMA pour [player_name]"
+      ],
+      "parameters": [
+        {
+          "name": "player_name",
+          "type": "string",
+          "required": true,
+          "prompts": [
+            "Quel est le nom du joueur pour lequel vous souhaitez commencer le PCMA ?"
+          ]
+        }
+      ],
+      "responses": [
+        {
+          "simpleResponse": {
+            "textToSpeech": "Parfait ! Commençons le PCMA pour $player_name. Quel est son poste ? (défenseur, milieu, attaquant)",
+            "displayText": "PCMA démarré pour $player_name. Quel est son poste ?"
+          }
+        }
+      ]
+    },
+    {
+      "name": "answer_field",
+      "description": "Répondre à un champ spécifique du PCMA",
+      "trainingPhrases": [
+        "il est [field_value]",
+        "c'est [field_value]",
+        "sa réponse est [field_value]",
+        "[field_value]",
+        "le champ est [field_value]"
+      ],
+      "parameters": [
+        {
+          "name": "field_value",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "responses": [
+        {
+          "simpleResponse": {
+            "textToSpeech": "Merci ! J'ai enregistré $field_value. Passons au champ suivant.",
+            "displayText": "Champ enregistré : $field_value"
+          }
+        }
+      ]
+    },
+    {
+      "name": "review_pcma",
+      "description": "Réviser les données du PCMA",
+      "trainingPhrases": [
+        "récapitule le PCMA",
+        "montre le récapitulatif",
+        "résume les informations",
+        "vérifie les données",
+        "affiche le résumé"
+      ],
+      "parameters": [],
+      "responses": [
+        {
+          "simpleResponse": {
+            "textToSpeech": "Voici le récapitulatif du PCMA pour $player_name. Voulez-vous continuer ou modifier quelque chose ?",
+            "displayText": "Récapitulatif PCMA affiché"
+          }
+        }
+      ]
+    },
+    {
+      "name": "complete_pcma",
+      "description": "Finaliser et soumettre le PCMA",
+      "trainingPhrases": [
+        "termine le PCMA",
+        "finalise le PCMA",
+        "soumet le PCMA",
+        "valide le PCMA",
+        "confirme le PCMA"
+      ],
+      "parameters": [],
+      "responses": [
+        {
+          "simpleResponse": {
+            "textToSpeech": "Parfait ! Le PCMA pour $player_name a été soumis avec succès. Merci d'avoir utilisé FIT Med Assistant !",
+            "displayText": "PCMA soumis avec succès !"
+          }
+        }
+      ]
+    },
+    {
+      "name": "fallback",
+      "description": "Gestion des intents non reconnus",
+      "trainingPhrases": [],
+      "parameters": [],
+      "responses": [
+        {
+          "simpleResponse": {
+            "textToSpeech": "Je n'ai pas compris. Dites 'commence un PCMA' pour démarrer un nouveau formulaire médical.",
+            "displayText": "Commande non reconnue. Dites 'commence un PCMA'."
+          }
+        }
+      ]
+    }
+  ]
+}

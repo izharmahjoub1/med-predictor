@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test JavaScript - Commande FIFA CONNECT</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 3px; margin: 10px 0; font-family: monospace; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test JavaScript - Commande FIFA CONNECT</h1>
+    
+    <div class="test-section info">
+        <h3>📋 Instructions de test</h3>
+        <p>Cette page teste les fonctions JavaScript de la commande "ID FIFA CONNECT" sans Laravel.</p>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 Test 1: Analyse du texte vocal</h3>
+        <input type="text" id="testText" value="ID FIFA CONNECT" placeholder="Entrez du texte à analyser">
+        <button onclick="testAnalyzeVoiceText()">Tester l'analyse</button>
+        <div id="analyzeResult" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔍 Test 2: Recherche automatique FIFA</h3>
+        <button onclick="testSearchPlayerByFifaConnect()">Tester la recherche FIFA</button>
+        <div id="searchResult" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 Test 3: Remplissage des champs</h3>
+        <button onclick="testFillFormFields()">Tester le remplissage</button>
+        <div id="fillResult" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🎤 Test 4: Simulation complète</h3>
+        <button onclick="testCompleteSimulation()">Test complet</button>
+        <div id="completeResult" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Logs de test</h3>
+        <div id="testLogs" class="log"></div>
+    </div>
+
+    <script>
+        // 🔧 Configuration de test
+        const TEST_PLAYER_DATA = {
+            id: 88,
+            name: "Ali Jebali",
+            fifa_connect_id: "TUN_001",
+            position: "Milieu offensif",
+            age: 24,
+            club: "AS Gabès",
+            nationality: "Tunisie"
+        };
+
+        // 📝 Fonction de log
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('testLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logEntry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logsDiv.appendChild(logEntry);
+            console.log(message);
+        }
+
+        // 🎯 Test 1: Analyse du texte vocal
+        function testAnalyzeVoiceText() {
+            log('🧪 Test de la fonction analyzeVoiceText...');
+            const resultDiv = document.getElementById('analyzeResult');
+            
+            try {
+                const text = document.getElementById('testText').value;
+                log(`📝 Texte à analyser: "${text}"`);
+                
+                // Simuler la fonction d'analyse
+                const result = analyzeVoiceText(text);
+                log(`✅ Résultat de l'analyse:`, 'success');
+                log(`   - Commande: ${result.command || 'Aucune'}`);
+                log(`   - Confiance: ${result.confidence || 'Aucune'}`);
+                log(`   - Nom: ${result.player_name || 'Aucun'}`);
+                log(`   - Âge: ${result.age || 'Aucun'}`);
+                log(`   - Position: ${result.position || 'Aucune'}`);
+                log(`   - Club: ${result.club || 'Aucun'}`);
+                
+                resultDiv.innerHTML = `<strong>✅ Succès!</strong><br>Commande détectée: ${result.command || 'Aucune'}`;
+                resultDiv.className = 'log success';
+                
+            } catch (error) {
+                log(`❌ Erreur lors du test: ${error.message}`, 'error');
+                resultDiv.innerHTML = `<strong>❌ Erreur!</strong><br>${error.message}`;
+                resultDiv.className = 'log error';
+            }
+        }
+
+        // 🔍 Test 2: Recherche automatique FIFA
+        async function testSearchPlayerByFifaConnect() {
+            log('🧪 Test de la fonction searchPlayerByFifaConnect...');
+            const resultDiv = document.getElementById('searchResult');
+            
+            try {
+                log('🔍 Lancement de la recherche automatique...');
+                
+                // Simuler la recherche
+                const playerData = await simulateSearchPlayer();
+                log(`✅ Joueur trouvé: ${playerData.name}`, 'success');
+                
+                resultDiv.innerHTML = `<strong>✅ Succès!</strong><br>Joueur: ${playerData.name} (${playerData.fifa_connect_id})`;
+                resultDiv.className = 'log success';
+                
+            } catch (error) {
+                log(`❌ Erreur lors de la recherche: ${error.message}`, 'error');
+                resultDiv.innerHTML = `<strong>❌ Erreur!</strong><br>${error.message}`;
+                resultDiv.className = 'log error';
+            }
+        }
+
+        // 📝 Test 3: Remplissage des champs
+        function testFillFormFields() {
+            log('🧪 Test de la fonction fillFormFields...');
+            const resultDiv = document.getElementById('fillResult');
+            
+            try {
+                log('📝 Remplissage des champs avec les données de test...');
+                
+                // Simuler le remplissage
+                const success = simulateFillFormFields(TEST_PLAYER_DATA);
+                
+                if (success) {
+                    log('✅ Champs remplis avec succès!', 'success');
+                    resultDiv.innerHTML = `<strong>✅ Succès!</strong><br>Tous les champs ont été remplis`;
+                    resultDiv.className = 'log success';
+                } else {
+                    log('⚠️ Certains champs n\'ont pas pu être remplis', 'error');
+                    resultDiv.innerHTML = `<strong>⚠️ Attention!</strong><br>Certains champs n'ont pas pu être remplis`;
+                    resultDiv.className = 'log error';
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur lors du remplissage: ${error.message}`, 'error');
+                resultDiv.innerHTML = `<strong>❌ Erreur!</strong><br>${error.message}`;
+                resultDiv.className = 'log error';
+            }
+        }
+
+        // 🎤 Test 4: Simulation complète
+        async function testCompleteSimulation() {
+            log('🧪 Test complet de la commande FIFA CONNECT...');
+            const resultDiv = document.getElementById('completeResult');
+            
+            try {
+                log('🎯 Démarrage de la simulation complète...');
+                
+                // 1. Analyse du texte
+                const text = "ID FIFA CONNECT";
+                const analysis = analyzeVoiceText(text);
+                log(`✅ Analyse: ${analysis.command}`);
+                
+                // 2. Recherche du joueur
+                const player = await simulateSearchPlayer();
+                log(`✅ Recherche: ${player.name} trouvé`);
+                
+                // 3. Remplissage des champs
+                const fillSuccess = simulateFillFormFields(player);
+                log(`✅ Remplissage: ${fillSuccess ? 'Succès' : 'Échec'}`);
+                
+                log('🎉 Simulation complète réussie!', 'success');
+                resultDiv.innerHTML = `<strong>🎉 Succès!</strong><br>Simulation complète réussie`;
+                resultDiv.className = 'log success';
+                
+            } catch (error) {
+                log(`❌ Erreur lors de la simulation: ${error.message}`, 'error');
+                resultDiv.innerHTML = `<strong>❌ Erreur!</strong><br>${error.message}`;
+                resultDiv.className = 'log error';
+            }
+        }
+
+        // 🔧 Fonctions de simulation
+        function analyzeVoiceText(text) {
+            log(`🔍 Analyse du texte: "${text}"`);
+            
+            const normalizedText = text.toLowerCase()
+                .replace(/[.,!?]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            
+            log(`📝 Texte normalisé: "${normalizedText}"`);
+            
+            // Détection de la commande FIFA CONNECT
+            const fifaConnectPatterns = [
+                /id\s+fifa\s+connect/i,
+                /fifa\s+connect/i,
+                /fifa\s+id/i,
+                /connect\s+id/i,
+                /identifiant\s+fifa/i,
+                /fifa\s+connect\s+id/i
+            ];
+            
+            for (const pattern of fifaConnectPatterns) {
+                if (pattern.test(normalizedText)) {
+                    log('🎯 Commande "ID FIFA CONNECT" détectée!');
+                    return {
+                        command: 'fifa_connect_search',
+                        confidence: 'very_high',
+                        player_name: null,
+                        age: null,
+                        position: null,
+                        club: null
+                    };
+                }
+            }
+            
+            log('⚠️ Aucune commande spéciale détectée');
+            return {
+                command: null,
+                confidence: 'low',
+                player_name: null,
+                age: null,
+                position: null,
+                club: null
+            };
+        }
+
+        async function simulateSearchPlayer() {
+            log('🔍 Simulation de la recherche du joueur...');
+            
+            // Simuler un délai d'API
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            log('✅ Joueur trouvé dans la simulation');
+            return TEST_PLAYER_DATA;
+        }
+
+        function simulateFillFormFields(playerData) {
+            log('📝 Simulation du remplissage des champs...');
+            
+            try {
+                // Simuler la mise à jour des champs
+                log(`   - Nom: ${playerData.name}`);
+                log(`   - Âge: ${playerData.age}`);
+                log(`   - Position: ${playerData.position}`);
+                log(`   - Club: ${playerData.club}`);
+                log(`   - ID FIFA: ${playerData.fifa_connect_id}`);
+                
+                return true;
+            } catch (error) {
+                log(`❌ Erreur lors du remplissage: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // 🚀 Initialisation
+        log('🚀 Page de test initialisée');
+        log('📋 Prêt pour les tests de la commande FIFA CONNECT');
+    </script>
+</body>
+</html>
+

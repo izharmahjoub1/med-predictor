@@ -1,0 +1,165 @@
+{
+  "scenes": [
+    {
+      "name": "Welcome",
+      "description": "Scène d'accueil et d'initialisation",
+      "slots": [],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaStart"
+        }
+      }
+    },
+    {
+      "name": "PcmaStart",
+      "description": "Démarrage du PCMA",
+      "slots": [
+        {
+          "name": "player_name",
+          "type": "string",
+          "required": true,
+          "prompts": [
+            "Quel est le nom du joueur pour lequel vous souhaitez commencer le PCMA ?"
+          ]
+        }
+      ],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaPosition"
+        }
+      }
+    },
+    {
+      "name": "PcmaPosition",
+      "description": "Saisie du poste du joueur",
+      "slots": [
+        {
+          "name": "position",
+          "type": "position",
+          "required": true,
+          "prompts": [
+            "Quel est son poste ? (défenseur, milieu, attaquant)"
+          ]
+        }
+      ],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaAge"
+        }
+      }
+    },
+    {
+      "name": "PcmaAge",
+      "description": "Saisie de l'âge du joueur",
+      "slots": [
+        {
+          "name": "age",
+          "type": "age",
+          "required": true,
+          "prompts": [
+            "Quel est son âge ?"
+          ]
+        }
+      ],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaAntecedents"
+        }
+      }
+    },
+    {
+      "name": "PcmaAntecedents",
+      "description": "Saisie des antécédents médicaux",
+      "slots": [
+        {
+          "name": "antecedents",
+          "type": "string",
+          "required": false,
+          "prompts": [
+            "A-t-il des antécédents médicaux importants ? Si oui, décrivez-les brièvement."
+          ]
+        }
+      ],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaInjury"
+        }
+      }
+    },
+    {
+      "name": "PcmaInjury",
+      "description": "Saisie de la dernière blessure",
+      "slots": [
+        {
+          "name": "last_injury_date",
+          "type": "string",
+          "required": false,
+          "prompts": [
+            "Quand a-t-il eu sa dernière blessure ? (date ou description)"
+          ]
+        },
+        {
+          "name": "injury_type",
+          "type": "injury_type",
+          "required": false,
+          "prompts": [
+            "Quel type de blessure était-ce ?"
+          ]
+        }
+      ],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaStatus"
+        }
+      }
+    },
+    {
+      "name": "PcmaStatus",
+      "description": "Saisie du statut médical actuel",
+      "slots": [
+        {
+          "name": "medical_status",
+          "type": "medical_status",
+          "required": true,
+          "prompts": [
+            "Quel est son statut médical actuel ? (apte, inapte temporaire, inapte permanent, en observation)"
+          ]
+        }
+      ],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaReview"
+        }
+      }
+    },
+    {
+      "name": "PcmaReview",
+      "description": "Révision des données PCMA",
+      "slots": [],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "PcmaComplete"
+        }
+      }
+    },
+    {
+      "name": "PcmaComplete",
+      "description": "Finalisation et soumission du PCMA",
+      "slots": [],
+      "onEnter": {
+        "condition": "true",
+        "transition": {
+          "nextScene": "Welcome"
+        }
+      }
+    }
+  ]
+}

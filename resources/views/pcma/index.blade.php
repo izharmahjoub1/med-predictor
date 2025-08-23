@@ -130,7 +130,7 @@
                                            class="text-blue-600 hover:text-blue-900">Voir</a>
                                         <a href="{{ route('pcma.edit', $pcma) }}" 
                                            class="text-gray-600 hover:text-gray-900">Modifier</a>
-                                        <a href="{{ route('pcma.view.pdf', $pcma) }}" 
+                                        <a href="{{ route('pcma.pdf', $pcma) }}" 
                                            class="text-green-600 hover:text-green-900">📄 PDF</a>
                                         @if($pcma->status === 'pending')
                                             <form method="POST" action="{{ route('pcma.complete', $pcma) }}" class="inline">

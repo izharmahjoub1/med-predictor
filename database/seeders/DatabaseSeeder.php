@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
             PlayerUserSeeder::class,
             TunisianLeaguePlayersSeeder::class,
             PlayerDetailedDataSeeder::class,
+            
+            // Seeders V3
+            V3AiPredictionSeeder::class,
+            V3PerformanceMetricSeeder::class,
         ]);
     }
 }

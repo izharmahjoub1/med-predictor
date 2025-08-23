@@ -1,0 +1,101 @@
+{
+  "types": [
+    {
+      "name": "player_name",
+      "description": "Nom du joueur pour le PCMA",
+      "entities": [
+        {
+          "id": "player_name",
+          "name": "player_name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "position",
+      "description": "Poste du joueur",
+      "entities": [
+        {
+          "id": "defenseur",
+          "name": "défenseur",
+          "synonyms": ["défenseur", "defenseur", "défense", "defense", "arrière", "arriere"]
+        },
+        {
+          "id": "milieu",
+          "name": "milieu",
+          "synonyms": ["milieu", "milieu de terrain", "milieu de terrain", "meneur", "meneur de jeu"]
+        },
+        {
+          "id": "attaquant",
+          "name": "attaquant",
+          "synonyms": ["attaquant", "avant", "buteur", "pointe", "ailier", "ailier"]
+        }
+      ]
+    },
+    {
+      "name": "age",
+      "description": "Âge du joueur",
+      "entities": [
+        {
+          "id": "age",
+          "name": "age",
+          "type": "number",
+          "min": 16,
+          "max": 50
+        }
+      ]
+    },
+    {
+      "name": "medical_status",
+      "description": "Statut médical du joueur",
+      "entities": [
+        {
+          "id": "apte",
+          "name": "apte",
+          "synonyms": ["apte", "en forme", "en forme", "bon état", "bon etat"]
+        },
+        {
+          "id": "inapte_temporaire",
+          "name": "inapte temporaire",
+          "synonyms": ["inapte temporaire", "inapte temporaire", "blessé", "blesse", "en convalescence"]
+        },
+        {
+          "id": "inapte_permanent",
+          "name": "inapte permanent",
+          "synonyms": ["inapte permanent", "inapte permanent", "retraité", "retraite", "arrêté", "arrete"]
+        },
+        {
+          "id": "en_observation",
+          "name": "en observation",
+          "synonyms": ["en observation", "en observation", "sous surveillance", "sous surveillance", "en attente"]
+        }
+      ]
+    },
+    {
+      "name": "injury_type",
+      "description": "Type de blessure",
+      "entities": [
+        {
+          "id": "entorse",
+          "name": "entorse",
+          "synonyms": ["entorse", "foulure", "élongation", "elongation"]
+        },
+        {
+          "id": "fracture",
+          "name": "fracture",
+          "synonyms": ["fracture", "cassure", "rupture", "brisure"]
+        },
+        {
+          "id": "contusion",
+          "name": "contusion",
+          "synonyms": ["contusion", "ecchymose", "hématome", "hematome"]
+        },
+        {
+          "id": "dechirure",
+          "name": "déchirure",
+          "synonyms": ["déchirure", "dechirure", "rupture musculaire", "rupture musculaire"]
+        }
+      ]
+    }
+  ]
+}

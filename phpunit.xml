@@ -3,20 +3,33 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         cacheDirectory=".phpunit.cache"
 >
     <testsuites>
         <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
+            <directory>tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+            <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="ConsoleVocale">
+            <directory>tests/ConsoleVocale</directory>
         </testsuite>
     </testsuites>
+    
     <source>
         <include>
-            <directory suffix=".php">./app</directory>
+            <directory suffix=".php">app</directory>
         </include>
+        <exclude>
+            <directory suffix=".php">app/Console</directory>
+            <directory suffix=".php">app/Exceptions</directory>
+            <directory suffix=".php">app/Providers</directory>
+        </exclude>
     </source>
+    
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
@@ -27,5 +40,23 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="GOOGLE_SPEECH_API_KEY" value="test_key"/>
     </php>
+    
+    <coverage>
+        <include>
+            <directory suffix=".php">app</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">app/Console</directory>
+            <directory suffix=".php">app/Exceptions</directory>
+            <directory suffix=".php">app/Providers</directory>
+            <directory suffix=".php">app/Http/Middleware</directory>
+        </exclude>
+        <report>
+            <html outputDirectory="coverage/html"/>
+            <clover outputFile="coverage.xml"/>
+            <text outputFile="coverage.txt"/>
+        </report>
+    </coverage>
 </phpunit>
