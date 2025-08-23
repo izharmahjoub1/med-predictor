@@ -1,0 +1,14 @@
+FROM nginx:alpine
+
+# Copier une page HTML statique simple
+RUN echo '<!DOCTYPE html><html><head><title>FIT Platform</title></head><body><h1>🚀 FIT Platform v3.0</h1><p>Deployed successfully on Google Cloud Run!</p><p>Date: <span id="date"></span></p><script>document.getElementById("date").textContent = new Date().toLocaleString();</script></body></html>' > /usr/share/nginx/html/index.html
+
+# Configuration Nginx pour écouter sur le port 8080
+RUN echo 'server { listen 8080; location / { root /usr/share/nginx/html; index index.html; } }' > /etc/nginx/conf.d/default.conf
+
+# Supprimer la configuration par défaut
+RUN rm /etc/nginx/conf.d/default.conf.bak 2>/dev/null || true
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

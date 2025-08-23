@@ -1,0 +1,21 @@
+FROM php:8.2-apache
+
+# Configurer Apache pour utiliser le port dynamique de Cloud Run
+RUN a2enmod rewrite
+ENV APACHE_DOCUMENT_ROOT /var/www/html
+ENV PORT 8080
+
+# Copier une page simple de test
+RUN echo "<?php echo '<h1>FIT Platform is running!</h1><p>Version 3.0 deployed successfully</p><p>PHP version: ' . phpversion() . '</p>'; ?>" > /var/www/html/index.php
+
+# Script de démarrage qui configure le port dynamiquement
+RUN echo '#!/bin/bash\n\
+    echo "Starting on port $PORT"\n\
+    sed -i "s/Listen 80/Listen $PORT/" /etc/apache2/ports.conf\n\
+    sed -i "s/VirtualHost \\*:80/VirtualHost \\*:$PORT/" /etc/apache2/sites-available/000-default.conf\n\
+    apache2-foreground\n\
+    ' > /start.sh && chmod +x /start.sh
+
+EXPOSE 8080
+
+CMD ["/start.sh"]

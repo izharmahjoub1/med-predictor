@@ -1,0 +1,18 @@
+FROM python:3.9-slim
+
+# Pas besoin d'installer de package - Python a un serveur HTTP intégré
+
+# Créer le répertoire de travail
+WORKDIR /app
+
+# Créer une page HTML simple
+RUN echo '<!DOCTYPE html><html><head><title>FIT Platform v3.0</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:50px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;}h1{font-size:3em;margin-bottom:20px;}p{font-size:1.2em;}</style></head><body><h1>🚀 FIT Platform v3.0</h1><p>Successfully deployed on Google Cloud Run!</p><p>Date: <span id="date"></span></p><script>document.getElementById("date").textContent = new Date().toLocaleString();</script></body></html>' > /app/index.html
+
+# Exposer le port 8080
+EXPOSE 8080
+
+# Script pour utiliser la variable d'environnement PORT de Cloud Run
+RUN echo '#!/bin/bash\nport=${PORT:-8080}\npython -m http.server $port' > /start.sh && chmod +x /start.sh
+
+# Démarrer le serveur HTTP sur le port dynamique
+CMD ["/start.sh"]

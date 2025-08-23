@@ -1,0 +1,20 @@
+runtime: php82
+
+env_variables:
+  APP_ENV: production
+  APP_KEY: base64:your-app-key-here
+  APP_DEBUG: false
+  APP_URL: https://fit.tbhc.uk
+  
+  # Database configuration
+  DB_CONNECTION: mysql
+  DB_HOST: 127.0.0.1
+  DB_PORT: 3306
+  DB_DATABASE: med_predictor_db
+  DB_USERNAME: med_predictor_user
+  DB_PASSWORD: VotreMot2Passe2024!
+  DB_SOCKET: "/cloudsql/med-predictor-fit:europe-west1:med-predictor-db"
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 3

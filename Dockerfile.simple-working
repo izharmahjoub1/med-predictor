@@ -1,0 +1,20 @@
+FROM nginx:alpine
+
+# Installer sed pour la substitution
+RUN apk add --no-cache sed
+
+# Copier une page HTML simple
+RUN echo '<!DOCTYPE html><html><head><title>FIT Platform v3.0</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:50px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;}h1{font-size:3.5em;margin:0 0 20px 0;}p{font-size:1.3em;margin:10px 0;}.container{background:rgba(255,255,255,0.1);padding:40px;border-radius:20px;}</style></head><body><div class="container"><h1>🚀 FIT Platform v3.0</h1><p><strong>✅ Successfully deployed on Google Cloud Run!</strong></p><p>Date: <span id="date"></span></p><p>Ready for <strong>fit.tbhc.uk</strong></p></div><script>document.getElementById("date").textContent = new Date().toLocaleString();</script></body></html>' > /usr/share/nginx/html/index.html
+
+# Configuration Nginx avec port dynamique
+RUN echo 'server { listen 8080; location / { root /usr/share/nginx/html; index index.html; } }' > /etc/nginx/conf.d/default.conf
+
+# Script de démarrage
+RUN echo '#!/bin/sh\n\
+    PORT=${PORT:-8080}\n\
+    sed -i "s/listen 8080/listen $PORT/" /etc/nginx/conf.d/default.conf\n\
+    nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
+
+EXPOSE 8080
+
+CMD ["/start.sh"]

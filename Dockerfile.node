@@ -1,0 +1,19 @@
+FROM node:18-alpine
+
+# Créer le répertoire de travail
+WORKDIR /app
+
+# Créer un fichier package.json simple
+RUN echo '{"name":"fit-platform","version":"1.0.0","scripts":{"start":"node server.js"},"dependencies":{"express":"^4.18.0"}}' > package.json
+
+# Installer express
+RUN npm install
+
+# Créer un serveur Express simple
+RUN echo 'const express = require("express");\nconst app = express();\nconst PORT = process.env.PORT || 8080;\n\napp.get("/", (req, res) => {\n  res.send(`<!DOCTYPE html><html><head><title>FIT Platform v3.0</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:50px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;}h1{font-size:3em;margin-bottom:20px;}p{font-size:1.2em;}</style></head><body><h1>🚀 FIT Platform v3.0</h1><p>Successfully deployed on Google Cloud Run!</p><p>Date: ${new Date().toLocaleString()}</p><p>Port: ${PORT}</p></body></html>`);\n});\n\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});' > server.js
+
+# Exposer le port
+EXPOSE 8080
+
+# Démarrer l'application
+CMD ["npm", "start"]
